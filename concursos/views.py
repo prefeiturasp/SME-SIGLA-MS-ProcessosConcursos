@@ -1,68 +1,98 @@
-"""
-DRF views for the concursos module.
-"""
-from rest_framework import viewsets, permissions, status
+from django_filters.rest_framework import DjangoFilterBackend
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.filters import SearchFilter, OrderingFilter
-
-from .models import Concurso
+from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from .models import Cargo, Concurso
 from .serializers import (
-    ConcursoSerializer,
+    CargoSerializer, 
+    CargoListSerializer,
+    CargoSelectSerializer,
+    ConcursoSerializer, 
+    ConcursoListSerializer,
+    ConcursoSelectSerializer
 )
-from .services import ExternalServices
+from .utils import CustomPagination
+
+
+class CargoViewSet(viewsets.ModelViewSet):
+    queryset = Cargo.objects.all()
+    serializer_class = CargoSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    search_fields = ['nome']
+    ordering_fields = ['criado_em']
+    ordering = ['-criado_em']
+    pagination_class = CustomPagination
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            if self.request.query_params.get('formato') == 'select':
+                return CargoSelectSerializer
+            return CargoListSerializer
+        return CargoSerializer
+    
+    def list(self, request, *args, **kwargs):
+        """
+        Lista todos os cargos.
+        Se formato=select, retorna sem paginação.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+        
+        # Se for formato select, retornar sem paginação
+        if request.query_params.get('formato') == 'select':
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+        
+        # Formato normal com paginação
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class ConcursoViewSet(viewsets.ModelViewSet):
-    
     queryset = Concurso.objects.all()
-    # permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ConcursoSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['status', 'tipo_concurso']
-    search_fields = ['concurso_nome', 'descricao']
-    ordering_fields = ['concurso_nome', 'data_publicacao', 'criado_em']
+    filterset_fields = ['nome']
+    search_fields = ['nome']
+    ordering_fields = ['nome', 'criado_em']
     ordering = ['-criado_em']
-    
+    pagination_class = CustomPagination
+
     def get_serializer_class(self):
-        """Return appropriate serializer class."""
         if self.action == 'list':
-            return ConcursoSerializer
-        elif self.action in ['create', 'update', 'partial_update']:
-            return ConcursoSerializer
+            if self.request.query_params.get('formato') == 'select':
+                return ConcursoSelectSerializer
+            return ConcursoListSerializer
         return ConcursoSerializer
     
-    def perform_create(self, serializer):
-        """Override to add custom logic on create."""
-        concurso = serializer.save()
-        print(concurso)
-        ###
-    
-    def perform_update(self, serializer):
-        """Override to add custom logic on update."""
-        concurso = serializer.save()
-        print(concurso)
-        ###
+    def list(self, request, *args, **kwargs):
+        """
+        Lista todos os concursos.
+        Se formato=select, retorna sem paginação.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
         
-    
-    def perform_destroy(self, instance):
-        """Override to add custom logic on delete."""
-        instance.delete()
-    
-    @action(detail=True, methods=['post'])
-    def finalizar(self, request, pk=None):
-        """Finalizar um concurso."""
-        concurso = self.get_object()
+        # Se for formato select, retornar sem paginação
+        if request.query_params.get('formato') == 'select':
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
         
-        if not concurso.status == 'EM_ANDAMENTO':
-            return Response(
-                {'error': 'Concurso não pode ser finalizado'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        # Formato normal com paginação
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
         
-        concurso.status = 'FINALIZADO'
-        concurso.save()
-        
-        serializer = self.get_serializer(concurso)
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
-
