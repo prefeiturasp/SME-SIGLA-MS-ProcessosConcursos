@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
-from .models import Cargo, Concurso
-from .serializers import (
+from concursos.models import Cargo, Concurso
+from concursos.serializers import (
     CargoSerializer, 
     CargoListSerializer,
     CargoSelectSerializer,
@@ -16,7 +16,7 @@ from .serializers import (
     ConcursoListSerializer,
     ConcursoSelectSerializer
 )
-from .utils import CustomPagination
+from concursos.utils import CustomPagination
 
 
 class CargoViewSet(viewsets.ModelViewSet):
@@ -35,25 +35,23 @@ class CargoViewSet(viewsets.ModelViewSet):
                 return CargoSelectSerializer
             return CargoListSerializer
         return CargoSerializer
-    
+
     def list(self, request, *args, **kwargs):
         """
         Lista todos os cargos.
         Se formato=select, retorna sem paginação.
         """
         queryset = self.filter_queryset(self.get_queryset())
-        
-        # Se for formato select, retornar sem paginação
+
         if request.query_params.get('formato') == 'select':
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
-        
-        # Formato normal com paginação
+
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-        
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -75,24 +73,22 @@ class ConcursoViewSet(viewsets.ModelViewSet):
                 return ConcursoSelectSerializer
             return ConcursoListSerializer
         return ConcursoSerializer
-    
+
     def list(self, request, *args, **kwargs):
         """
         Lista todos os concursos.
         Se formato=select, retorna sem paginação.
         """
         queryset = self.filter_queryset(self.get_queryset())
-        
-        # Se for formato select, retornar sem paginação
+
         if request.query_params.get('formato') == 'select':
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
-        
-        # Formato normal com paginação
+
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
-        
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
