@@ -23,6 +23,7 @@ class Cargo(BaseModel):
     """
     history = AuditlogHistoryField()
     nome = models.CharField(max_length=200, verbose_name="Nome do Cargo")
+    codigo = models.CharField(max_length=200, verbose_name="Código do Cargo", blank=True, null=True)
 
     class Meta:
         db_table = 'cargos'
