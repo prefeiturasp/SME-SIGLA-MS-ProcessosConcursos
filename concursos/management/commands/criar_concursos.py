@@ -50,12 +50,23 @@ class Command(BaseCommand):
             
             self.stdout.write('Criando cargos de exemplo...')
             for nome in cargos_nomes:
-                cargo, created = Cargo.objects.get_or_create(nome=nome)
+                codigo = f"{random.randint(0, 9999):04d}"
+                cargo, created = Cargo.objects.get_or_create(
+                    nome=nome,
+                    defaults={
+                        'codigo': codigo,
+                    },
+                )
+                # Se já existia mas sem código (situação improvável), define um
+                if not created and not getattr(cargo, 'codigo', None):
+                    cargo.codigo = codigo
+                    cargo.save(update_fields=['codigo'])
+
                 cargos_disponiveis.append(cargo)
                 if created:
-                    self.stdout.write(f'  ✓ Criado cargo: {nome}')
+                    self.stdout.write(f'  ✓ Criado cargo: {nome} (código {cargo.codigo})')
                 else:
-                    self.stdout.write(f'  - Cargo já existe: {nome}')
+                    self.stdout.write(f'  - Cargo já existe: {nome} (código {cargo.codigo})')
         
         concursos_criados = []
         

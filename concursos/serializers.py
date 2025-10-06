@@ -8,7 +8,7 @@ class CargoSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Cargo
-        fields = ['uuid', 'nome', 'criado_em', 'atualizado_em']
+        fields = ['uuid', 'nome', 'codigo', 'criado_em', 'atualizado_em']
         read_only_fields = ['uuid', 'criado_em', 'atualizado_em']
 
 
@@ -18,7 +18,7 @@ class CargoListSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Cargo
-        fields = ['uuid', 'nome']
+        fields = ['uuid', 'nome', 'codigo']
 
 
 class CargoSelectSerializer(serializers.ModelSerializer):
@@ -27,10 +27,10 @@ class CargoSelectSerializer(serializers.ModelSerializer):
     """
     value = serializers.UUIDField(source='uuid')
     label = serializers.CharField(source='nome')
-    
+
     class Meta:
         model = Cargo
-        fields = ['value', 'label']
+        fields = ['value', 'label', 'codigo']
 
 
 class ConcursoSerializer(serializers.ModelSerializer):
