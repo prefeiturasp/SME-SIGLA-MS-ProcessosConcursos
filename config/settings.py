@@ -177,3 +177,6 @@ LOGGING = {
         'level': 'INFO',
     },
 }
+
+SMEINTEGRACAO_API_URL = os.environ.get('SMEINTEGRACAO_API_URL')
+SMEINTEGRACAO_API_TOKEN = os.environ.get('SMEINTEGRACAO_API_TOKEN')
