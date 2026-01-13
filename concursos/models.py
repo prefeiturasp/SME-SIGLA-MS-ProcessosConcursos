@@ -23,7 +23,7 @@ class Cargo(BaseModel):
     """
     history = AuditlogHistoryField()
     nome = models.CharField(max_length=200, verbose_name="Nome do Cargo")
-    codigo = models.CharField(max_length=200, verbose_name="Código do Cargo", blank=True, null=True)
+    codigo = models.IntegerField(verbose_name="Código do Cargo", blank=True, null=True, default=0)
 
     class Meta:
         db_table = 'cargos'
@@ -46,6 +46,8 @@ class Concurso(BaseModel):
         verbose_name="Cargos",
         related_name="concursos"
     )
+    numero_processo = models.IntegerField(verbose_name="Número do Processo", blank=True, null=True, default=0)
+    codigo = models.IntegerField(verbose_name="Código do Concurso", blank=True, null=True, default=0)
 
     class Meta:
         db_table = 'concursos'
