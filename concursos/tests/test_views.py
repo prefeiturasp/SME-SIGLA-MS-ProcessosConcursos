@@ -51,7 +51,7 @@ def test_create_cargo_success(authenticated_client, cargo_data):
     assert novo_cargo.uuid is not None
     assert novo_cargo.criado_em is not None
     assert novo_cargo.atualizado_em is not None
-    assert novo_cargo.codigo == '1234'
+    assert novo_cargo.codigo == 1234
 
 
 def test_retrieve_cargo_success(authenticated_client, cargo_analista):
@@ -107,6 +107,10 @@ def test_list_concursos_success(authenticated_client, concursos):
     concurso_nomes = [concurso['nome'] for concurso in concursos_data]
     assert 'Concurso de Analista' in concurso_nomes
     assert 'Concurso de Professor' in concurso_nomes
+    # Novos campos presentes
+    for concurso in concursos_data:
+        assert 'codigo' in concurso
+        assert 'numero_processo' in concurso
 
 def test_list_concursos_with_select_format(authenticated_client, concursos):
     """Testa se a listagem com formato select retorna sem paginação."""
@@ -127,7 +131,9 @@ def test_list_concursos_with_select_format(authenticated_client, concursos):
 def test_create_concurso_success(authenticated_client, concurso_data):
     """Testa se a criação de concurso funciona corretamente."""
     url = reverse('concurso-list')
-    response = authenticated_client.post(url, concurso_data)
+    # Inclui novos campos no payload
+    payload = {**concurso_data, 'codigo': 77, 'numero_processo': 888}
+    response = authenticated_client.post(url, payload)
 
     assert response.status_code == status.HTTP_201_CREATED
     assert Concurso.objects.count() == 1
@@ -138,6 +144,9 @@ def test_create_concurso_success(authenticated_client, concurso_data):
     assert novo_concurso.atualizado_em is not None
 
     assert novo_concurso.cargos.count() == 1
+    # Verifica novos campos persistidos
+    assert novo_concurso.codigo == 77
+    assert novo_concurso.numero_processo == 888
 
 def test_create_concurso_without_nome(authenticated_client):
     """Testa se a criação sem nome retorna erro."""
@@ -187,6 +196,9 @@ def test_retrieve_concurso_success(authenticated_client, concurso_analista):
     assert response.data['uuid'] == str(concurso_analista.uuid)
     assert len(response.data['cargos']) == 1
     assert response.data['cargos'][0]['nome'] == 'Analista de Sistemas'
+    # Novos campos presentes no retrieve
+    assert 'codigo' in response.data
+    assert 'numero_processo' in response.data
 
 def test_retrieve_concurso_not_found(authenticated_client, fake_uuid):
     """Testa se retorna 404 para concurso inexistente."""
