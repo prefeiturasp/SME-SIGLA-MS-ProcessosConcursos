@@ -1,36 +1,6 @@
 from rest_framework import serializers
-from .models import Cargo, Concurso
-
-
-class CargoSerializer(serializers.ModelSerializer):
-    """
-    Serializer para o modelo Cargo.
-    """
-    class Meta:
-        model = Cargo
-        fields = ['uuid', 'nome', 'codigo', 'criado_em', 'atualizado_em']
-        read_only_fields = ['uuid', 'criado_em', 'atualizado_em']
-
-
-class CargoListSerializer(serializers.ModelSerializer):
-    """
-    Serializer para listagem de cargos.
-    """
-    class Meta:
-        model = Cargo
-        fields = ['uuid', 'nome', 'codigo']
-
-
-class CargoSelectSerializer(serializers.ModelSerializer):
-    """
-    Serializer para selects/dropdowns no frontend.
-    """
-    value = serializers.UUIDField(source='uuid')
-    label = serializers.CharField(source='nome')
-
-    class Meta:
-        model = Cargo
-        fields = ['value', 'label', 'codigo']
+from concursos.models import Concurso, Cargo
+from .cargo import CargoListSerializer, CargoSelectSerializer
 
 
 class ConcursoSerializer(serializers.ModelSerializer):
@@ -46,7 +16,7 @@ class ConcursoSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Concurso
-        fields = ['uuid', 'nome', 'cargos', 'cargos_ids', 'criado_em', 'atualizado_em']
+        fields = ['uuid', 'nome', 'cargos', 'cargos_ids', 'criado_em', 'atualizado_em', 'numero_processo', 'codigo']
         read_only_fields = ['uuid', 'criado_em', 'atualizado_em']
     
     def create(self, validated_data):
@@ -81,7 +51,7 @@ class ConcursoListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Concurso
-        fields = ['uuid', 'nome', 'cargos']
+        fields = ['uuid', 'nome', 'cargos', 'numero_processo', 'codigo']
 
 
 class ConcursoSelectSerializer(serializers.ModelSerializer):
@@ -94,4 +64,5 @@ class ConcursoSelectSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Concurso
-        fields = ['value', 'label', 'cargos']
+        fields = ['value', 'label', 'cargos', 'numero_processo', 'codigo']
+
