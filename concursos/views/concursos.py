@@ -7,53 +7,13 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
-from concursos.models import Cargo, Concurso
+from concursos.models import Concurso
 from concursos.serializers import (
-    CargoSerializer, 
-    CargoListSerializer,
-    CargoSelectSerializer,
     ConcursoSerializer, 
     ConcursoListSerializer,
     ConcursoSelectSerializer
 )
 from concursos.utils import CustomPagination
-
-
-class CargoViewSet(viewsets.ModelViewSet):
-    queryset = Cargo.objects.all()
-    serializer_class = CargoSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    search_fields = ['nome']
-    ordering_fields = ['criado_em']
-    ordering = ['-criado_em']
-    pagination_class = CustomPagination
-
-    def get_serializer_class(self):
-        if self.action == 'list':
-            if self.request.query_params.get('formato') == 'select':
-                return CargoSelectSerializer
-            return CargoListSerializer
-        return CargoSerializer
-
-    def list(self, request, *args, **kwargs):
-        """
-        Lista todos os cargos.
-        Se formato=select, retorna sem paginação.
-        """
-        queryset = self.filter_queryset(self.get_queryset())
-
-        if request.query_params.get('formato') == 'select':
-            serializer = self.get_serializer(queryset, many=True)
-            return Response(serializer.data)
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
 
 
 class ConcursoViewSet(viewsets.ModelViewSet):
