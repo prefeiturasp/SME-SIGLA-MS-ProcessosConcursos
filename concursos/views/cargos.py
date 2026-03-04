@@ -31,7 +31,6 @@ class CargoViewSet(viewsets.ModelViewSet):
         """
         Lista todos os cargos com agregados de autorizações publicadas:
         - total de autorizacoes
-        - total de autorizacoes_sem_efeito
         - data_autorizacao_mais_recente
         """
         # Busca totais de escolhas por cargo no ms-escolhas
@@ -44,7 +43,6 @@ class CargoViewSet(viewsets.ModelViewSet):
             .all()
             .annotate(
                 total_autorizacoes=Sum('autorizacoes__autorizacoes'),
-                total_autorizacoes_sem_efeito=Sum('autorizacoes__autorizacoes_sem_efeito'),
                 ultima_autorizacao=Max('autorizacoes__data_autorizacao'),
             )
             .order_by('nome')
@@ -57,7 +55,6 @@ class CargoViewSet(viewsets.ModelViewSet):
                 'nome': cargo.nome,
                 'codigo': cargo.codigo,
                 'autorizacoes': int(cargo.total_autorizacoes or 0),
-                'autorizacoes_sem_efeito': int(cargo.total_autorizacoes_sem_efeito or 0),
                 'data_autorizacao_mais_recente': cargo.ultima_autorizacao.isoformat() if cargo.ultima_autorizacao else None,
                 'total_escolhas': int(total_escolhas or 0),
             })
