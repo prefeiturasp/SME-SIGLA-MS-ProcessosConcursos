@@ -9,9 +9,7 @@ def test_autorizacao_publicada_model_fields():
     expected_fields = [
         'uuid',
         'cargo',
-        'vagas_sem_efeito',
         'autorizacoes',
-        'autorizacoes_sem_efeito',
         'data_autorizacao',
         'observacao',
         'criado_em',
