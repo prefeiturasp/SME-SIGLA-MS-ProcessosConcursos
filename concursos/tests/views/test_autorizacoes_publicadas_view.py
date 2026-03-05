@@ -8,9 +8,7 @@ pytestmark = pytest.mark.django_db
 
 def criar_autorizacao(cargo: Cargo | None = None, **kwargs) -> AutorizacaoPublicada:
     defaults = dict(
-        vagas_sem_efeito=False,
         autorizacoes=2,
-        autorizacoes_sem_efeito=1,
         observacao='Obs teste',
     )
     defaults.update(kwargs)
@@ -65,9 +63,7 @@ def test_create_autorizacao_publicada_success_with_cargo(api_client):
     url = reverse('autorizacao-publicada-list')
     payload = {
         'cargo': str(cargo.uuid),
-        'vagas_sem_efeito': True,
         'autorizacoes': 5,
-        'autorizacoes_sem_efeito': 0,
         'data_autorizacao': '2026-01-29',
         'observacao': 'Criado via teste',
     }
@@ -76,7 +72,6 @@ def test_create_autorizacao_publicada_success_with_cargo(api_client):
     created = AutorizacaoPublicada.objects.get(uuid=resp.data['uuid'])
     assert created.cargo == cargo
     assert created.autorizacoes == 5
-    assert created.vagas_sem_efeito is True
 
 
 def test_create_autorizacao_publicada_invalid_cargo(api_client):
@@ -92,21 +87,17 @@ def test_create_autorizacao_publicada_invalid_cargo(api_client):
 
 
 def test_patch_autorizacao_publicada_success(api_client):
-    obj = criar_autorizacao(None, autorizacoes=2, autorizacoes_sem_efeito=1, observacao='old')
+    obj = criar_autorizacao(None, autorizacoes=2, observacao='old')
     url = reverse('autorizacao-publicada-detail', kwargs={'pk': obj.uuid})
     payload = {
-        'vagas_sem_efeito': True,
         'autorizacoes': 7,
-        'autorizacoes_sem_efeito': 3,
         'data_autorizacao': '2026-01-29',
         'observacao': 'nova',
     }
     resp = api_client.patch(url, payload, format='json')
     assert resp.status_code == status.HTTP_200_OK
     obj.refresh_from_db()
-    assert obj.vagas_sem_efeito is True
     assert obj.autorizacoes == 7
-    assert obj.autorizacoes_sem_efeito == 3
     assert str(obj.data_autorizacao) == '2026-01-29'
     assert obj.observacao == 'nova'
 
