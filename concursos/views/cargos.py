@@ -22,6 +22,7 @@ class CargoViewSet(viewsets.ModelViewSet):
     serializer_class = CargoSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['codigo']
     search_fields = ['nome']
     ordering_fields = ['criado_em']
     ordering = ['-criado_em']
