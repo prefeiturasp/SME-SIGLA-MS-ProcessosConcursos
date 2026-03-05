@@ -12,9 +12,7 @@ class AutorizacaoPublicadaSerializer(serializers.ModelSerializer):
         fields = [
             'uuid',
             'cargo',
-            'vagas_sem_efeito',
             'autorizacoes',
-            'autorizacoes_sem_efeito',
             'data_autorizacao',
             'observacao',
             'criado_em',
