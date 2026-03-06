@@ -73,9 +73,9 @@ def test_autorizacoes_publicadas_agrupa_e_integra_ms_escolhas(authenticated_clie
     cargo_a = Cargo.objects.create(nome='Cargo A', codigo=1001)
     cargo_b = Cargo.objects.create(nome='Cargo B', codigo=1002)
     # cria autorizações publicadas locais
-    AutorizacaoPublicada.objects.create(cargo=cargo_a, autorizacoes=2, autorizacoes_sem_efeito=1, data_autorizacao=date(2026, 1, 1))
-    AutorizacaoPublicada.objects.create(cargo=cargo_a, autorizacoes=1, autorizacoes_sem_efeito=0, data_autorizacao=date(2026, 1, 15))
-    AutorizacaoPublicada.objects.create(cargo=cargo_b, autorizacoes=5, autorizacoes_sem_efeito=2, data_autorizacao=date(2025, 12, 31))
+    AutorizacaoPublicada.objects.create(cargo=cargo_a, autorizacoes=2, data_autorizacao=date(2026, 1, 1))
+    AutorizacaoPublicada.objects.create(cargo=cargo_a, autorizacoes=1, data_autorizacao=date(2026, 1, 15))
+    AutorizacaoPublicada.objects.create(cargo=cargo_b, autorizacoes=5, data_autorizacao=date(2025, 12, 31))
 
     # mock do serviço externo retornando totais de escolhas por cargo
     payload = {"1001": 3, "1002": 1}
@@ -100,9 +100,7 @@ def test_autorizacoes_publicadas_agrupa_e_integra_ms_escolhas(authenticated_clie
         assert b['total_escolhas'] == payload['1002']
         # verifica agregações locais (somas)
         assert a['autorizacoes'] == 3  # 2 + 1
-        assert a['autorizacoes_sem_efeito'] == 1  # 1 + 0
         assert a['data_autorizacao_mais_recente'] == '2026-01-15'
         assert b['autorizacoes'] == 5
-        assert b['autorizacoes_sem_efeito'] == 2
         assert b['data_autorizacao_mais_recente'] == '2025-12-31'
 

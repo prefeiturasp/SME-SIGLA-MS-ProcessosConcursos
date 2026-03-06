@@ -10,7 +10,7 @@ class CargoAdmin(admin.ModelAdmin):
     """
     Admin para o modelo Cargo.
     """
-    list_display = ['nome', 'uuid', 'criado_em', 'atualizado_em']
+    list_display = ['nome', 'uuid', 'codigo', 'criado_em', 'atualizado_em']
     list_filter = ['criado_em', 'atualizado_em']
     search_fields = ['nome']
     readonly_fields = ['uuid', 'criado_em', 'atualizado_em']
