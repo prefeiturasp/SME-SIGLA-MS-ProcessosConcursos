@@ -19,7 +19,7 @@ from concursos.utils import CustomPagination
 class ConcursoViewSet(viewsets.ModelViewSet):
     queryset = Concurso.objects.all()
     serializer_class = ConcursoSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = []
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['nome']
     search_fields = ['nome']
