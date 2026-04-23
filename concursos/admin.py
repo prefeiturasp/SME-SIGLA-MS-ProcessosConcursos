@@ -2,7 +2,7 @@
 Django admin configuration for the concursos module.
 """
 from django.contrib import admin
-from .models import Cargo, Concurso
+from .models import Cargo, Concurso, AutorizacaoPublicada
 
 
 @admin.register(Cargo)
@@ -68,3 +68,24 @@ class ConcursoAdmin(admin.ModelAdmin):
         return obj.cargos.count()
     cargos_count.short_description = 'Número de Cargos'
 
+
+@admin.register(AutorizacaoPublicada)
+class AutorizacaoPublicadaAdmin(admin.ModelAdmin):
+    """
+    Admin para o modelo AutorizacaoPublicada.
+    """
+    list_display = ['cargo', 'autorizacoes', 'data_autorizacao', 'observacao', 'criado_em', 'atualizado_em']
+    list_filter = ['criado_em', 'atualizado_em']
+    search_fields = ['cargo__nome', 'observacao']
+    readonly_fields = ['uuid', 'criado_em', 'atualizado_em']
+    ordering = ['-criado_em']
+    
+    fieldsets = (
+        ('Informações Básicas', {
+            'fields': ('cargo', 'autorizacoes', 'data_autorizacao', 'observacao')
+        }),
+        ('Metadados', {
+            'fields': ('uuid', 'criado_em', 'atualizado_em'),
+            'classes': ('collapse',)
+        }),
+    )

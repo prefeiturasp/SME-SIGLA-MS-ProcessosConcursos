@@ -34,6 +34,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'sigla_sdk.middlewares.CorrelationIdMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -42,7 +43,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'auditlog.middleware.AuditlogMiddleware',
+    'sigla_sdk.middlewares.AuditlogJWTMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -133,9 +134,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
@@ -178,17 +180,55 @@ AUDITLOG_INCLUDE_ALL_MODELS = False
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+    'formatters': {
+        'json': {
+            '()': 'sigla_sdk.logging.json_formatter.CustomJsonFormatter',
+            # Estes campos do logging padrão virarão chaves no JSON
+            'format': '%(levelname)s %(asctime)s %(module)s %(filename)s %(lineno)d %(funcName)s %(message)s'
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'json',
+        },
+    },
+    'loggers': {
+        # Logger do Django (Framework)
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        # Seu Logger de Aplicação (substitua pelo nome do seu app)
+        'processos': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'ERROR',  # Alterando para ERROR, ele para de mostrar os GET/POST/OPTIONS de rotina (INFO)
+            'propagate': False,
+        },
     },
 }
 
 SMEINTEGRACAO_API_URL = os.environ.get('SMEINTEGRACAO_API_URL')
 SMEINTEGRACAO_API_TOKEN = os.environ.get('SMEINTEGRACAO_API_TOKEN')
 ESCOLHAS_API_URL = os.environ.get('ESCOLHAS_API_URL', 'http://localhost:8000')
+
+from datetime import timedelta
+JWT_SIGNING_KEY = os.environ.get(
+    'JWT_SIGNING_KEY',
+    os.environ.get('SECRET_KEY', 'fallback-só-dev'),
+)
+
+SIMPLE_JWT = {
+    'SIGNING_KEY': JWT_SIGNING_KEY,
+    'ALGORITHM': 'HS256',
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1440),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
