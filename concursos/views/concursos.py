@@ -1,17 +1,13 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, status
-from rest_framework.decorators import action
+from rest_framework import viewsets
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.filters import SearchFilter, OrderingFilter
-from django.shortcuts import get_object_or_404
-from rest_framework.views import APIView
+
 from concursos.models import Concurso
 from concursos.serializers import (
-    ConcursoSerializer, 
     ConcursoListSerializer,
-    ConcursoSelectSerializer
+    ConcursoSelectSerializer,
+    ConcursoSerializer,
 )
 from concursos.utils import CustomPagination
 
@@ -21,15 +17,15 @@ class ConcursoViewSet(viewsets.ModelViewSet):
     serializer_class = ConcursoSerializer
     permission_classes = []
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['nome']
-    search_fields = ['nome']
-    ordering_fields = ['nome', 'criado_em']
-    ordering = ['-criado_em']
+    filterset_fields = ["nome"]
+    search_fields = ["nome"]
+    ordering_fields = ["nome", "criado_em"]
+    ordering = ["-criado_em"]
     pagination_class = CustomPagination
 
     def get_serializer_class(self):
-        if self.action == 'list':
-            if self.request.query_params.get('formato') == 'select':
+        if self.action == "list":
+            if self.request.query_params.get("formato") == "select":
                 return ConcursoSelectSerializer
             return ConcursoListSerializer
         return ConcursoSerializer
@@ -41,7 +37,7 @@ class ConcursoViewSet(viewsets.ModelViewSet):
         """
         queryset = self.filter_queryset(self.get_queryset())
 
-        if request.query_params.get('formato') == 'select':
+        if request.query_params.get("formato") == "select":
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
 
