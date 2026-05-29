@@ -4,6 +4,7 @@ Django settings for convocacao_processes project.
 
 import os
 from pathlib import Path
+from datetime import timedelta
 
 from dotenv import load_dotenv
 
@@ -221,7 +222,7 @@ LOGGING = {
         },
         "django.server": {
             "handlers": ["console"],
-            "level": "ERROR",  # Alterando para ERROR, ele para de mostrar os GET/POST/OPTIONS de rotina (INFO)
+            "level": "ERROR",
             "propagate": False,
         },
     },
@@ -230,8 +231,6 @@ LOGGING = {
 SMEINTEGRACAO_API_URL = os.environ.get("SMEINTEGRACAO_API_URL")
 SMEINTEGRACAO_API_TOKEN = os.environ.get("SMEINTEGRACAO_API_TOKEN")
 ESCOLHAS_API_URL = os.environ.get("ESCOLHAS_API_URL", "http://localhost:8000")
-
-from datetime import timedelta
 
 JWT_SIGNING_KEY = os.environ.get(
     "JWT_SIGNING_KEY",

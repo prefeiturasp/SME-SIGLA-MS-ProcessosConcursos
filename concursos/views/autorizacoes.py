@@ -1,3 +1,5 @@
+"""ViewSet de autorizações publicadas."""
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -8,13 +10,11 @@ from concursos.serializers import AutorizacaoPublicadaSerializer
 
 
 class AutorizacaoPublicadaViewSet(viewsets.ModelViewSet):
-    """
-    ViewSet para gerenciar Autorizações Publicadas.
-    """
+    """CRUD de autorizações publicadas por cargo."""
 
     queryset = AutorizacaoPublicada.objects.all()
     serializer_class = AutorizacaoPublicadaSerializer
-    permission_classes = [AllowAny]  # [IsAuthenticatedOrReadOnly]
+    permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ["cargo__codigo", "cargo__uuid"]
     search_fields = ["observacao"]

@@ -1,3 +1,5 @@
+"""Model base com UUID e timestamps para o app concursos."""
+
 import uuid
 
 from auditlog.models import AuditlogHistoryField
@@ -5,9 +7,7 @@ from django.db import models
 
 
 class BaseModel(models.Model):
-    """
-    Model base com UUID, criado_em e atualizado_em.
-    """
+    """Modelo base abstrato com UUID, histórico e timestamps."""
 
     history = AuditlogHistoryField()
     uuid = models.UUIDField(

@@ -1,12 +1,12 @@
+"""Serializers do modelo Cargo."""
+
 from rest_framework import serializers
 
 from concursos.models import Cargo
 
 
 class CargoSerializer(serializers.ModelSerializer):
-    """
-    Serializer para o modelo Cargo.
-    """
+    """Serializer completo de cargo."""
 
     class Meta:
         model = Cargo
@@ -15,9 +15,7 @@ class CargoSerializer(serializers.ModelSerializer):
 
 
 class CargoListSerializer(serializers.ModelSerializer):
-    """
-    Serializer para listagem de cargos.
-    """
+    """Serializer enxuto para listagem de cargos."""
 
     class Meta:
         model = Cargo
@@ -25,9 +23,7 @@ class CargoListSerializer(serializers.ModelSerializer):
 
 
 class CargoSelectSerializer(serializers.ModelSerializer):
-    """
-    Serializer para selects/dropdowns no frontend.
-    """
+    """Serializer ``value``/``label`` para selects no frontend."""
 
     value = serializers.UUIDField(source="uuid")
     label = serializers.CharField(source="nome")

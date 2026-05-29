@@ -1,19 +1,26 @@
+"""ViewSet de cargos e agregados de autorizações."""
+
+from __future__ import annotations
+
+from typing import Any
+
 from django.db.models import Max, Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.request import Request
 from rest_framework.response import Response
 
 from concursos.models import Cargo
-from concursos.serializers import (
-    CargoSerializer,
-)
+from concursos.serializers import CargoSerializer
 from concursos.services import EscolhasAPIService
 
 
 class CargoViewSet(viewsets.ModelViewSet):
+    """CRUD de cargos e action de autorizações publicadas agregadas."""
+
     queryset = Cargo.objects.all()
     serializer_class = CargoSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -24,14 +31,38 @@ class CargoViewSet(viewsets.ModelViewSet):
     ordering = ["-criado_em"]
 
     @action(methods=["get"], detail=False, url_path="autorizacoes-publicadas")
-    def autorizacoes_publicadas(self, request, *args, **kwargs):
+    def autorizacoes_publicadas(
+        self,
+        request: Request,
+        *args: Any,
+        **kwargs: Any,
+    ) -> Response:
+        """Lista cargos com totais de autorizações e escolhas.
+
+        Args:
+            request: requisição HTTP (sem parâmetros obrigatórios).
+
+        Returns:
+            Lista de dicts por cargo com autorizações e escolhas agregadas.
+
+        Raises:
+            requests.HTTPError: falha ao consultar MS-Escolhas.
+
+        Examples:
+            GET /api/v1/cargos/autorizacoes-publicadas/::
+
+                [
+                  {
+                    "uuid": "...",
+                    "nome": "Professor",
+                    "codigo": 1,
+                    "autorizacoes": 10,
+                    "data_autorizacao_mais_recente": "2026-01-15",
+                    "total_escolhas": 5
+                  }
+                ]
         """
-        Lista todos os cargos com agregados de autorizações publicadas:
-        - total de autorizacoes
-        - data_autorizacao_mais_recente
-        """
-        # Busca totais de escolhas por cargo no ms-escolhas
-        escolhas_por_cargo = {}
+        escolhas_por_cargo: dict[str | int, Any] = {}
         resp = EscolhasAPIService().get_escolhas_por_cargo()
         escolhas_por_cargo = resp.json()
 
@@ -43,7 +74,7 @@ class CargoViewSet(viewsets.ModelViewSet):
             )
             .order_by("nome")
         )
-        data = []
+        data: list[dict[str, Any]] = []
         for cargo in qs:
             total_escolhas = (
                 escolhas_por_cargo.get(str(cargo.codigo))

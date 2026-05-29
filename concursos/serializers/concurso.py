@@ -1,3 +1,9 @@
+"""Serializers do modelo Concurso."""
+
+from __future__ import annotations
+
+from typing import Any
+
 from rest_framework import serializers
 
 from concursos.models import Cargo, Concurso
@@ -6,9 +12,7 @@ from .cargo import CargoListSerializer, CargoSelectSerializer
 
 
 class ConcursoSerializer(serializers.ModelSerializer):
-    """
-    Serializer para o modelo Concurso.
-    """
+    """Serializer completo de concurso com vínculo de cargos."""
 
     cargos = CargoListSerializer(many=True, read_only=True)
     cargos_ids = serializers.ListField(
@@ -29,7 +33,15 @@ class ConcursoSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["uuid", "criado_em", "atualizado_em"]
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict[str, Any]) -> Concurso:
+        """Cria concurso e associa cargos por UUID.
+
+        Args:
+            validated_data: dados validados; ``cargos_ids`` opcional.
+
+        Returns:
+            Instância ``Concurso`` persistida.
+        """
         cargos_ids = validated_data.pop("cargos_ids", [])
         concurso = Concurso.objects.create(**validated_data)
 
@@ -39,7 +51,20 @@ class ConcursoSerializer(serializers.ModelSerializer):
 
         return concurso
 
-    def update(self, instance, validated_data):
+    def update(
+        self,
+        instance: Concurso,
+        validated_data: dict[str, Any],
+    ) -> Concurso:
+        """Atualiza concurso e, se informado, substitui cargos vinculados.
+
+        Args:
+            instance: concurso existente.
+            validated_data: campos a atualizar; ``cargos_ids`` opcional.
+
+        Returns:
+            Instância atualizada.
+        """
         cargos_ids = validated_data.pop("cargos_ids", None)
 
         for attr, value in validated_data.items():
@@ -54,9 +79,7 @@ class ConcursoSerializer(serializers.ModelSerializer):
 
 
 class ConcursoListSerializer(serializers.ModelSerializer):
-    """
-    Serializer para listagem de concursos.
-    """
+    """Serializer enxuto para listagem de concursos."""
 
     cargos = CargoListSerializer(many=True, read_only=True)
 
@@ -66,9 +89,7 @@ class ConcursoListSerializer(serializers.ModelSerializer):
 
 
 class ConcursoSelectSerializer(serializers.ModelSerializer):
-    """
-    Serializer para selects/dropdowns no frontend.
-    """
+    """Serializer ``value``/``label`` para selects no frontend."""
 
     value = serializers.UUIDField(source="uuid")
     label = serializers.CharField(source="nome")
