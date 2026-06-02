@@ -1,8 +1,10 @@
+import uuid
+
 import pytest
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
+
 from concursos.models import Cargo, Concurso
-import uuid
 
 
 @pytest.fixture
@@ -19,9 +21,7 @@ def user():
     Fixture para criar um usuário de teste.
     """
     return User.objects.create_user(
-        username='testuser',
-        password='testpass123',
-        email='test@example.com'
+        username="testuser", password="testpass123", email="test@example.com"
     )
 
 
@@ -39,7 +39,7 @@ def cargo_analista():
     """
     Fixture para criar um cargo de analista.
     """
-    return Cargo.objects.create(nome='Analista de Sistemas')
+    return Cargo.objects.create(nome="Analista de Sistemas")
 
 
 @pytest.fixture
@@ -47,7 +47,7 @@ def cargo_desenvolvedor():
     """
     Fixture para criar um cargo de desenvolvedor.
     """
-    return Cargo.objects.create(nome='Desenvolvedor Backend')
+    return Cargo.objects.create(nome="Desenvolvedor Backend")
 
 
 @pytest.fixture
@@ -55,7 +55,7 @@ def cargo_professor():
     """
     Fixture para criar um cargo de professor.
     """
-    return Cargo.objects.create(nome='Professor de Matemática')
+    return Cargo.objects.create(nome="Professor de Matemática")
 
 
 @pytest.fixture
@@ -64,9 +64,9 @@ def cargos(cargo_analista, cargo_desenvolvedor, cargo_professor):
     Fixture para criar múltiplos cargos de teste.
     """
     return {
-        'analista': cargo_analista,
-        'desenvolvedor': cargo_desenvolvedor,
-        'professor': cargo_professor
+        "analista": cargo_analista,
+        "desenvolvedor": cargo_desenvolvedor,
+        "professor": cargo_professor,
     }
 
 
@@ -75,7 +75,7 @@ def concurso_analista(cargo_analista):
     """
     Fixture para criar um concurso de analista.
     """
-    concurso = Concurso.objects.create(nome='Concurso de Analista')
+    concurso = Concurso.objects.create(nome="Concurso de Analista")
     concurso.cargos.add(cargo_analista)
     return concurso
 
@@ -85,7 +85,7 @@ def concurso_professor(cargo_professor):
     """
     Fixture para criar um concurso de professor.
     """
-    concurso = Concurso.objects.create(nome='Concurso de Professor')
+    concurso = Concurso.objects.create(nome="Concurso de Professor")
     concurso.cargos.add(cargo_professor)
     return concurso
 
@@ -95,10 +95,7 @@ def concursos(concurso_analista, concurso_professor):
     """
     Fixture para criar múltiplos concursos de teste.
     """
-    return {
-        'analista': concurso_analista,
-        'professor': concurso_professor
-    }
+    return {"analista": concurso_analista, "professor": concurso_professor}
 
 
 @pytest.fixture
@@ -106,9 +103,7 @@ def cargo_data():
     """
     Fixture para dados de cargo válidos.
     """
-    return {
-        'nome': 'Novo Cargo de Teste'
-    }
+    return {"nome": "Novo Cargo de Teste"}
 
 
 @pytest.fixture
@@ -117,7 +112,7 @@ def cargo_data_invalid():
     Fixture para dados de cargo inválidos.
     """
     return {
-        'nome': ''  # Nome vazio é inválido
+        "nome": ""  # Nome vazio é inválido
     }
 
 
@@ -127,7 +122,7 @@ def cargo_data_long_name():
     Fixture para dados de cargo com nome muito longo.
     """
     return {
-        'nome': 'A' * 201  # Mais que max_length=200
+        "nome": "A" * 201  # Mais que max_length=200
     }
 
 
@@ -137,8 +132,8 @@ def concurso_data(cargo_analista):
     Fixture para dados de concurso válidos.
     """
     return {
-        'nome': 'Novo Concurso de Teste',
-        'cargos_ids': [str(cargo_analista.uuid)]
+        "nome": "Novo Concurso de Teste",
+        "cargos_ids": [str(cargo_analista.uuid)],
     }
 
 
@@ -148,8 +143,11 @@ def concurso_data_multiple_cargos(cargo_analista, cargo_desenvolvedor):
     Fixture para dados de concurso com múltiplos cargos.
     """
     return {
-        'nome': 'Concurso com Múltiplos Cargos',
-        'cargos_ids': [str(cargo_analista.uuid), str(cargo_desenvolvedor.uuid)]
+        "nome": "Concurso com Múltiplos Cargos",
+        "cargos_ids": [
+            str(cargo_analista.uuid),
+            str(cargo_desenvolvedor.uuid),
+        ],
     }
 
 
@@ -158,9 +156,7 @@ def concurso_data_no_cargos():
     """
     Fixture para dados de concurso sem cargos.
     """
-    return {
-        'nome': 'Concurso Sem Cargos'
-    }
+    return {"nome": "Concurso Sem Cargos"}
 
 
 @pytest.fixture
@@ -169,8 +165,8 @@ def concurso_data_invalid():
     Fixture para dados de concurso inválidos.
     """
     return {
-        'nome': '',  # Nome vazio é inválido
-        'cargos_ids': ['invalid-uuid']
+        "nome": "",  # Nome vazio é inválido
+        "cargos_ids": ["invalid-uuid"],
     }
 
 
@@ -181,8 +177,8 @@ def concurso_data_invalid_cargo_ids():
     """
     fake_uuid = uuid.uuid4()
     return {
-        'nome': 'Concurso com Cargo Inválido',
-        'cargos_ids': [str(fake_uuid)]
+        "nome": "Concurso com Cargo Inválido",
+        "cargos_ids": [str(fake_uuid)],
     }
 
 
@@ -201,7 +197,7 @@ def multiple_cargos():
     """
     cargos = []
     for i in range(25):
-        cargo = Cargo.objects.create(nome=f'Cargo Teste {i}')
+        cargo = Cargo.objects.create(nome=f"Cargo Teste {i}")
         cargos.append(cargo)
     return cargos
 
@@ -213,6 +209,6 @@ def multiple_concursos():
     """
     concursos = []
     for i in range(25):
-        concurso = Concurso.objects.create(nome=f'Concurso Teste {i}')
+        concurso = Concurso.objects.create(nome=f"Concurso Teste {i}")
         concursos.append(concurso)
-    return concursos 
+    return concursos

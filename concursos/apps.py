@@ -1,6 +1,10 @@
+"""Configuração do app Django ``concursos``."""
+
 from django.apps import AppConfig
 
 
 class ConcursosConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'concursos' 
+    """App de concursos, cargos e autorizações publicadas."""
+
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "concursos"

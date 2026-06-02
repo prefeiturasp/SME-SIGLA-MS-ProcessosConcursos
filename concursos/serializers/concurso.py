@@ -1,68 +1,100 @@
+"""Serializers do modelo Concurso."""
+
+from __future__ import annotations
+
+from typing import Any
+
 from rest_framework import serializers
-from concursos.models import Concurso, Cargo
+
+from concursos.models import Cargo, Concurso
+
 from .cargo import CargoListSerializer, CargoSelectSerializer
 
 
 class ConcursoSerializer(serializers.ModelSerializer):
-    """
-    Serializer para o modelo Concurso.
-    """
+    """Serializer completo de concurso com vínculo de cargos."""
+
     cargos = CargoListSerializer(many=True, read_only=True)
     cargos_ids = serializers.ListField(
-        child=serializers.UUIDField(),
-        write_only=True,
-        required=False
+        child=serializers.UUIDField(), write_only=True, required=False
     )
-    
+
     class Meta:
         model = Concurso
-        fields = ['uuid', 'nome', 'cargos', 'cargos_ids', 'criado_em', 'atualizado_em', 'numero_processo', 'codigo']
-        read_only_fields = ['uuid', 'criado_em', 'atualizado_em']
-    
-    def create(self, validated_data):
-        cargos_ids = validated_data.pop('cargos_ids', [])
+        fields = [
+            "uuid",
+            "nome",
+            "cargos",
+            "cargos_ids",
+            "criado_em",
+            "atualizado_em",
+            "numero_processo",
+            "codigo",
+        ]
+        read_only_fields = ["uuid", "criado_em", "atualizado_em"]
+
+    def create(self, validated_data: dict[str, Any]) -> Concurso:
+        """Cria concurso e associa cargos por UUID.
+
+        Args:
+            validated_data: dados validados; ``cargos_ids`` opcional.
+
+        Returns:
+            Instância ``Concurso`` persistida.
+        """
+        cargos_ids = validated_data.pop("cargos_ids", [])
         concurso = Concurso.objects.create(**validated_data)
-        
+
         if cargos_ids:
             cargos = Cargo.objects.filter(uuid__in=cargos_ids)
             concurso.cargos.set(cargos)
-        
+
         return concurso
-    
-    def update(self, instance, validated_data):
-        cargos_ids = validated_data.pop('cargos_ids', None)
-        
+
+    def update(
+        self,
+        instance: Concurso,
+        validated_data: dict[str, Any],
+    ) -> Concurso:
+        """Atualiza concurso e, se informado, substitui cargos vinculados.
+
+        Args:
+            instance: concurso existente.
+            validated_data: campos a atualizar; ``cargos_ids`` opcional.
+
+        Returns:
+            Instância atualizada.
+        """
+        cargos_ids = validated_data.pop("cargos_ids", None)
+
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
-        
+
         if cargos_ids is not None:
             cargos = Cargo.objects.filter(uuid__in=cargos_ids)
             instance.cargos.set(cargos)
-        
+
         return instance
 
 
 class ConcursoListSerializer(serializers.ModelSerializer):
-    """
-    Serializer para listagem de concursos.
-    """
+    """Serializer enxuto para listagem de concursos."""
+
     cargos = CargoListSerializer(many=True, read_only=True)
-    
+
     class Meta:
         model = Concurso
-        fields = ['uuid', 'nome', 'cargos', 'numero_processo', 'codigo']
+        fields = ["uuid", "nome", "cargos", "numero_processo", "codigo"]
 
 
 class ConcursoSelectSerializer(serializers.ModelSerializer):
-    """
-    Serializer para selects/dropdowns no frontend.
-    """
-    value = serializers.UUIDField(source='uuid')
-    label = serializers.CharField(source='nome')
+    """Serializer ``value``/``label`` para selects no frontend."""
+
+    value = serializers.UUIDField(source="uuid")
+    label = serializers.CharField(source="nome")
     cargos = CargoSelectSerializer(many=True, read_only=True)
-    
+
     class Meta:
         model = Concurso
-        fields = ['value', 'label', 'cargos', 'numero_processo', 'codigo']
-
+        fields = ["value", "label", "cargos", "numero_processo", "codigo"]
