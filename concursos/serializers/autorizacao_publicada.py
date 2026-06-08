@@ -49,3 +49,18 @@ class AutorizacaoPublicadaSerializer(serializers.ModelSerializer):
                     {"cargo": "Cargo não encontrado"}
                 ) from err
         return super().create(validated_data)
+
+
+class AutorizacoesPublicadasTotalSerializer(serializers.Serializer):
+    """Payload do endpoint de total de autorizações publicadas por concurso.
+
+    ``anos`` é opcional: se informado, restringe o resultado a esses anos;
+    se omitido, retorna todos os anos com autorizações.
+    """
+
+    concurso_uuid = serializers.UUIDField()
+    anos = serializers.ListField(
+        child=serializers.IntegerField(),
+        required=False,
+        allow_empty=True,
+    )
