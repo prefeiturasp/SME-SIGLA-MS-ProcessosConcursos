@@ -52,13 +52,16 @@ class AutorizacaoPublicadaSerializer(serializers.ModelSerializer):
 
 
 class AutorizacoesPublicadasTotalSerializer(serializers.Serializer):
-    """Payload do endpoint de total de autorizações publicadas por concurso.
+    """Payload do endpoint de total de autorizações publicadas.
 
-    ``anos`` é opcional: se informado, restringe o resultado a esses anos;
-    se omitido, retorna todos os anos com autorizações.
+    - ``concurso_uuid`` é opcional: ausente → agrega autorizações de todos os
+      concursos.
+    - ``anos`` é opcional: se informado, restringe o resultado a esses anos
+      (quebrado por ano); se omitido, retorna uma única chave agregada
+      ``"total"`` com a soma de todas as autorizações.
     """
 
-    concurso_uuid = serializers.UUIDField()
+    concurso_uuid = serializers.UUIDField(required=False, allow_null=True)
     anos = serializers.ListField(
         child=serializers.IntegerField(),
         required=False,
