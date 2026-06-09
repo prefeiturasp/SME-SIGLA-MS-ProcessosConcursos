@@ -35,13 +35,13 @@ class ConcursoViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self) -> type[BaseSerializer]:
         """Retorna serializer conforme action e query ``formato=select``.
-        
+
         Args:
             self: Instância do objeto.
-        
+
         Returns:
             Tipo retornado conforme a operação.
-        
+
         Raises:
             Nenhuma exceção específica documentada.
         """
@@ -53,19 +53,19 @@ class ConcursoViewSet(viewsets.ModelViewSet):
 
     def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """Lista concursos paginados ou em formato select.
-        
+
         Args:
             self: Instância do objeto.
             request: Requisição HTTP; ``formato=select`` desativa paginação.
             *args: Argumentos posicionais variáveis.
             **kwargs: Argumentos nomeados variáveis.
-        
+
         Returns:
             Resposta HTTP com o resultado da operação.
-        
+
         Raises:
             Nenhuma exceção específica documentada.
-        
+
         Examples:
             GET /api/v1/concursos/?page=1::
             {

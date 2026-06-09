@@ -21,6 +21,7 @@ class ConcursoSerializer(serializers.ModelSerializer):
 
     class Meta:
         """Configuração do serializer."""
+
         model = Concurso
         fields = [
             "uuid",
@@ -36,14 +37,14 @@ class ConcursoSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data: dict[str, Any]) -> Concurso:
         """Cria concurso e associa cargos por UUID.
-        
+
         Args:
             self: Instância do objeto.
             validated_data: dados validados; ``cargos_ids`` opcional.
-        
+
         Returns:
             Instância do concurso persistida.
-        
+
         Raises:
             Nenhuma exceção específica documentada.
         """
@@ -62,15 +63,15 @@ class ConcursoSerializer(serializers.ModelSerializer):
         validated_data: dict[str, Any],
     ) -> Concurso:
         """Atualiza concurso e, se informado, substitui cargos vinculados.
-        
+
         Args:
             self: Instância do objeto.
             instance: concurso existente.
             validated_data: campos a atualizar; ``cargos_ids`` opcional.
-        
+
         Returns:
             Instância do concurso persistida.
-        
+
         Raises:
             Nenhuma exceção específica documentada.
         """
@@ -94,6 +95,7 @@ class ConcursoListSerializer(serializers.ModelSerializer):
 
     class Meta:
         """Configuração do serializer."""
+
         model = Concurso
         fields = ["uuid", "nome", "cargos", "numero_processo", "codigo"]
 
@@ -107,5 +109,6 @@ class ConcursoSelectSerializer(serializers.ModelSerializer):
 
     class Meta:
         """Configuração do serializer."""
+
         model = Concurso
         fields = ["value", "label", "cargos", "numero_processo", "codigo"]

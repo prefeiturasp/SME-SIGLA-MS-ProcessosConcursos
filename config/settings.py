@@ -3,8 +3,8 @@ Django settings for convocacao_processes project.
 """
 
 import os
-from pathlib import Path
 from datetime import timedelta
+from pathlib import Path
 
 from dotenv import load_dotenv
 

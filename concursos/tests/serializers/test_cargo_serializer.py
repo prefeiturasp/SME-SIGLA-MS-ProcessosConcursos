@@ -1,4 +1,5 @@
 """Módulo tests/serializers/test_cargo_serializer."""
+
 import pytest
 
 from concursos.serializers import (
@@ -11,17 +12,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_cargo_serializer_fields(cargo_analista):
-    """Verifica cargo serializer fields.
-    
-    Args:
-        cargo_analista: Parâmetro cargo analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica cargo serializer fields."""
     serializer = CargoSerializer(cargo_analista)
     data = serializer.data
     assert "uuid" in data
@@ -33,14 +24,7 @@ def test_cargo_serializer_fields(cargo_analista):
 
 
 def test_cargo_serializer_read_only_fields():
-    """Verifica cargo serializer read only fields.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica cargo serializer read only fields."""
     data = {
         "uuid": "invalid-uuid",
         "nome": "Novo Nome",
@@ -55,17 +39,7 @@ def test_cargo_serializer_read_only_fields():
 
 
 def test_cargo_list_serializer_fields(cargo_analista):
-    """Verifica cargo list serializer fields.
-    
-    Args:
-        cargo_analista: Parâmetro cargo analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica cargo list serializer fields."""
     serializer = CargoListSerializer(cargo_analista)
     data = serializer.data
     assert "uuid" in data
@@ -77,17 +51,7 @@ def test_cargo_list_serializer_fields(cargo_analista):
 
 
 def test_cargo_select_serializer_fields(cargo_analista):
-    """Verifica cargo select serializer fields.
-    
-    Args:
-        cargo_analista: Parâmetro cargo analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica cargo select serializer fields."""
     serializer = CargoSelectSerializer(cargo_analista)
     data = serializer.data
     assert "value" in data
@@ -99,67 +63,27 @@ def test_cargo_select_serializer_fields(cargo_analista):
 
 
 def test_cargo_serializer_validation_valid(cargo_data):
-    """Verifica cargo serializer validation valid.
-    
-    Args:
-        cargo_data: Parâmetro cargo data da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica cargo serializer validation valid."""
     serializer = CargoSerializer(data=cargo_data)
     assert serializer.is_valid()
 
 
 def test_cargo_serializer_validation_empty_nome(cargo_data_invalid):
-    """Verifica cargo serializer validation empty nome.
-    
-    Args:
-        cargo_data_invalid: Parâmetro cargo data invalid da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica cargo serializer validation empty nome."""
     serializer = CargoSerializer(data=cargo_data_invalid)
     assert not serializer.is_valid()
     assert "nome" in serializer.errors
 
 
 def test_cargo_serializer_validation_long_nome(cargo_data_long_name):
-    """Verifica cargo serializer validation long nome.
-    
-    Args:
-        cargo_data_long_name: Parâmetro cargo data long name da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica cargo serializer validation long nome."""
     serializer = CargoSerializer(data=cargo_data_long_name)
     assert not serializer.is_valid()
     assert "nome" in serializer.errors
 
 
 def test_cargo_serializer_create(cargo_data):
-    """Verifica cargo serializer create.
-    
-    Args:
-        cargo_data: Parâmetro cargo data da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica cargo serializer create."""
     serializer = CargoSerializer(data=cargo_data)
     assert serializer.is_valid()
     cargo = serializer.save()
@@ -170,17 +94,7 @@ def test_cargo_serializer_create(cargo_data):
 
 
 def test_cargo_serializer_update(cargo_analista):
-    """Verifica cargo serializer update.
-    
-    Args:
-        cargo_analista: Parâmetro cargo analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica cargo serializer update."""
     data = {"nome": "Nome Atualizado"}
     serializer = CargoSerializer(cargo_analista, data=data, partial=True)
     assert serializer.is_valid()

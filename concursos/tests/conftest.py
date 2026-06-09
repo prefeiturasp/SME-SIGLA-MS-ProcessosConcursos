@@ -1,4 +1,5 @@
 """Módulo tests/conftest."""
+
 import uuid
 
 import pytest
@@ -10,27 +11,13 @@ from concursos.models import Cargo, Concurso
 
 @pytest.fixture
 def api_client():
-    """Fixture para criar um cliente API de teste.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para criar um cliente API de teste."""
     return APIClient()
 
 
 @pytest.fixture
 def user():
-    """Fixture para criar um usuário de teste.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para criar um usuário de teste."""
     return User.objects.create_user(
         username="testuser", password="testpass123", email="test@example.com"
     )
@@ -38,76 +25,32 @@ def user():
 
 @pytest.fixture
 def authenticated_client(api_client, user):
-    """Fixture para criar um cliente API autenticado.
-    
-    Args:
-        api_client: Cliente de API para requisições de teste.
-        user: Parâmetro user da operação.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para criar um cliente API autenticado."""
     api_client.force_authenticate(user=user)
     return api_client
 
 
 @pytest.fixture
 def cargo_analista():
-    """Fixture para criar um cargo de analista.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para criar um cargo de analista."""
     return Cargo.objects.create(nome="Analista de Sistemas")
 
 
 @pytest.fixture
 def cargo_desenvolvedor():
-    """Fixture para criar um cargo de desenvolvedor.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para criar um cargo de desenvolvedor."""
     return Cargo.objects.create(nome="Desenvolvedor Backend")
 
 
 @pytest.fixture
 def cargo_professor():
-    """Fixture para criar um cargo de professor.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para criar um cargo de professor."""
     return Cargo.objects.create(nome="Professor de Matemática")
 
 
 @pytest.fixture
 def cargos(cargo_analista, cargo_desenvolvedor, cargo_professor):
-    """Fixture para criar múltiplos cargos de teste.
-    
-    Args:
-        cargo_analista: Parâmetro cargo analista da operação.
-        cargo_desenvolvedor: Parâmetro cargo desenvolvedor da operação.
-        cargo_professor: Parâmetro cargo professor da operação.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para criar múltiplos cargos de teste."""
     return {
         "analista": cargo_analista,
         "desenvolvedor": cargo_desenvolvedor,
@@ -117,17 +60,7 @@ def cargos(cargo_analista, cargo_desenvolvedor, cargo_professor):
 
 @pytest.fixture
 def concurso_analista(cargo_analista):
-    """Fixture para criar um concurso de analista.
-    
-    Args:
-        cargo_analista: Parâmetro cargo analista da operação.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para criar um concurso de analista."""
     concurso = Concurso.objects.create(nome="Concurso de Analista")
     concurso.cargos.add(cargo_analista)
     return concurso
@@ -135,17 +68,7 @@ def concurso_analista(cargo_analista):
 
 @pytest.fixture
 def concurso_professor(cargo_professor):
-    """Fixture para criar um concurso de professor.
-    
-    Args:
-        cargo_professor: Parâmetro cargo professor da operação.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para criar um concurso de professor."""
     concurso = Concurso.objects.create(nome="Concurso de Professor")
     concurso.cargos.add(cargo_professor)
     return concurso
@@ -153,44 +76,19 @@ def concurso_professor(cargo_professor):
 
 @pytest.fixture
 def concursos(concurso_analista, concurso_professor):
-    """Fixture para criar múltiplos concursos de teste.
-    
-    Args:
-        concurso_analista: Parâmetro concurso analista da operação.
-        concurso_professor: Parâmetro concurso professor da operação.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para criar múltiplos concursos de teste."""
     return {"analista": concurso_analista, "professor": concurso_professor}
 
 
 @pytest.fixture
 def cargo_data():
-    """Fixture para dados de cargo válidos.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para dados de cargo válidos."""
     return {"nome": "Novo Cargo de Teste"}
 
 
 @pytest.fixture
 def cargo_data_invalid():
-    """Fixture para dados de cargo inválidos.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para dados de cargo inválidos."""
     return {
         "nome": ""  # Nome vazio é inválido
     }
@@ -198,14 +96,7 @@ def cargo_data_invalid():
 
 @pytest.fixture
 def cargo_data_long_name():
-    """Fixture para dados de cargo com nome muito longo.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para dados de cargo com nome muito longo."""
     return {
         "nome": "A" * 201  # Mais que max_length=200
     }
@@ -213,17 +104,7 @@ def cargo_data_long_name():
 
 @pytest.fixture
 def concurso_data(cargo_analista):
-    """Fixture para dados de concurso válidos.
-    
-    Args:
-        cargo_analista: Parâmetro cargo analista da operação.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para dados de concurso válidos."""
     return {
         "nome": "Novo Concurso de Teste",
         "cargos_ids": [str(cargo_analista.uuid)],
@@ -232,18 +113,7 @@ def concurso_data(cargo_analista):
 
 @pytest.fixture
 def concurso_data_multiple_cargos(cargo_analista, cargo_desenvolvedor):
-    """Fixture para dados de concurso com múltiplos cargos.
-    
-    Args:
-        cargo_analista: Parâmetro cargo analista da operação.
-        cargo_desenvolvedor: Parâmetro cargo desenvolvedor da operação.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para dados de concurso com múltiplos cargos."""
     return {
         "nome": "Concurso com Múltiplos Cargos",
         "cargos_ids": [
@@ -255,27 +125,13 @@ def concurso_data_multiple_cargos(cargo_analista, cargo_desenvolvedor):
 
 @pytest.fixture
 def concurso_data_no_cargos():
-    """Fixture para dados de concurso sem cargos.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para dados de concurso sem cargos."""
     return {"nome": "Concurso Sem Cargos"}
 
 
 @pytest.fixture
 def concurso_data_invalid():
-    """Fixture para dados de concurso inválidos.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para dados de concurso inválidos."""
     return {
         "nome": "",  # Nome vazio é inválido
         "cargos_ids": ["invalid-uuid"],
@@ -284,14 +140,7 @@ def concurso_data_invalid():
 
 @pytest.fixture
 def concurso_data_invalid_cargo_ids():
-    """Fixture para dados de concurso com IDs de cargo inválidos.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para dados de concurso com IDs de cargo inválidos."""
     fake_uuid = uuid.uuid4()
     return {
         "nome": "Concurso com Cargo Inválido",
@@ -301,27 +150,13 @@ def concurso_data_invalid_cargo_ids():
 
 @pytest.fixture
 def fake_uuid():
-    """Fixture para gerar UUIDs falsos para testes.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para gerar UUIDs falsos para testes."""
     return uuid.uuid4()
 
 
 @pytest.fixture
 def multiple_cargos():
-    """Fixture para criar múltiplos cargos para testes de paginação.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para criar múltiplos cargos para testes de paginação."""
     cargos = []
     for i in range(25):
         cargo = Cargo.objects.create(nome=f"Cargo Teste {i}")
@@ -331,14 +166,7 @@ def multiple_cargos():
 
 @pytest.fixture
 def multiple_concursos():
-    """Fixture para criar múltiplos concursos para testes de paginação.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Fixture para criar múltiplos concursos para testes de paginação."""
     concursos = []
     for i in range(25):
         concurso = Concurso.objects.create(nome=f"Concurso Teste {i}")

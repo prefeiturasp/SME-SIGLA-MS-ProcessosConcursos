@@ -23,6 +23,7 @@ class Concurso(BaseModel):
 
     class Meta:
         """Configuração do serializer."""
+
         db_table = "concursos"
         verbose_name = "Concurso"
         verbose_name_plural = "Concursos"
@@ -30,13 +31,13 @@ class Concurso(BaseModel):
 
     def __str__(self) -> str:
         """Executa   str  .
-        
+
         Args:
             self: Instância do objeto.
-        
+
         Returns:
             Texto resultante da operação.
-        
+
         Raises:
             Nenhuma exceção específica documentada.
         """

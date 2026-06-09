@@ -1,4 +1,5 @@
 """Módulo tests/views/test_autorizacoes_publicadas_view."""
+
 import pytest
 from django.urls import reverse
 from rest_framework import status
@@ -11,18 +12,7 @@ pytestmark = pytest.mark.django_db
 def criar_autorizacao(
     cargo: Cargo | None = None, **kwargs
 ) -> AutorizacaoPublicada:
-    """Executa criar autorizacao.
-    
-    Args:
-        cargo: Instância ou dados do cargo.
-        **kwargs: Argumentos nomeados variáveis.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Executa criar autorizacao."""
     defaults = dict(
         autorizacoes=2,
         observacao="Obs teste",
@@ -32,17 +22,7 @@ def criar_autorizacao(
 
 
 def test_list_autorizacoes_publicadas_success(api_client):
-    """Verifica list autorizacoes publicadas success.
-    
-    Args:
-        api_client: Cliente de API para requisições de teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica list autorizacoes publicadas success."""
     cargo_a = Cargo.objects.create(nome="Cargo A")
     cargo_b = Cargo.objects.create(nome="Cargo B")
     criar_autorizacao(cargo_a, autorizacoes=3)
@@ -58,17 +38,7 @@ def test_list_autorizacoes_publicadas_success(api_client):
 
 
 def test_list_autorizacoes_publicadas_filter_by_cargo_codigo(api_client):
-    """Verifica list autorizacoes publicadas filter by cargo codigo.
-    
-    Args:
-        api_client: Cliente de API para requisições de teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica list autorizacoes publicadas filter by cargo codigo."""
     cargo_a = Cargo.objects.create(nome="Cargo A", codigo=1001)
     cargo_b = Cargo.objects.create(nome="Cargo B", codigo=1002)
     criar_autorizacao(cargo_a)
@@ -86,17 +56,7 @@ def test_list_autorizacoes_publicadas_filter_by_cargo_codigo(api_client):
 
 
 def test_retrieve_autorizacao_publicada_success(api_client):
-    """Verifica retrieve autorizacao publicada success.
-    
-    Args:
-        api_client: Cliente de API para requisições de teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica retrieve autorizacao publicada success."""
     cargo = Cargo.objects.create(nome="Cargo A")
     obj = criar_autorizacao(cargo)
 
@@ -108,17 +68,7 @@ def test_retrieve_autorizacao_publicada_success(api_client):
 
 
 def test_create_autorizacao_publicada_success_with_cargo(api_client):
-    """Verifica create autorizacao publicada success with cargo.
-    
-    Args:
-        api_client: Cliente de API para requisições de teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica create autorizacao publicada success with cargo."""
     cargo = Cargo.objects.create(nome="Cargo X")
     url = reverse("autorizacao-publicada-list")
     payload = {
@@ -135,17 +85,7 @@ def test_create_autorizacao_publicada_success_with_cargo(api_client):
 
 
 def test_create_autorizacao_publicada_invalid_cargo(api_client):
-    """Verifica create autorizacao publicada invalid cargo.
-    
-    Args:
-        api_client: Cliente de API para requisições de teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica create autorizacao publicada invalid cargo."""
     url = reverse("autorizacao-publicada-list")
     payload = {
         "cargo": "00000000-0000-0000-0000-000000000000",
@@ -158,17 +98,7 @@ def test_create_autorizacao_publicada_invalid_cargo(api_client):
 
 
 def test_patch_autorizacao_publicada_success(api_client):
-    """Verifica patch autorizacao publicada success.
-    
-    Args:
-        api_client: Cliente de API para requisições de teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica patch autorizacao publicada success."""
     obj = criar_autorizacao(None, autorizacoes=2, observacao="old")
     url = reverse("autorizacao-publicada-detail", kwargs={"pk": obj.uuid})
     payload = {
@@ -185,17 +115,7 @@ def test_patch_autorizacao_publicada_success(api_client):
 
 
 def test_delete_autorizacao_publicada_success(api_client):
-    """Verifica delete autorizacao publicada success.
-    
-    Args:
-        api_client: Cliente de API para requisições de teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica delete autorizacao publicada success."""
     obj = criar_autorizacao()
     url = reverse("autorizacao-publicada-detail", kwargs={"pk": obj.uuid})
     resp = api_client.delete(url)

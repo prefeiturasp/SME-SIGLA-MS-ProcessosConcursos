@@ -9,18 +9,19 @@ from concursos.models import Cargo, Concurso
 
 class Command(BaseCommand):
     """Define Command."""
+
     help = "Cria concursos de exemplo para desenvolvimento"
 
     def add_arguments(self, parser):
         """Registra argumentos da linha de comando.
-        
+
         Args:
             self: Instância do objeto.
             parser: Parser de argumentos do comando.
-        
+
         Returns:
             Não retorna valor.
-        
+
         Raises:
             Nenhuma exceção específica documentada.
         """
@@ -33,15 +34,15 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Executa a lógica principal do comando.
-        
+
         Args:
             self: Instância do objeto.
             *args: Argumentos posicionais variáveis.
             **options: Parâmetro options da operação.
-        
+
         Returns:
             Não retorna valor; executa a operação do comando.
-        
+
         Raises:
             Nenhuma exceção específica documentada.
         """

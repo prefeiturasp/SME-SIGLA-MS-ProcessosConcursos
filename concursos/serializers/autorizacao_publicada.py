@@ -17,6 +17,7 @@ class AutorizacaoPublicadaSerializer(serializers.ModelSerializer):
 
     class Meta:
         """Configuração do serializer."""
+
         model = AutorizacaoPublicada
         fields = [
             "uuid",
@@ -31,14 +32,14 @@ class AutorizacaoPublicadaSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data: dict[str, Any]) -> AutorizacaoPublicada:
         """Cria autorização resolvendo cargo a partir do UUID.
-        
+
         Args:
             self: Instância do objeto.
             validated_data: dados validados; ``cargo`` é UUID opcional.
-        
+
         Returns:
             Resposta HTTP com os dados serializados.
-        
+
         Raises:
             ValidationError: Se os dados informados forem inválidos.
         """

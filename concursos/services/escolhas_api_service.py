@@ -15,12 +15,12 @@ class EscolhasAPIService:
         timeout_seconds: int = 30,
     ) -> None:
         """Inicializa cliente com URL base e timeout.
-        
+
         Args:
             self: Instância do objeto.
             base_url: sobrescreve ``ESCOLHAS_API_URL`` das settings.
             timeout_seconds: timeout das requisições HTTP.
-        
+
         Raises:
             ValueError: se ``ESCOLHAS_API_URL`` não estiver configurada.
         """
@@ -39,14 +39,14 @@ class EscolhasAPIService:
         headers: dict[str, str] | None = None,
     ) -> requests.Response:
         """Agrupa escolhas por código de cargo no MS-Escolhas.
-        
+
         Args:
             self: Instância do objeto.
             headers: cabeçalhos HTTP adicionais.
-        
+
         Returns:
             Resposta HTTP com o resultado da operação.
-        
+
         Raises:
             Nenhuma exceção específica documentada.
         """

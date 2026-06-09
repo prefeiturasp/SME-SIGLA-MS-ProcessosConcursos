@@ -1,4 +1,5 @@
 """Módulo tests/serializers/test_concurso_serializer."""
+
 import pytest
 
 from concursos.serializers import (
@@ -11,17 +12,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_concurso_serializer_fields(concurso_analista):
-    """Verifica concurso serializer fields.
-    
-    Args:
-        concurso_analista: Parâmetro concurso analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer fields."""
     serializer = ConcursoSerializer(concurso_analista)
     data = serializer.data
     assert "uuid" in data
@@ -36,17 +27,7 @@ def test_concurso_serializer_fields(concurso_analista):
 
 
 def test_concurso_serializer_create(concurso_data):
-    """Verifica concurso serializer create.
-    
-    Args:
-        concurso_data: Parâmetro concurso data da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer create."""
     serializer = ConcursoSerializer(data=concurso_data)
     assert serializer.is_valid()
     concurso = serializer.save()
@@ -55,17 +36,7 @@ def test_concurso_serializer_create(concurso_data):
 
 
 def test_concurso_serializer_create_without_cargos(concurso_data_no_cargos):
-    """Verifica concurso serializer create without cargos.
-    
-    Args:
-        concurso_data_no_cargos: Parâmetro concurso data no cargos da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer create without cargos."""
     serializer = ConcursoSerializer(data=concurso_data_no_cargos)
     assert serializer.is_valid()
     concurso = serializer.save()
@@ -76,17 +47,7 @@ def test_concurso_serializer_create_without_cargos(concurso_data_no_cargos):
 def test_concurso_serializer_create_with_invalid_cargo_ids(
     concurso_data_invalid_cargo_ids,
 ):
-    """Verifica concurso serializer create with invalid cargo ids.
-    
-    Args:
-        concurso_data_invalid_cargo_ids: Parâmetro concurso data invalid cargo ids da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer create with invalid cargo ids."""
     serializer = ConcursoSerializer(data=concurso_data_invalid_cargo_ids)
     assert serializer.is_valid()
     concurso = serializer.save()
@@ -97,17 +58,7 @@ def test_concurso_serializer_create_with_invalid_cargo_ids(
 def test_concurso_serializer_create_with_multiple_cargos(
     concurso_data_multiple_cargos,
 ):
-    """Verifica concurso serializer create with multiple cargos.
-    
-    Args:
-        concurso_data_multiple_cargos: Parâmetro concurso data multiple cargos da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer create with multiple cargos."""
     serializer = ConcursoSerializer(data=concurso_data_multiple_cargos)
     assert serializer.is_valid()
     concurso = serializer.save()
@@ -116,18 +67,7 @@ def test_concurso_serializer_create_with_multiple_cargos(
 
 
 def test_concurso_serializer_update(concurso_analista, cargo_desenvolvedor):
-    """Verifica concurso serializer update.
-    
-    Args:
-        concurso_analista: Parâmetro concurso analista da operação.
-        cargo_desenvolvedor: Parâmetro cargo desenvolvedor da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer update."""
     data = {
         "nome": "Concurso Atualizado",
         "cargos_ids": [str(cargo_desenvolvedor.uuid)],
@@ -141,17 +81,7 @@ def test_concurso_serializer_update(concurso_analista, cargo_desenvolvedor):
 
 
 def test_concurso_serializer_update_clear_cargos(concurso_analista):
-    """Verifica concurso serializer update clear cargos.
-    
-    Args:
-        concurso_analista: Parâmetro concurso analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer update clear cargos."""
     data = {"cargos_ids": []}
     serializer = ConcursoSerializer(concurso_analista, data=data, partial=True)
     assert serializer.is_valid()
@@ -160,47 +90,20 @@ def test_concurso_serializer_update_clear_cargos(concurso_analista):
 
 
 def test_concurso_serializer_validation_valid(concurso_data):
-    """Verifica concurso serializer validation valid.
-    
-    Args:
-        concurso_data: Parâmetro concurso data da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer validation valid."""
     serializer = ConcursoSerializer(data=concurso_data)
     assert serializer.is_valid()
 
 
 def test_concurso_serializer_validation_empty_nome(concurso_data_invalid):
-    """Verifica concurso serializer validation empty nome.
-    
-    Args:
-        concurso_data_invalid: Parâmetro concurso data invalid da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer validation empty nome."""
     serializer = ConcursoSerializer(data=concurso_data_invalid)
     assert not serializer.is_valid()
     assert "nome" in serializer.errors
 
 
 def test_concurso_serializer_validation_long_nome():
-    """Verifica concurso serializer validation long nome.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer validation long nome."""
     data = {"nome": "A" * 201}
     serializer = ConcursoSerializer(data=data)
     assert not serializer.is_valid()
@@ -208,17 +111,7 @@ def test_concurso_serializer_validation_long_nome():
 
 
 def test_concurso_list_serializer_fields(concurso_analista):
-    """Verifica concurso list serializer fields.
-    
-    Args:
-        concurso_analista: Parâmetro concurso analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso list serializer fields."""
     serializer = ConcursoListSerializer(concurso_analista)
     data = serializer.data
     assert "uuid" in data
@@ -232,17 +125,7 @@ def test_concurso_list_serializer_fields(concurso_analista):
 
 
 def test_concurso_select_serializer_fields(concurso_analista):
-    """Verifica concurso select serializer fields.
-    
-    Args:
-        concurso_analista: Parâmetro concurso analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso select serializer fields."""
     serializer = ConcursoSelectSerializer(concurso_analista)
     data = serializer.data
     assert "value" in data
@@ -256,17 +139,7 @@ def test_concurso_select_serializer_fields(concurso_analista):
 
 
 def test_concurso_serializer_cargos_ids_field(concurso_analista):
-    """Verifica concurso serializer cargos ids field.
-    
-    Args:
-        concurso_analista: Parâmetro concurso analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer cargos ids field."""
     serializer = ConcursoSerializer(concurso_analista)
     data = serializer.data
     assert "cargos_ids" not in data
@@ -281,18 +154,7 @@ def test_concurso_serializer_cargos_ids_field(concurso_analista):
 def test_concurso_serializer_nested_cargos(
     concurso_analista, cargo_desenvolvedor
 ):
-    """Verifica concurso serializer nested cargos.
-    
-    Args:
-        concurso_analista: Parâmetro concurso analista da operação.
-        cargo_desenvolvedor: Parâmetro cargo desenvolvedor da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer nested cargos."""
     concurso_analista.cargos.add(cargo_desenvolvedor)
     serializer = ConcursoSerializer(concurso_analista)
     data = serializer.data
@@ -303,17 +165,7 @@ def test_concurso_serializer_nested_cargos(
 
 
 def test_concurso_serializer_partial_update(concurso_analista):
-    """Verifica concurso serializer partial update.
-    
-    Args:
-        concurso_analista: Parâmetro concurso analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer partial update."""
     data = {"nome": "Nome Atualizado"}
     serializer = ConcursoSerializer(concurso_analista, data=data, partial=True)
     assert serializer.is_valid()
@@ -323,14 +175,7 @@ def test_concurso_serializer_partial_update(concurso_analista):
 
 
 def test_concurso_serializer_create_with_empty_cargos_ids():
-    """Verifica concurso serializer create with empty cargos ids.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer create with empty cargos ids."""
     data = {"nome": "Concurso Vazio", "cargos_ids": []}
     serializer = ConcursoSerializer(data=data)
     assert serializer.is_valid()
@@ -340,17 +185,7 @@ def test_concurso_serializer_create_with_empty_cargos_ids():
 
 
 def test_concurso_serializer_update_with_none_cargos_ids(concurso_analista):
-    """Verifica concurso serializer update with none cargos ids.
-    
-    Args:
-        concurso_analista: Parâmetro concurso analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer update with none cargos ids."""
     data = {"nome": "Nome Atualizado"}
     serializer = ConcursoSerializer(concurso_analista, data=data, partial=True)
     assert serializer.is_valid()
@@ -360,14 +195,7 @@ def test_concurso_serializer_update_with_none_cargos_ids(concurso_analista):
 
 
 def test_concurso_serializer_invalid_uuid_format():
-    """Verifica concurso serializer invalid uuid format.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer invalid uuid format."""
     data = {"nome": "Concurso Teste", "cargos_ids": ["invalid-uuid-format"]}
     serializer = ConcursoSerializer(data=data)
     assert not serializer.is_valid()
@@ -375,17 +203,7 @@ def test_concurso_serializer_invalid_uuid_format():
 
 
 def test_concurso_serializer_mixed_valid_invalid_cargos(cargo_analista):
-    """Verifica concurso serializer mixed valid invalid cargos.
-    
-    Args:
-        cargo_analista: Parâmetro cargo analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica concurso serializer mixed valid invalid cargos."""
     import uuid
 
     fake_uuid = uuid.uuid4()

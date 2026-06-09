@@ -10,6 +10,7 @@ class CargoSerializer(serializers.ModelSerializer):
 
     class Meta:
         """Configuração do serializer."""
+
         model = Cargo
         fields = ["uuid", "nome", "codigo", "criado_em", "atualizado_em"]
         read_only_fields = ["uuid", "criado_em", "atualizado_em"]
@@ -20,6 +21,7 @@ class CargoListSerializer(serializers.ModelSerializer):
 
     class Meta:
         """Configuração do serializer."""
+
         model = Cargo
         fields = ["uuid", "nome", "codigo"]
 
@@ -32,5 +34,6 @@ class CargoSelectSerializer(serializers.ModelSerializer):
 
     class Meta:
         """Configuração do serializer."""
+
         model = Cargo
         fields = ["value", "label", "codigo"]

@@ -1,4 +1,5 @@
 """Módulo tests/services/test_sme_integration."""
+
 from unittest.mock import Mock, patch
 
 import pytest
@@ -8,35 +9,13 @@ from concursos.services import sme_integration as svc
 
 
 def _set_settings(settings, url="http://api.local", token="secret"):
-    """Executa  set settings.
-    
-    Args:
-        settings: Configurações do Django para o teste.
-        url: Parâmetro url da operação.
-        token: Parâmetro token da operação.
-    
-    Returns:
-        Não retorna valor.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Executa  set settings."""
     settings.SMEINTEGRACAO_API_URL = url
     settings.SMEINTEGRACAO_API_TOKEN = token
 
 
 def test_buscar_cargos_sucesso(settings):
-    """Verifica buscar cargos sucesso.
-    
-    Args:
-        settings: Configurações do Django para o teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica buscar cargos sucesso."""
     _set_settings(settings)
 
     payload = [
@@ -64,17 +43,7 @@ def test_buscar_cargos_sucesso(settings):
 
 
 def test_buscar_cargos_payload_invalido(settings):
-    """Verifica buscar cargos payload invalido.
-    
-    Args:
-        settings: Configurações do Django para o teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica buscar cargos payload invalido."""
     _set_settings(settings)
     mock_resp = Mock(status_code=200)
     mock_resp.json.return_value = {"unexpected": "obj"}  # não é lista
@@ -88,17 +57,7 @@ def test_buscar_cargos_payload_invalido(settings):
 
 
 def test_buscar_cargos_http_error(settings):
-    """Verifica buscar cargos http error.
-    
-    Args:
-        settings: Configurações do Django para o teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica buscar cargos http error."""
     _set_settings(settings)
     mock_resp = Mock()
     mock_resp.raise_for_status.side_effect = requests.HTTPError("boom")
@@ -111,17 +70,7 @@ def test_buscar_cargos_http_error(settings):
 
 
 def test_buscar_concursos_sucesso(settings):
-    """Verifica buscar concursos sucesso.
-    
-    Args:
-        settings: Configurações do Django para o teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica buscar concursos sucesso."""
     _set_settings(settings)
     payload = [
         {
@@ -154,17 +103,7 @@ def test_buscar_concursos_sucesso(settings):
 
 
 def test_buscar_concursos_payload_invalido(settings):
-    """Verifica buscar concursos payload invalido.
-    
-    Args:
-        settings: Configurações do Django para o teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica buscar concursos payload invalido."""
     _set_settings(settings)
     mock_resp = Mock(status_code=200)
     mock_resp.json.return_value = {"unexpected": "obj"}  # não é lista
@@ -179,17 +118,7 @@ def test_buscar_concursos_payload_invalido(settings):
 
 def test_settings_faltando_url(settings):
     # Falta URL
-    """Verifica settings faltando url.
-    
-    Args:
-        settings: Configurações do Django para o teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica settings faltando url."""
     _set_settings(settings, url=None, token="x")
     with pytest.raises(ValueError):
         svc.buscar_cargos_de_smeintegracao()
@@ -197,17 +126,7 @@ def test_settings_faltando_url(settings):
 
 def test_settings_faltando_token(settings):
     # Falta token
-    """Verifica settings faltando token.
-    
-    Args:
-        settings: Configurações do Django para o teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica settings faltando token."""
     _set_settings(settings, url="http://api", token=None)
     with pytest.raises(ValueError):
         svc.buscar_concursos_de_smeintegracao()

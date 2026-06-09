@@ -10,10 +10,10 @@ from django.conf import settings
 
 def _get_base_url_and_headers() -> tuple[str, dict[str, str]]:
     """Monta URL base e headers de autenticação da SME.
-    
+
     Returns:
         Resultado da operação.
-    
+
     Raises:
         ValueError: URL ou token não configurados.
     """
@@ -34,10 +34,10 @@ def _get_base_url_and_headers() -> tuple[str, dict[str, str]]:
 
 def buscar_cargos_de_smeintegracao() -> list[dict[str, Any]]:
     """Busca lista de cargos na API de integração SME.
-    
+
     Returns:
         Lista com os registros resultantes.
-    
+
     Raises:
         ValueError: formato de resposta inesperado.
     """
@@ -71,10 +71,10 @@ def buscar_cargos_de_smeintegracao() -> list[dict[str, Any]]:
 
 def buscar_concursos_de_smeintegracao() -> list[dict[str, Any]]:
     """Busca tipos de concurso na API de integração SME.
-    
+
     Returns:
         Lista com os registros resultantes.
-    
+
     Raises:
         ValueError: formato de resposta inesperado.
     """

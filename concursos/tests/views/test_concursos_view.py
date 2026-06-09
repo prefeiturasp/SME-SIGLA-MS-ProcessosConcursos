@@ -1,4 +1,5 @@
 """Módulo tests/views/test_concursos_view."""
+
 import pytest
 from django.urls import reverse
 from rest_framework import status
@@ -9,18 +10,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_list_concursos_success(authenticated_client, concursos):
-    """Verifica list concursos success.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        concursos: Parâmetro concursos da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica list concursos success."""
     url = reverse("concurso-list")
     response = authenticated_client.get(url)
     assert response.status_code == status.HTTP_200_OK
@@ -35,18 +25,7 @@ def test_list_concursos_success(authenticated_client, concursos):
 
 
 def test_list_concursos_with_select_format(authenticated_client, concursos):
-    """Verifica list concursos with select format.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        concursos: Parâmetro concursos da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica list concursos with select format."""
     url = reverse("concurso-list")
     response = authenticated_client.get(url, {"formato": "select"})
     assert response.status_code == status.HTTP_200_OK
@@ -60,18 +39,7 @@ def test_list_concursos_with_select_format(authenticated_client, concursos):
 
 
 def test_create_concurso_success(authenticated_client, concurso_data):
-    """Verifica create concurso success.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        concurso_data: Parâmetro concurso data da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica create concurso success."""
     url = reverse("concurso-list")
     payload = {**concurso_data, "codigo": 77, "numero_processo": 888}
     response = authenticated_client.post(url, payload)
@@ -87,17 +55,7 @@ def test_create_concurso_success(authenticated_client, concurso_data):
 
 
 def test_create_concurso_without_nome(authenticated_client):
-    """Verifica create concurso without nome.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica create concurso without nome."""
     url = reverse("concurso-list")
     response = authenticated_client.post(url, {"cargos_ids": []})
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -107,18 +65,7 @@ def test_create_concurso_without_nome(authenticated_client):
 def test_create_concurso_with_invalid_cargo_ids(
     authenticated_client, concurso_data_invalid_cargo_ids
 ):
-    """Verifica create concurso with invalid cargo ids.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        concurso_data_invalid_cargo_ids: Parâmetro concurso data invalid cargo ids da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica create concurso with invalid cargo ids."""
     url = reverse("concurso-list")
     response = authenticated_client.post(url, concurso_data_invalid_cargo_ids)
     assert response.status_code == status.HTTP_201_CREATED
@@ -129,18 +76,7 @@ def test_create_concurso_with_invalid_cargo_ids(
 def test_create_concurso_without_cargos(
     authenticated_client, concurso_data_no_cargos
 ):
-    """Verifica create concurso without cargos.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        concurso_data_no_cargos: Parâmetro concurso data no cargos da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica create concurso without cargos."""
     url = reverse("concurso-list")
     response = authenticated_client.post(url, concurso_data_no_cargos)
     assert response.status_code == status.HTTP_201_CREATED
@@ -151,18 +87,7 @@ def test_create_concurso_without_cargos(
 def test_create_concurso_with_multiple_cargos(
     authenticated_client, concurso_data_multiple_cargos
 ):
-    """Verifica create concurso with multiple cargos.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        concurso_data_multiple_cargos: Parâmetro concurso data multiple cargos da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica create concurso with multiple cargos."""
     url = reverse("concurso-list")
     response = authenticated_client.post(url, concurso_data_multiple_cargos)
     assert response.status_code == status.HTTP_201_CREATED
@@ -171,18 +96,7 @@ def test_create_concurso_with_multiple_cargos(
 
 
 def test_retrieve_concurso_success(authenticated_client, concurso_analista):
-    """Verifica retrieve concurso success.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        concurso_analista: Parâmetro concurso analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica retrieve concurso success."""
     url = reverse("concurso-detail", kwargs={"pk": concurso_analista.uuid})
     response = authenticated_client.get(url)
     assert response.status_code == status.HTTP_200_OK
@@ -195,18 +109,7 @@ def test_retrieve_concurso_success(authenticated_client, concurso_analista):
 
 
 def test_retrieve_concurso_not_found(authenticated_client, fake_uuid):
-    """Verifica retrieve concurso not found.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        fake_uuid: Parâmetro fake uuid da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica retrieve concurso not found."""
     url = reverse("concurso-detail", kwargs={"pk": fake_uuid})
     response = authenticated_client.get(url)
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -215,19 +118,7 @@ def test_retrieve_concurso_not_found(authenticated_client, fake_uuid):
 def test_update_concurso_success(
     authenticated_client, concurso_analista, cargo_desenvolvedor
 ):
-    """Verifica update concurso success.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        concurso_analista: Parâmetro concurso analista da operação.
-        cargo_desenvolvedor: Parâmetro cargo desenvolvedor da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica update concurso success."""
     url = reverse("concurso-detail", kwargs={"pk": concurso_analista.uuid})
     data = {
         "nome": "Concurso de Analista Atualizado",
@@ -243,18 +134,7 @@ def test_update_concurso_success(
 
 
 def test_delete_concurso_success(authenticated_client, concurso_analista):
-    """Verifica delete concurso success.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        concurso_analista: Parâmetro concurso analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica delete concurso success."""
     url = reverse("concurso-detail", kwargs={"pk": concurso_analista.uuid})
     response = authenticated_client.delete(url)
     assert response.status_code == status.HTTP_204_NO_CONTENT

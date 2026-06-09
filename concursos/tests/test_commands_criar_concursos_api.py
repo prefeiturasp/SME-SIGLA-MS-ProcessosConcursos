@@ -1,4 +1,5 @@
 """Módulo tests/test_commands_criar_concursos_api."""
+
 from unittest.mock import patch
 
 import pytest
@@ -11,14 +12,7 @@ pytestmark = pytest.mark.django_db
 
 def _mock_cargos():
     # serviço retorna 'codigo' como str; comando faz int(...)
-    """Executa  mock cargos.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Executa  mock cargos."""
     return [
         {"codigo": "101", "nome": "Professor A"},
         {"codigo": "102", "nome": "Professor B"},
@@ -27,14 +21,7 @@ def _mock_cargos():
 
 def _mock_concursos():
     # serviço retorna ints
-    """Executa  mock concursos.
-    
-    Returns:
-        Resultado da operação.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Executa  mock concursos."""
     return [
         {
             "codigo": 1,
@@ -56,18 +43,7 @@ def _mock_concursos():
 def test_criar_concursos_api_cria_registros(
     mock_buscar_concursos, mock_buscar_cargos
 ):
-    """Verifica criar concursos api cria registros.
-    
-    Args:
-        mock_buscar_concursos: Parâmetro mock buscar concursos da operação.
-        mock_buscar_cargos: Parâmetro mock buscar cargos da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica criar concursos api cria registros."""
     mock_buscar_cargos.return_value = _mock_cargos()
     mock_buscar_concursos.return_value = _mock_concursos()
 
@@ -102,18 +78,7 @@ def test_criar_concursos_api_atualiza_existentes(
     mock_buscar_concursos, mock_buscar_cargos
 ):
     # Pre-existentes com nomes antigos
-    """Verifica criar concursos api atualiza existentes.
-    
-    Args:
-        mock_buscar_concursos: Parâmetro mock buscar concursos da operação.
-        mock_buscar_cargos: Parâmetro mock buscar cargos da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica criar concursos api atualiza existentes."""
     c101 = Cargo.objects.create(nome="Antigo 101", codigo=101)
     c102 = Cargo.objects.create(nome="Antigo 102", codigo=102)
     concurso = Concurso.objects.create(
@@ -149,18 +114,7 @@ def test_criar_concursos_api_atualiza_existentes(
 def test_criar_concursos_api_dry_run_nao_persiste(
     mock_buscar_concursos, mock_buscar_cargos
 ):
-    """Verifica criar concursos api dry run nao persiste.
-    
-    Args:
-        mock_buscar_concursos: Parâmetro mock buscar concursos da operação.
-        mock_buscar_cargos: Parâmetro mock buscar cargos da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica criar concursos api dry run nao persiste."""
     mock_buscar_cargos.return_value = _mock_cargos()
     mock_buscar_concursos.return_value = _mock_concursos()
 
@@ -181,18 +135,7 @@ def test_criar_concursos_api_dry_run_nao_persiste(
 def test_criar_concursos_api_quebra_api_nao_cria(
     mock_buscar_concursos, mock_buscar_cargos
 ):
-    """Verifica criar concursos api quebra api nao cria.
-    
-    Args:
-        mock_buscar_concursos: Parâmetro mock buscar concursos da operação.
-        mock_buscar_cargos: Parâmetro mock buscar cargos da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica criar concursos api quebra api nao cria."""
     mock_buscar_cargos.side_effect = Exception("API indisponível")
     mock_buscar_concursos.return_value = []
 

@@ -38,19 +38,19 @@ class CargoViewSet(viewsets.ModelViewSet):
         **kwargs: Any,
     ) -> Response:
         """Lista cargos com totais de autorizações e escolhas.
-        
+
         Args:
             self: Instância do objeto.
             request: Requisição HTTP (sem parâmetros obrigatórios).
             *args: Argumentos posicionais variáveis.
             **kwargs: Argumentos nomeados variáveis.
-        
+
         Returns:
             Resposta HTTP com o resultado da operação.
-        
+
         Raises:
             Nenhuma exceção específica documentada.
-        
+
         Examples:
             GET /api/v1/cargos/autorizacoes-publicadas/::
             [

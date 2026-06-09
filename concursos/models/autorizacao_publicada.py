@@ -1,4 +1,5 @@
 """Módulo models/autorizacao_publicada."""
+
 from auditlog.registry import auditlog
 from django.db import models
 
@@ -27,6 +28,7 @@ class AutorizacaoPublicada(BaseModel):
 
     class Meta:
         """Configuração do serializer."""
+
         db_table = "autorizacoes_publicadas"
         verbose_name = "Autorização Publicada"
         verbose_name_plural = "Autorizações Publicadas"
@@ -34,13 +36,13 @@ class AutorizacaoPublicada(BaseModel):
 
     def __str__(self) -> str:
         """Executa   str  .
-        
+
         Args:
             self: Instância do objeto.
-        
+
         Returns:
             Texto resultante da operação.
-        
+
         Raises:
             Nenhuma exceção específica documentada.
         """

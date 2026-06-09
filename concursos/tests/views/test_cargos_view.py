@@ -1,4 +1,5 @@
 """Módulo tests/views/test_cargos_view."""
+
 from datetime import date
 from unittest.mock import patch
 
@@ -12,18 +13,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_list_cargos_success(authenticated_client, cargos):
-    """Verifica list cargos success.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        cargos: Parâmetro cargos da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica list cargos success."""
     url = reverse("cargo-list")
     response = authenticated_client.get(url)
     assert response.status_code == status.HTTP_200_OK
@@ -37,18 +27,7 @@ def test_list_cargos_success(authenticated_client, cargos):
 
 
 def test_create_cargo_success(authenticated_client, cargo_data):
-    """Verifica create cargo success.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        cargo_data: Parâmetro cargo data da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica create cargo success."""
     url = reverse("cargo-list")
     response = authenticated_client.post(url, {**cargo_data, "codigo": "1234"})
     assert response.status_code == status.HTTP_201_CREATED
@@ -61,18 +40,7 @@ def test_create_cargo_success(authenticated_client, cargo_data):
 
 
 def test_retrieve_cargo_success(authenticated_client, cargo_analista):
-    """Verifica retrieve cargo success.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        cargo_analista: Parâmetro cargo analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica retrieve cargo success."""
     url = reverse("cargo-detail", kwargs={"pk": cargo_analista.uuid})
     response = authenticated_client.get(url)
     assert response.status_code == status.HTTP_200_OK
@@ -81,36 +49,14 @@ def test_retrieve_cargo_success(authenticated_client, cargo_analista):
 
 
 def test_retrieve_cargo_not_found(authenticated_client, fake_uuid):
-    """Verifica retrieve cargo not found.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        fake_uuid: Parâmetro fake uuid da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica retrieve cargo not found."""
     url = reverse("cargo-detail", kwargs={"pk": fake_uuid})
     response = authenticated_client.get(url)
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_update_cargo_success(authenticated_client, cargo_analista):
-    """Verifica update cargo success.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        cargo_analista: Parâmetro cargo analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica update cargo success."""
     url = reverse("cargo-detail", kwargs={"pk": cargo_analista.uuid})
     data = {"nome": "Analista de Sistemas Atualizado"}
     response = authenticated_client.put(url, data)
@@ -121,18 +67,7 @@ def test_update_cargo_success(authenticated_client, cargo_analista):
 
 
 def test_delete_cargo_success(authenticated_client, cargo_analista):
-    """Verifica delete cargo success.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-        cargo_analista: Parâmetro cargo analista da operação.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Verifica delete cargo success."""
     url = reverse("cargo-detail", kwargs={"pk": cargo_analista.uuid})
     response = authenticated_client.delete(url)
     assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -144,17 +79,7 @@ def test_delete_cargo_success(authenticated_client, cargo_analista):
 def test_autorizacoes_publicadas_agrupa_e_integra_ms_escolhas(
     authenticated_client,
 ):
-    """Testa a action /cargos/autorizacoes-publicadas/ agregando dados.
-    
-    Args:
-        authenticated_client: Cliente autenticado para requisições de teste.
-    
-    Returns:
-        Nenhum valor; valida comportamento via asserções.
-    
-    Raises:
-        Nenhuma exceção específica documentada.
-    """
+    """Testa a action /cargos/autorizacoes-publicadas/ agregando dados."""
     cargo_a = Cargo.objects.create(nome="Cargo A", codigo=1001)
     cargo_b = Cargo.objects.create(nome="Cargo B", codigo=1002)
     # cria autorizações publicadas locais
@@ -173,18 +98,9 @@ def test_autorizacoes_publicadas_agrupa_e_integra_ms_escolhas(
 
     class DummyResp:
         """Define DummyResp."""
+
         def json(self):
-            """Executa json.
-            
-            Args:
-                self: Instância do objeto.
-            
-            Returns:
-                Resultado da operação.
-            
-            Raises:
-                Nenhuma exceção específica documentada.
-            """
+            """Executa json."""
             return payload
 
     with patch(
