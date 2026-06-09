@@ -1,6 +1,4 @@
-"""
-Django management command to clear all concursos.
-"""
+"""Django management command to clear all concursos."""
 
 from django.core.management.base import BaseCommand
 
@@ -8,10 +6,15 @@ from concursos.models import Cargo, Concurso
 
 
 class Command(BaseCommand):
+    """Define Command."""
+
     help = "Remove todos os registros da tabela de concursos"
 
     def handle(self, *args, **options):
-        # Contar registros existentes
+        """Executa a lógica principal do comando.
+
+        Remove todos os registros da tabela de concursos.
+        """
         total_concursos = Concurso.objects.count()
         total_cargos = Cargo.objects.count()
         # Executar a exclusão
