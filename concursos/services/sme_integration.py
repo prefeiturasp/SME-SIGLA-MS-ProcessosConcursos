@@ -12,7 +12,7 @@ def _get_base_url_and_headers() -> tuple[str, dict[str, str]]:
     """Monta URL base e headers de autenticação da SME.
 
     Returns:
-        Resultado da operação.
+        URL base e headers de autenticação da SMEIntegracao.
 
     Raises:
         ValueError: URL ou token não configurados.

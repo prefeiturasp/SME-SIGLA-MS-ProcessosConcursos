@@ -62,19 +62,8 @@ class ConcursoSerializer(serializers.ModelSerializer):
         instance: Concurso,
         validated_data: dict[str, Any],
     ) -> Concurso:
-        """Atualiza concurso e, se informado, substitui cargos vinculados.
 
-        Args:
-            self: Instância do objeto.
-            instance: concurso existente.
-            validated_data: campos a atualizar; ``cargos_ids`` opcional.
-
-        Returns:
-            Instância do concurso persistida.
-
-        Raises:
-            Nenhuma exceção específica documentada.
-        """
+        """Atualiza concurso e, se informado, substitui cargos vinculados."""
         cargos_ids = validated_data.pop("cargos_ids", None)
 
         for attr, value in validated_data.items():

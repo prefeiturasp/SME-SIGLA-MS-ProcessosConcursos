@@ -30,17 +30,7 @@ class Concurso(BaseModel):
         ordering = ["-criado_em"]
 
     def __str__(self) -> str:
-        """Executa   str  .
-
-        Args:
-            self: Instância do objeto.
-
-        Returns:
-            Texto resultante da operação.
-
-        Raises:
-            Nenhuma exceção específica documentada.
-        """
+        """String de representação do objeto."""
         return self.nome
 
 

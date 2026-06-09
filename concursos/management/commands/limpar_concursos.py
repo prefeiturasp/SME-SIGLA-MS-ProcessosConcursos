@@ -11,19 +11,9 @@ class Command(BaseCommand):
     help = "Remove todos os registros da tabela de concursos"
 
     def handle(self, *args, **options):
-        # Contar registros existentes
         """Executa a lógica principal do comando.
 
-        Args:
-            self: Instância do objeto.
-            *args: Argumentos posicionais variáveis.
-            **options: Parâmetro options da operação.
-
-        Returns:
-            Não retorna valor; executa a operação do comando.
-
-        Raises:
-            Nenhuma exceção específica documentada.
+        Remove todos os registros da tabela de concursos.
         """
         total_concursos = Concurso.objects.count()
         total_cargos = Cargo.objects.count()

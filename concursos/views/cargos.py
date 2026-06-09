@@ -37,33 +37,7 @@ class CargoViewSet(viewsets.ModelViewSet):
         *args: Any,
         **kwargs: Any,
     ) -> Response:
-        """Lista cargos com totais de autorizações e escolhas.
-
-        Args:
-            self: Instância do objeto.
-            request: Requisição HTTP (sem parâmetros obrigatórios).
-            *args: Argumentos posicionais variáveis.
-            **kwargs: Argumentos nomeados variáveis.
-
-        Returns:
-            Resposta HTTP com o resultado da operação.
-
-        Raises:
-            Nenhuma exceção específica documentada.
-
-        Examples:
-            GET /api/v1/cargos/autorizacoes-publicadas/::
-            [
-            {
-            "uuid": "...",
-            "nome": "Professor",
-            "codigo": 1,
-            "autorizacoes": 10,
-            "data_autorizacao_mais_recente": "2026-01-15",
-            "total_escolhas": 5
-            }
-            ]
-        """
+        """Lista cargos com totais de autorizações e escolhas."""
         escolhas_por_cargo: dict[str | int, Any] = {}
         resp = EscolhasAPIService().get_escolhas_por_cargo()
         escolhas_por_cargo = resp.json()

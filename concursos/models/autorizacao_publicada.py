@@ -35,17 +35,7 @@ class AutorizacaoPublicada(BaseModel):
         ordering = ["-data_autorizacao", "-criado_em"]
 
     def __str__(self) -> str:
-        """Executa   str  .
-
-        Args:
-            self: Instância do objeto.
-
-        Returns:
-            Texto resultante da operação.
-
-        Raises:
-            Nenhuma exceção específica documentada.
-        """
+        """Retorna a string de representação do objeto."""
         return f"Autorização {self.uuid}"
 
 

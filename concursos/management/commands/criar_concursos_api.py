@@ -19,18 +19,7 @@ class Command(BaseCommand):
     help = "Cria/atualiza Cargos e Concursos a partir da API SME Integração"
 
     def add_arguments(self, parser):
-        """Registra argumentos da linha de comando.
-
-        Args:
-            self: Instância do objeto.
-            parser: Parser de argumentos do comando.
-
-        Returns:
-            Não retorna valor.
-
-        Raises:
-            Nenhuma exceção específica documentada.
-        """
+        """Registra argumentos da linha de comando."""
         parser.add_argument(
             "--dry-run",
             action="store_true",
@@ -40,16 +29,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Executa a lógica principal do comando.
 
-        Args:
-            self: Instância do objeto.
-            *args: Argumentos posicionais variáveis.
-            **options: Parâmetro options da operação.
-
-        Returns:
-            Não retorna valor; executa a operação do comando.
-
-        Raises:
-            TransactionManagementError: Se ocorrer erro nesta operação.
+        Cria/atualiza Cargos e Concursos a partir da API SME Integração.
         """
         dry_run: bool = options.get("dry_run", False)
 
