@@ -1,3 +1,4 @@
+"""Módulo tests/services/test_escolhas_api_service."""
 from unittest.mock import Mock, patch
 
 import pytest
@@ -8,6 +9,14 @@ from concursos.services import EscolhasAPIService
 
 
 def test_get_escolhas_por_cargo_success():
+    """Verifica get escolhas por cargo success.
+    
+    Returns:
+        Nenhum valor; valida comportamento via asserções.
+    
+    Raises:
+        Nenhuma exceção específica documentada.
+    """
     service = EscolhasAPIService(
         base_url="http://example.com", timeout_seconds=5
     )
@@ -29,6 +38,14 @@ def test_get_escolhas_por_cargo_success():
 
 
 def test_get_escolhas_por_cargo_http_error_propagates():
+    """Verifica get escolhas por cargo http error propagates.
+    
+    Returns:
+        Nenhum valor; valida comportamento via asserções.
+    
+    Raises:
+        Nenhuma exceção específica documentada.
+    """
     service = EscolhasAPIService(base_url="http://example.com")
     fake_response = Mock()
     fake_response.raise_for_status.side_effect = requests.HTTPError("boom")
@@ -44,6 +61,17 @@ def test_get_escolhas_por_cargo_http_error_propagates():
 
 def test_init_without_setting_and_without_base_url_raises(monkeypatch):
     # Garante que o setting está ausente/vazio
+    """Verifica init without setting and without base url raises.
+    
+    Args:
+        monkeypatch: Fixture do pytest para substituir objetos.
+    
+    Returns:
+        Nenhum valor; valida comportamento via asserções.
+    
+    Raises:
+        Nenhuma exceção específica documentada.
+    """
     monkeypatch.setattr(settings, "ESCOLHAS_API_URL", "", raising=False)
     with pytest.raises(ValueError):
         EscolhasAPIService()

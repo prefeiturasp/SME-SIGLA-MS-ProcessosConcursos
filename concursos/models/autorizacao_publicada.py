@@ -1,3 +1,4 @@
+"""Módulo models/autorizacao_publicada."""
 from auditlog.registry import auditlog
 from django.db import models
 
@@ -6,9 +7,7 @@ from .cargo import Cargo
 
 
 class AutorizacaoPublicada(BaseModel):
-    """
-    Registra informações de autorizações publicadas.
-    """
+    """Registra informações de autorizações publicadas."""
 
     cargo = models.ForeignKey(
         Cargo,
@@ -27,12 +26,24 @@ class AutorizacaoPublicada(BaseModel):
     )
 
     class Meta:
+        """Configuração do serializer."""
         db_table = "autorizacoes_publicadas"
         verbose_name = "Autorização Publicada"
         verbose_name_plural = "Autorizações Publicadas"
         ordering = ["-data_autorizacao", "-criado_em"]
 
     def __str__(self) -> str:
+        """Executa   str  .
+        
+        Args:
+            self: Instância do objeto.
+        
+        Returns:
+            Texto resultante da operação.
+        
+        Raises:
+            Nenhuma exceção específica documentada.
+        """
         return f"Autorização {self.uuid}"
 
 

@@ -15,12 +15,24 @@ class Cargo(BaseModel):
     )
 
     class Meta:
+        """Configuração do serializer."""
         db_table = "cargos"
         verbose_name = "Cargo"
         verbose_name_plural = "Cargos"
         ordering = ["nome"]
 
     def __str__(self) -> str:
+        """Executa   str  .
+        
+        Args:
+            self: Instância do objeto.
+        
+        Returns:
+            Texto resultante da operação.
+        
+        Raises:
+            Nenhuma exceção específica documentada.
+        """
         return self.nome
 
 

@@ -20,6 +20,7 @@ class ConcursoSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
+        """Configuração do serializer."""
         model = Concurso
         fields = [
             "uuid",
@@ -35,12 +36,16 @@ class ConcursoSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data: dict[str, Any]) -> Concurso:
         """Cria concurso e associa cargos por UUID.
-
+        
         Args:
+            self: Instância do objeto.
             validated_data: dados validados; ``cargos_ids`` opcional.
-
+        
         Returns:
-            Instância ``Concurso`` persistida.
+            Instância do concurso persistida.
+        
+        Raises:
+            Nenhuma exceção específica documentada.
         """
         cargos_ids = validated_data.pop("cargos_ids", [])
         concurso = Concurso.objects.create(**validated_data)
@@ -57,13 +62,17 @@ class ConcursoSerializer(serializers.ModelSerializer):
         validated_data: dict[str, Any],
     ) -> Concurso:
         """Atualiza concurso e, se informado, substitui cargos vinculados.
-
+        
         Args:
+            self: Instância do objeto.
             instance: concurso existente.
             validated_data: campos a atualizar; ``cargos_ids`` opcional.
-
+        
         Returns:
-            Instância atualizada.
+            Instância do concurso persistida.
+        
+        Raises:
+            Nenhuma exceção específica documentada.
         """
         cargos_ids = validated_data.pop("cargos_ids", None)
 
@@ -84,6 +93,7 @@ class ConcursoListSerializer(serializers.ModelSerializer):
     cargos = CargoListSerializer(many=True, read_only=True)
 
     class Meta:
+        """Configuração do serializer."""
         model = Concurso
         fields = ["uuid", "nome", "cargos", "numero_processo", "codigo"]
 
@@ -96,5 +106,6 @@ class ConcursoSelectSerializer(serializers.ModelSerializer):
     cargos = CargoSelectSerializer(many=True, read_only=True)
 
     class Meta:
+        """Configuração do serializer."""
         model = Concurso
         fields = ["value", "label", "cargos", "numero_processo", "codigo"]

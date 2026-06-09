@@ -67,7 +67,18 @@ class ConcursoAdmin(admin.ModelAdmin):
     )
 
     def cargos_count(self, obj: Concurso) -> int:
-        """Quantidade de cargos vinculados ao concurso."""
+        """Quantidade de cargos vinculados ao concurso.
+        
+        Args:
+            self: Instância do objeto.
+            obj: Instância do objeto processado.
+        
+        Returns:
+            Valor inteiro calculado.
+        
+        Raises:
+            Nenhuma exceção específica documentada.
+        """
         return obj.cargos.count()
 
     cargos_count.short_description = "Número de Cargos"

@@ -34,7 +34,17 @@ class ConcursoViewSet(viewsets.ModelViewSet):
     pagination_class = CustomPagination
 
     def get_serializer_class(self) -> type[BaseSerializer]:
-        """Retorna serializer conforme action e query ``formato=select``."""
+        """Retorna serializer conforme action e query ``formato=select``.
+        
+        Args:
+            self: Instância do objeto.
+        
+        Returns:
+            Tipo retornado conforme a operação.
+        
+        Raises:
+            Nenhuma exceção específica documentada.
+        """
         if self.action == "list":
             if self.request.query_params.get("formato") == "select":
                 return ConcursoSelectSerializer
@@ -43,23 +53,27 @@ class ConcursoViewSet(viewsets.ModelViewSet):
 
     def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """Lista concursos paginados ou em formato select.
-
+        
         Args:
-            request: requisição HTTP; ``formato=select`` desativa paginação.
-
+            self: Instância do objeto.
+            request: Requisição HTTP; ``formato=select`` desativa paginação.
+            *args: Argumentos posicionais variáveis.
+            **kwargs: Argumentos nomeados variáveis.
+        
         Returns:
-            Lista paginada ou array de ``{value, label, cargos}``.
-
+            Resposta HTTP com o resultado da operação.
+        
+        Raises:
+            Nenhuma exceção específica documentada.
+        
         Examples:
             GET /api/v1/concursos/?page=1::
-                {
-                    "count": 1, "page": 1, 
-                    "results": [{"uuid": "...", "nome": "..."}]
-                }
-
+            {
+            "count": 1, "page": 1,
+            "results": [{"uuid": "...", "nome": "..."}]
+            }
             GET /api/v1/concursos/?formato=select::
-
-                [{"value": "uuid", "label": "Nome", "cargos": []}]
+            [{"value": "uuid", "label": "Nome", "cargos": []}]
         """
         queryset = self.filter_queryset(self.get_queryset())
 

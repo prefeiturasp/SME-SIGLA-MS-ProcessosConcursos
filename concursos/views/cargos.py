@@ -38,29 +38,31 @@ class CargoViewSet(viewsets.ModelViewSet):
         **kwargs: Any,
     ) -> Response:
         """Lista cargos com totais de autorizações e escolhas.
-
+        
         Args:
-            request: requisição HTTP (sem parâmetros obrigatórios).
-
+            self: Instância do objeto.
+            request: Requisição HTTP (sem parâmetros obrigatórios).
+            *args: Argumentos posicionais variáveis.
+            **kwargs: Argumentos nomeados variáveis.
+        
         Returns:
-            Lista de dicts por cargo com autorizações e escolhas agregadas.
-
+            Resposta HTTP com o resultado da operação.
+        
         Raises:
-            requests.HTTPError: falha ao consultar MS-Escolhas.
-
+            Nenhuma exceção específica documentada.
+        
         Examples:
             GET /api/v1/cargos/autorizacoes-publicadas/::
-
-                [
-                  {
-                    "uuid": "...",
-                    "nome": "Professor",
-                    "codigo": 1,
-                    "autorizacoes": 10,
-                    "data_autorizacao_mais_recente": "2026-01-15",
-                    "total_escolhas": 5
-                  }
-                ]
+            [
+            {
+            "uuid": "...",
+            "nome": "Professor",
+            "codigo": 1,
+            "autorizacoes": 10,
+            "data_autorizacao_mais_recente": "2026-01-15",
+            "total_escolhas": 5
+            }
+            ]
         """
         escolhas_por_cargo: dict[str | int, Any] = {}
         resp = EscolhasAPIService().get_escolhas_por_cargo()

@@ -21,4 +21,5 @@ class BaseModel(models.Model):
     )
 
     class Meta:
+        """Configuração do serializer."""
         abstract = True

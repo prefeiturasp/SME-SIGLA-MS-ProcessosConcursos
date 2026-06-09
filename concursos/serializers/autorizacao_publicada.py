@@ -16,6 +16,7 @@ class AutorizacaoPublicadaSerializer(serializers.ModelSerializer):
     cargo = serializers.UUIDField(required=False, allow_null=True)
 
     class Meta:
+        """Configuração do serializer."""
         model = AutorizacaoPublicada
         fields = [
             "uuid",
@@ -30,15 +31,16 @@ class AutorizacaoPublicadaSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data: dict[str, Any]) -> AutorizacaoPublicada:
         """Cria autorização resolvendo cargo a partir do UUID.
-
+        
         Args:
+            self: Instância do objeto.
             validated_data: dados validados; ``cargo`` é UUID opcional.
-
+        
         Returns:
-            Instância ``AutorizacaoPublicada`` criada.
-
+            Resposta HTTP com os dados serializados.
+        
         Raises:
-            serializers.ValidationError: cargo UUID inexistente.
+            ValidationError: Se os dados informados forem inválidos.
         """
         cargo_uuid: UUID | None = validated_data.pop("cargo", None)
         if cargo_uuid:
