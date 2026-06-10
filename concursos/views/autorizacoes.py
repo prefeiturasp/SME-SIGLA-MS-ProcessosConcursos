@@ -1,19 +1,12 @@
 """ViewSet de autorizações publicadas."""
 
-from django.db.models import Sum
-from django.db.models.functions import ExtractYear
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
-from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
 
-from concursos.models import AutorizacaoPublicada, Concurso
-from concursos.serializers import (
-    AutorizacaoPublicadaSerializer,
-    AutorizacoesPublicadasTotalSerializer,
-)
+from concursos.models import AutorizacaoPublicada
+from concursos.serializers import AutorizacaoPublicadaSerializer
 
 
 class AutorizacaoPublicadaViewSet(viewsets.ModelViewSet):
@@ -27,45 +20,3 @@ class AutorizacaoPublicadaViewSet(viewsets.ModelViewSet):
     search_fields = ["observacao"]
     ordering_fields = ["data_autorizacao", "criado_em"]
     ordering = ["-data_autorizacao", "-criado_em"]
-
-    @action(detail=False, methods=["post"], url_path="total")
-    def total(self, request):
-        """
-        Total de autorizações publicadas (SUM).
-
-        POST /autorizacoes-publicadas/total/
-        Body: {concurso_uuid?, anos?: [int]}
-        Com `anos`: agrupado por ano de ``data_autorizacao``.
-        Sem `anos`: retorna a chave "total" com a soma de todas as autorizações.
-        Sem `concurso_uuid`: agrega autorizações de todos os concursos.
-        """
-        serializer = AutorizacoesPublicadasTotalSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        concurso_uuid = serializer.validated_data.get("concurso_uuid")
-        anos = serializer.validated_data.get("anos")
-
-        qs = AutorizacaoPublicada.objects.filter(
-            data_autorizacao__isnull=False
-        )
-        if concurso_uuid:
-            cargos_ids = Concurso.objects.filter(
-                uuid=concurso_uuid
-            ).values_list("cargos__uuid", flat=True)
-            qs = qs.filter(cargo__uuid__in=cargos_ids)
-
-        if anos:
-            totais = (
-                qs.annotate(ano=ExtractYear("data_autorizacao"))
-                .values("ano")
-                .annotate(total=Sum("autorizacoes"))
-                .filter(ano__in=anos)
-            )
-            resultado = {
-                str(item["ano"]): {"autorizacoes-publicadas": item["total"]}
-                for item in totais
-            }
-        else:
-            total = qs.aggregate(total=Sum("autorizacoes"))["total"] or 0
-            resultado = {"total": {"autorizacoes-publicadas": total}}
-
-        return Response(resultado)

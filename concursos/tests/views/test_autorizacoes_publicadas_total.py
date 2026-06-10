@@ -9,7 +9,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_total_autorizacoes_publicadas_por_ano(api_client):
-    url = reverse("autorizacao-publicada-total")
+    url = reverse("extracao-dados-list")
 
     cargo_a = Cargo.objects.create(nome="Cargo A")
     cargo_b = Cargo.objects.create(nome="Cargo B")
@@ -51,7 +51,7 @@ def test_total_autorizacoes_publicadas_por_ano(api_client):
 
 
 def test_total_sem_concurso_agrega_todos(api_client):
-    url = reverse("autorizacao-publicada-total")
+    url = reverse("extracao-dados-list")
 
     cargo_a = Cargo.objects.create(nome="Cargo A")
     cargo_b = Cargo.objects.create(nome="Cargo B")
@@ -85,7 +85,7 @@ def test_total_sem_concurso_agrega_todos(api_client):
 
 
 def test_total_autorizacoes_filtra_por_anos(api_client):
-    url = reverse("autorizacao-publicada-total")
+    url = reverse("extracao-dados-list")
 
     cargo = Cargo.objects.create(nome="Cargo A")
     concurso = Concurso.objects.create(nome="Concurso X")
@@ -117,7 +117,7 @@ def test_total_autorizacoes_filtra_por_anos(api_client):
 
 
 def test_total_sem_anos_retorna_total(api_client):
-    url = reverse("autorizacao-publicada-total")
+    url = reverse("extracao-dados-list")
 
     cargo = Cargo.objects.create(nome="Cargo A")
     concurso = Concurso.objects.create(nome="Concurso X")
