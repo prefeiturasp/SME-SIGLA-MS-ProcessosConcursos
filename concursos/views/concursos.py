@@ -42,25 +42,7 @@ class ConcursoViewSet(viewsets.ModelViewSet):
         return ConcursoSerializer
 
     def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
-        """Lista concursos paginados ou em formato select.
-
-        Args:
-            request: requisição HTTP; ``formato=select`` desativa paginação.
-
-        Returns:
-            Lista paginada ou array de ``{value, label, cargos}``.
-
-        Examples:
-            GET /api/v1/concursos/?page=1::
-                {
-                    "count": 1, "page": 1, 
-                    "results": [{"uuid": "...", "nome": "..."}]
-                }
-
-            GET /api/v1/concursos/?formato=select::
-
-                [{"value": "uuid", "label": "Nome", "cargos": []}]
-        """
+        """Lista concursos paginados ou em formato select."""
         queryset = self.filter_queryset(self.get_queryset())
 
         if request.query_params.get("formato") == "select":
