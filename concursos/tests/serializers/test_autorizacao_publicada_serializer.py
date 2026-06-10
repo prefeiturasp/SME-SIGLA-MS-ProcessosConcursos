@@ -1,3 +1,5 @@
+"""Módulo tests/serializers/test_autorizacao_publicada_serializer."""
+
 import pytest
 
 from concursos.models import AutorizacaoPublicada, Cargo
@@ -7,6 +9,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_autorizacao_publicada_serializer_fields():
+    """Verifica autorizacao publicada serializer fields."""
     obj = AutorizacaoPublicada.objects.create()
     data = AutorizacaoPublicadaSerializer(obj).data
     for field in [
@@ -22,6 +25,7 @@ def test_autorizacao_publicada_serializer_fields():
 
 
 def test_autorizacao_publicada_create_with_valid_cargo():
+    """Verifica autorizacao publicada create with valid cargo."""
     cargo = Cargo.objects.create(nome="Teste")
     payload = {
         "cargo": str(cargo.uuid),
