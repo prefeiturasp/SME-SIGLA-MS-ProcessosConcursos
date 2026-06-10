@@ -1,3 +1,5 @@
+"""Módulo serializers/__init__."""
+
 from .autorizacao_publicada import AutorizacaoPublicadaSerializer
 from .cargo import CargoListSerializer, CargoSelectSerializer, CargoSerializer
 from .concurso import (

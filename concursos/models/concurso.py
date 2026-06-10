@@ -22,12 +22,15 @@ class Concurso(BaseModel):
     )
 
     class Meta:
+        """Configuração do serializer."""
+
         db_table = "concursos"
         verbose_name = "Concurso"
         verbose_name_plural = "Concursos"
         ordering = ["-criado_em"]
 
     def __str__(self) -> str:
+        """String de representação do objeto."""
         return self.nome
 
 

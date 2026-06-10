@@ -1,5 +1,5 @@
-"""
-Django management command to create/update Cargos e Concursos
+"""Django management command to create/update Cargos e Concursos.
+
 usando a API de Integração da SME.
 """
 
@@ -14,9 +14,12 @@ from concursos.services.sme_integration import (
 
 
 class Command(BaseCommand):
+    """Define Command."""
+
     help = "Cria/atualiza Cargos e Concursos a partir da API SME Integração"
 
     def add_arguments(self, parser):
+        """Registra argumentos da linha de comando."""
         parser.add_argument(
             "--dry-run",
             action="store_true",
@@ -24,6 +27,10 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """Executa a lógica principal do comando.
+
+        Cria/atualiza Cargos e Concursos a partir da API SME Integração.
+        """
         dry_run: bool = options.get("dry_run", False)
 
         try:

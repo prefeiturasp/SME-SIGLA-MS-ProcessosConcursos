@@ -17,6 +17,7 @@ class EscolhasAPIService:
         """Inicializa cliente com URL base e timeout.
 
         Args:
+            self: Instância do objeto.
             base_url: sobrescreve ``ESCOLHAS_API_URL`` das settings.
             timeout_seconds: timeout das requisições HTTP.
 
@@ -40,14 +41,14 @@ class EscolhasAPIService:
         """Agrupa escolhas por código de cargo no MS-Escolhas.
 
         Args:
+            self: Instância do objeto.
             headers: cabeçalhos HTTP adicionais.
 
         Returns:
-            Response HTTP com JSON ``{codigo_cargo: total, ...}``.
+            Resposta HTTP com o resultado da operação.
 
         Raises:
-            requests.HTTPError: status HTTP de erro.
-            requests.RequestException: falha de conexão.
+            Nenhuma exceção específica documentada.
         """
         url = f"{self.base_url}/api/v1/escolhas/agrupar-por-cargo/"
         merged_headers = {**self._default_headers, **(headers or {})}
