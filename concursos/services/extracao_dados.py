@@ -1,6 +1,6 @@
 """Agregações para a extração de dados de autorizações publicadas."""
 
-from typing import Any, Optional, Union
+from typing import Any
 from uuid import UUID
 
 from django.db.models import Sum
@@ -10,26 +10,28 @@ from concursos.models import AutorizacaoPublicada, Concurso
 
 
 def montar_extracao_dados(
-    concurso_uuid: Optional[Union[UUID, str]] = None,
-    anos: Optional[list[int]] = None,
+    concurso_uuid: UUID | str | None = None,
+    anos: list[int] | None = None,
 ) -> dict[str, Any]:
     """
     Monta o dicionário de total de autorizações publicadas (SUM).
 
-    - ``concurso_uuid`` é opcional: ausente → agrega autorizações de todos os
-      concursos; presente → filtra pelos cargos do concurso (``Concurso.cargos``).
-    - Com ``anos``: agrupa por ano de ``data_autorizacao`` e restringe a esses anos.
-    - Sem ``anos``: retorna uma única chave ``"total"`` com a soma de todas as
-      autorizações.
+    - ``concurso_uuid`` é opcional: ausente → agrega autorizações de todos
+      os concursos; presente → filtra pelos cargos do concurso
+      (``Concurso.cargos``).
+    - Com ``anos``: agrupa por ano de ``data_autorizacao`` e restringe a
+      esses anos.
+    - Sem ``anos``: retorna a soma de todas as autorizações na raiz, em
+      ``"autorizacoes-publicadas"`` (forma plana, sem quebra por ano).
 
     Registros com ``data_autorizacao`` nulo são ignorados.
     """
     qs = AutorizacaoPublicada.objects.filter(data_autorizacao__isnull=False)
 
     if concurso_uuid:
-        cargos_ids = Concurso.objects.filter(
-            uuid=concurso_uuid
-        ).values_list("cargos__uuid", flat=True)
+        cargos_ids = Concurso.objects.filter(uuid=concurso_uuid).values_list(
+            "cargos__uuid", flat=True
+        )
         qs = qs.filter(cargo__uuid__in=cargos_ids)
 
     if anos:

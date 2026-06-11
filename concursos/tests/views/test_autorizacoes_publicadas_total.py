@@ -81,7 +81,7 @@ def test_total_sem_concurso_agrega_todos(api_client):
 
     assert resp.status_code == 200, resp.content
     data = resp.json()
-    assert data == {"total": {"autorizacoes-publicadas": 1149}}
+    assert data == {"autorizacoes-publicadas": 1149}
 
 
 def test_total_autorizacoes_filtra_por_anos(api_client):
@@ -140,5 +140,5 @@ def test_total_sem_anos_retorna_total(api_client):
 
     assert resp.status_code == 200, resp.content
     data = resp.json()
-    # sem `anos`: chave "total" com a soma de tudo (sem quebra por ano)
-    assert data == {"total": {"autorizacoes-publicadas": 130}}
+    # sem `anos`: soma de tudo na raiz (forma plana, sem quebra por ano)
+    assert data == {"autorizacoes-publicadas": 130}

@@ -60,8 +60,9 @@ class AutorizacoesPublicadasTotalSerializer(serializers.Serializer):
     - ``concurso_uuid`` é opcional: ausente → agrega autorizações de todos os
       concursos.
     - ``anos`` é opcional: se informado, restringe o resultado a esses anos
-      (quebrado por ano); se omitido, retorna uma única chave agregada
-      ``"total"`` com a soma de todas as autorizações.
+      (quebrado por ano); se omitido, retorna a soma de todas as autorizações
+      na raiz, em ``"autorizacoes-publicadas"`` (forma plana, sem quebra por
+      ano).
     """
 
     concurso_uuid = serializers.UUIDField(required=False, allow_null=True)

@@ -15,7 +15,8 @@ class ExtracaoDadosViewSet(viewsets.ViewSet):
     POST /extracao-dados/
     Body: {concurso_uuid?, anos?: [int]}
     Com `anos`: agrupado por ano de ``data_autorizacao``.
-    Sem `anos`: retorna a chave "total" com a soma de todas as autorizações.
+    Sem `anos`: retorna na raiz ``autorizacoes-publicadas`` com a soma de
+    todas as autorizações.
     Sem `concurso_uuid`: agrega autorizações de todos os concursos.
     """
 
