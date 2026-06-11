@@ -3,7 +3,12 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import AutorizacaoPublicadaViewSet, CargoViewSet, ConcursoViewSet
+from .views import (
+    AutorizacaoPublicadaViewSet,
+    CargoViewSet,
+    ConcursoViewSet,
+    ExtracaoDadosViewSet,
+)
 
 router = DefaultRouter()
 router.register(r"cargos", CargoViewSet, basename="cargo")
@@ -12,6 +17,9 @@ router.register(
     r"autorizacoes-publicadas",
     AutorizacaoPublicadaViewSet,
     basename="autorizacao-publicada",
+)
+router.register(
+    r"extracao-dados", ExtracaoDadosViewSet, basename="extracao-dados"
 )
 
 urlpatterns = [
