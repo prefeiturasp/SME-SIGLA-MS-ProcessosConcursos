@@ -45,4 +45,4 @@ def montar_extracao_dados(
         }
 
     total = qs.aggregate(total=Sum("autorizacoes"))["total"] or 0
-    return {"total": {"autorizacoes-publicadas": total}}
+    return {"autorizacoes-publicadas": total}
