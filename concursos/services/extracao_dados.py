@@ -14,13 +14,14 @@ def montar_extracao_dados(
     anos: Optional[list[int]] = None,
 ) -> dict[str, Any]:
     """
-    Monta o dicionário de total de autorizações publicadas (SUM).
+    Monta o dicionário de total de autorizações publicadas (SUM) por ano.
 
-    - ``concurso_uuid`` é opcional: ausente → agrega autorizações de todos os
-      concursos; presente → filtra pelos cargos do concurso (``Concurso.cargos``).
-    - Com ``anos``: agrupa por ano de ``data_autorizacao`` e restringe a esses anos.
-    - Sem ``anos``: retorna uma única chave ``"total"`` com a soma de todas as
-      autorizações.
+    O resultado é sempre quebrado por ano de ``data_autorizacao``:
+
+    - ``concurso_uuid`` + ``anos`` juntos: filtra pelos cargos do concurso
+      (``Concurso.cargos``) e restringe aos anos informados.
+    - Ambos ausentes: retorna todos os anos existentes, somando os cargos de
+      todos os concursos.
 
     Registros com ``data_autorizacao`` nulo são ignorados.
     """
@@ -32,17 +33,16 @@ def montar_extracao_dados(
         ).values_list("cargos__uuid", flat=True)
         qs = qs.filter(cargo__uuid__in=cargos_ids)
 
+    totais = (
+        qs.annotate(ano=ExtractYear("data_autorizacao"))
+        .values("ano")
+        .annotate(total=Sum("autorizacoes"))
+        .order_by("ano")
+    )
     if anos:
-        totais = (
-            qs.annotate(ano=ExtractYear("data_autorizacao"))
-            .values("ano")
-            .annotate(total=Sum("autorizacoes"))
-            .filter(ano__in=anos)
-        )
-        return {
-            str(item["ano"]): {"autorizacoes-publicadas": item["total"]}
-            for item in totais
-        }
+        totais = totais.filter(ano__in=anos)
 
-    total = qs.aggregate(total=Sum("autorizacoes"))["total"] or 0
-    return {"total": {"autorizacoes-publicadas": total}}
+    return {
+        str(item["ano"]): {"autorizacoes-publicadas": item["total"]}
+        for item in totais
+    }

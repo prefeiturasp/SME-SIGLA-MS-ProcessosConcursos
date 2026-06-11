@@ -50,7 +50,7 @@ def test_total_autorizacoes_publicadas_por_ano(api_client):
     assert data["2025"] == {"autorizacoes-publicadas": 80}
 
 
-def test_total_sem_concurso_agrega_todos(api_client):
+def test_extracao_vazio_todos_anos(api_client):
     url = reverse("extracao-dados-list")
 
     cargo_a = Cargo.objects.create(nome="Cargo A")
@@ -62,7 +62,7 @@ def test_total_sem_concurso_agrega_todos(api_client):
     concurso_y = Concurso.objects.create(nome="Concurso Y")
     concurso_y.cargos.add(cargo_b)
 
-    # sem concurso_uuid: agrega autorizacoes de todos os cargos (100+50+999)
+    # body vazio: quebra por TODOS os anos, somando todos os cargos
     AutorizacaoPublicada.objects.create(
         cargo=cargo_a, autorizacoes=100, data_autorizacao=date(2026, 3, 1)
     )
@@ -81,7 +81,11 @@ def test_total_sem_concurso_agrega_todos(api_client):
 
     assert resp.status_code == 200, resp.content
     data = resp.json()
-    assert data == {"total": {"autorizacoes-publicadas": 1149}}
+    assert data == {
+        "2026": {"autorizacoes-publicadas": 100},
+        "2025": {"autorizacoes-publicadas": 50},
+        "2024": {"autorizacoes-publicadas": 999},
+    }
 
 
 def test_total_autorizacoes_filtra_por_anos(api_client):
@@ -116,29 +120,19 @@ def test_total_autorizacoes_filtra_por_anos(api_client):
     assert "2024" not in data
 
 
-def test_total_sem_anos_retorna_total(api_client):
+def test_extracao_so_concurso_400(api_client):
+    """Regra tudo-ou-nada: concurso_uuid sem anos -> 400."""
     url = reverse("extracao-dados-list")
-
-    cargo = Cargo.objects.create(nome="Cargo A")
     concurso = Concurso.objects.create(nome="Concurso X")
-    concurso.cargos.add(cargo)
-
-    AutorizacaoPublicada.objects.create(
-        cargo=cargo, autorizacoes=100, data_autorizacao=date(2026, 3, 1)
-    )
-    AutorizacaoPublicada.objects.create(
-        cargo=cargo, autorizacoes=30, data_autorizacao=date(2024, 1, 5)
-    )
-    # data nula ignorada
-    AutorizacaoPublicada.objects.create(
-        cargo=cargo, autorizacoes=5, data_autorizacao=None
-    )
 
     resp = api_client.post(
         url, {"concurso_uuid": str(concurso.uuid)}, format="json"
     )
+    assert resp.status_code == 400, resp.content
 
-    assert resp.status_code == 200, resp.content
-    data = resp.json()
-    # sem `anos`: chave "total" com a soma de tudo (sem quebra por ano)
-    assert data == {"total": {"autorizacoes-publicadas": 130}}
+
+def test_extracao_so_anos_400(api_client):
+    """Regra tudo-ou-nada: anos sem concurso_uuid -> 400."""
+    url = reverse("extracao-dados-list")
+    resp = api_client.post(url, {"anos": [2026]}, format="json")
+    assert resp.status_code == 400, resp.content

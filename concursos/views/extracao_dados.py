@@ -13,10 +13,10 @@ class ExtracaoDadosViewSet(viewsets.ViewSet):
     Indicadores de autorizações publicadas para extração de dados.
 
     POST /extracao-dados/
-    Body: {concurso_uuid?, anos?: [int]}
-    Com `anos`: agrupado por ano de ``data_autorizacao``.
-    Sem `anos`: retorna a chave "total" com a soma de todas as autorizações.
-    Sem `concurso_uuid`: agrega autorizações de todos os concursos.
+    Body: {concurso_uuid, anos: [int]} juntos, ou {} (vazio).
+    Resultado sempre quebrado por ano de ``data_autorizacao``.
+    Vazio: retorna todos os anos existentes (todos os concursos).
+    Passar só um dos dois filtros → 400.
     """
 
     permission_classes = [AllowAny]

@@ -55,13 +55,12 @@ class AutorizacaoPublicadaSerializer(serializers.ModelSerializer):
 
 
 class AutorizacoesPublicadasTotalSerializer(serializers.Serializer):
-    """Payload do endpoint de total de autorizações publicadas.
+    """Payload do endpoint de extração de dados de autorizações publicadas.
 
-    - ``concurso_uuid`` é opcional: ausente → agrega autorizações de todos os
-      concursos.
-    - ``anos`` é opcional: se informado, restringe o resultado a esses anos
-      (quebrado por ano); se omitido, retorna uma única chave agregada
-      ``"total"`` com a soma de todas as autorizações.
+    Regra tudo-ou-nada: ``concurso_uuid`` e ``anos`` são informados **juntos**
+    (filtra por concurso + anos) ou **nenhum dos dois** (retorna todos os anos
+    existentes). Passar só um deles é inválido. O resultado é sempre quebrado
+    por ano de ``data_autorizacao``.
     """
 
     concurso_uuid = serializers.UUIDField(required=False, allow_null=True)
@@ -70,3 +69,23 @@ class AutorizacoesPublicadasTotalSerializer(serializers.Serializer):
         required=False,
         allow_empty=True,
     )
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        """Garante que ``concurso_uuid`` e ``anos`` venham juntos ou ausentes.
+
+        Args:
+            attrs: dados validados por campo.
+
+        Returns:
+            Os mesmos ``attrs`` quando a combinação é válida.
+
+        Raises:
+            serializers.ValidationError: apenas um dos dois filtros informado.
+        """
+        tem_concurso = attrs.get("concurso_uuid") is not None
+        tem_anos = bool(attrs.get("anos"))
+        if tem_concurso != tem_anos:
+            raise serializers.ValidationError(
+                "Informe `concurso_uuid` e `anos` juntos, ou nenhum dos dois."
+            )
+        return attrs
