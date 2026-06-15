@@ -1,4 +1,4 @@
-"""Disponibiliza os números de autorizações para a extração de dados."""
+"""Módulo de extração de dados de autorizações publicadas."""
 
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
@@ -9,7 +9,7 @@ from concursos.services import montar_extracao_dados
 
 
 class ExtracaoDadosViewSet(viewsets.ViewSet):
-    """Reúne os totais de autorizações que alimentam a extração de dados."""
+    """ViewSet de autorizações publicadas para extração de dados."""
 
     permission_classes = [AllowAny]
 
