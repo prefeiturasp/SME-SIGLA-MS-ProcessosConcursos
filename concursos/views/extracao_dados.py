@@ -9,16 +9,7 @@ from concursos.services import montar_extracao_dados
 
 
 class ExtracaoDadosViewSet(viewsets.ViewSet):
-    """
-    Indicadores de autorizações publicadas para extração de dados.
-
-    POST /extracao-dados/
-    Body: {concurso_uuid?, anos?: [int]}
-    Com `anos`: agrupado por ano de ``data_autorizacao``.
-    Sem `anos`: retorna na raiz ``autorizacoes-publicadas`` com a soma de
-    todas as autorizações.
-    Sem `concurso_uuid`: agrega autorizações de todos os concursos.
-    """
+    """Indicadores de autorizações publicadas para extração de dados."""
 
     permission_classes = [AllowAny]
 
