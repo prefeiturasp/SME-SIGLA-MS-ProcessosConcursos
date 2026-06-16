@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 from datetime import date
-from typing import Any, Optional, Union
+from typing import Any
 from uuid import UUID
 
 from django.db.models import Max, QuerySet, Sum
@@ -12,6 +12,14 @@ from concursos.models import AutorizacaoPublicada, Concurso
 
 
 def _formatar_data_autorizacao(value: date | None) -> str | None:
+    """Formata a data de autorização em ISO.
+
+    Args:
+        value: Data a formatar; ausente → ``None``.
+
+    Returns:
+        Data em formato ISO ou ``None``.
+    """
     if value is None:
         return None
     return value.isoformat()
@@ -24,6 +32,18 @@ def _montar_item_cargo(
     autorizacoes: int | None,
     data_autorizacao: date | None,
 ) -> dict[str, Any]:
+    """Monta o item de totais de um cargo.
+
+    Args:
+        cargo_uuid: UUID do cargo.
+        nome: Nome do cargo.
+        codigo: Código do cargo.
+        autorizacoes: Total de autorizações do cargo.
+        data_autorizacao: Data de autorização mais recente.
+
+    Returns:
+        Dicionário com os dados do cargo.
+    """
     return {
         "uuid": str(cargo_uuid),
         "nome": nome,
@@ -36,7 +56,14 @@ def _montar_item_cargo(
 
 
 def _totais_por_cargo(qs: QuerySet) -> list[dict[str, Any]]:
-    """Soma autorizações agrupadas por cargo."""
+    """Soma autorizações agrupadas por cargo.
+
+    Args:
+        qs: Queryset de autorizações a agregar.
+
+    Returns:
+        Lista de cargos com os totais de autorizações.
+    """
     itens = (
         qs.filter(cargo__isnull=False)
         .values("cargo__uuid", "cargo__nome", "cargo__codigo")
@@ -59,29 +86,26 @@ def _totais_por_cargo(qs: QuerySet) -> list[dict[str, Any]]:
 
 
 def montar_extracao_dados(
-    concurso_uuid: Optional[Union[UUID, str]] = None,
-    anos: Optional[list[int]] = None,
+    concurso_uuid: UUID | str | None = None,
+    anos: list[int] | None = None,
 ) -> dict[str, Any]:
-    """
-    Monta o dicionário de total de autorizações publicadas (SUM).
+    """Monta o dicionário de total de autorizações publicadas.
 
-    - ``concurso_uuid`` é opcional: ausente → agrega autorizações de todos os
-      concursos; presente → filtra pelos cargos do concurso (``Concurso.cargos``).
-    - Com ``anos``: agrupa por ano de ``data_autorizacao`` e restringe a esses anos.
-    - Sem ``anos``: retorna uma única chave ``"total"`` com a soma de todas as
-      autorizações.
+    Args:
+        concurso_uuid: Concurso a restringir; ausente → todos os concursos.
+        anos: Anos de ``data_autorizacao`` a filtrar; ausente → soma total
+            na raiz, sem quebra por ano.
 
-    Em todos os cenários inclui ``autorizacoes-publicadas`` (total) e ``cargos``
-    (lista com totais por cargo e ``data_autorizacao_mais_recente``).
-
-    Registros com ``data_autorizacao`` nulo são ignorados.
+    Returns:
+        Dicionário com ``autorizacoes-publicadas`` (total) e ``cargos``
+        (totais por cargo).
     """
     qs = AutorizacaoPublicada.objects.filter(data_autorizacao__isnull=False)
 
     if concurso_uuid:
-        cargos_ids = Concurso.objects.filter(
-            uuid=concurso_uuid
-        ).values_list("cargos__uuid", flat=True)
+        cargos_ids = Concurso.objects.filter(uuid=concurso_uuid).values_list(
+            "cargos__uuid", flat=True
+        )
         qs = qs.filter(cargo__uuid__in=cargos_ids)
 
     if anos:

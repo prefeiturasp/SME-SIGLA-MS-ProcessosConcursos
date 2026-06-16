@@ -1,4 +1,4 @@
-"""ViewSet de extração de dados de autorizações publicadas."""
+"""Módulo de extração de dados de autorizações publicadas."""
 
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
@@ -9,16 +9,7 @@ from concursos.services import montar_extracao_dados
 
 
 class ExtracaoDadosViewSet(viewsets.ViewSet):
-    """
-    Indicadores de autorizações publicadas para extração de dados.
-
-    POST /extracao-dados/
-    Body: {concurso_uuid?, anos?: [int]}
-    Com `anos`: agrupado por ano de ``data_autorizacao``.
-    Sem `anos`: retorna a chave "total" com a soma de todas as autorizações.
-    Em ambos os casos inclui totais por cargo em ``cargos``.
-    Sem `concurso_uuid`: agrega autorizações de todos os concursos.
-    """
+    """ViewSet de autorizações publicadas para extração de dados."""
 
     permission_classes = [AllowAny]
 
