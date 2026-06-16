@@ -1,6 +1,7 @@
-"""Módulo serializers/__init__."""
-
-from .autorizacao_publicada import AutorizacaoPublicadaSerializer
+from .autorizacao_publicada import (
+    AutorizacaoPublicadaSerializer,
+    AutorizacoesPublicadasTotalSerializer,
+)
 from .cargo import CargoListSerializer, CargoSelectSerializer, CargoSerializer
 from .concurso import (
     ConcursoListSerializer,
@@ -16,4 +17,5 @@ __all__ = [
     "ConcursoListSerializer",
     "ConcursoSelectSerializer",
     "AutorizacaoPublicadaSerializer",
+    "AutorizacoesPublicadasTotalSerializer",
 ]
