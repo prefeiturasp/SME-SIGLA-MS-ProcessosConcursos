@@ -113,12 +113,16 @@ def montar_extracao_dados(
                 )
             )
 
+        totais_por_ano = {
+            item["ano"]: item["total"] or 0 for item in totais_ano
+        }
+
         return {
-            str(item["ano"]): {
-                "autorizacoes-publicadas": item["total"] or 0,
-                "cargos": cargos_por_ano.get(item["ano"], []),
+            str(ano): {
+                "autorizacoes-publicadas": totais_por_ano.get(ano, 0),
+                "cargos": cargos_por_ano.get(ano, []),
             }
-            for item in totais_ano
+            for ano in anos
         }
 
     total = qs.aggregate(total=Sum("autorizacoes"))["total"] or 0
