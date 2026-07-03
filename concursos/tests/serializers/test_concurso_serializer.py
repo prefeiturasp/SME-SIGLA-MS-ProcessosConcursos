@@ -217,3 +217,37 @@ def test_concurso_serializer_mixed_valid_invalid_cargos(cargo_analista):
     assert concurso.nome == "Concurso Misto"
     assert concurso.cargos.count() == 1
     assert cargo_analista in concurso.cargos.all()
+
+
+def test_concurso_serializer_cria_com_novos_campos(cargo_analista):
+    """ConcursoSerializer persiste os campos novos no create."""
+    from concursos.serializers import ConcursoSerializer
+
+    serializer = ConcursoSerializer(
+        data={
+            "nome": "Concurso Serializer",
+            "cargos_ids": [str(cargo_analista.uuid)],
+            "ano_edital": 2026,
+            "banca_responsavel": "Cebraspe",
+            "ativo": False,
+            "numero_processo": "6016202200779764",
+        }
+    )
+    assert serializer.is_valid(), serializer.errors
+    concurso = serializer.save()
+    assert concurso.ano_edital == 2026
+    assert concurso.banca_responsavel == "Cebraspe"
+    assert concurso.ativo is False
+    assert concurso.numero_processo == "6016202200779764"
+
+
+def test_concurso_list_serializer_expoe_cargos_descricao(concurso_analista):
+    """ConcursoListSerializer retorna cargos_descricao como 'codigo - nome'."""
+    from concursos.serializers import ConcursoListSerializer
+
+    data = ConcursoListSerializer(concurso_analista).data
+    assert "cargos_descricao" in data
+    assert data["cargos_descricao"] == ["0 - Analista de Sistemas"]
+    assert "ano_edital" in data
+    assert "banca_responsavel" in data
+    assert "ativo" in data

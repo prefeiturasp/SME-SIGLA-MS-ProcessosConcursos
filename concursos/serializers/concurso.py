@@ -32,6 +32,9 @@ class ConcursoSerializer(serializers.ModelSerializer):
             "atualizado_em",
             "numero_processo",
             "codigo",
+            "ano_edital",
+            "banca_responsavel",
+            "ativo",
         ]
         read_only_fields = ["uuid", "criado_em", "atualizado_em"]
 
@@ -81,12 +84,34 @@ class ConcursoListSerializer(serializers.ModelSerializer):
     """Serializer enxuto para listagem de concursos."""
 
     cargos = CargoListSerializer(many=True, read_only=True)
+    cargos_descricao = serializers.SerializerMethodField()
 
     class Meta:
         """Configuração do serializer."""
 
         model = Concurso
-        fields = ["uuid", "nome", "cargos", "numero_processo", "codigo"]
+        fields = [
+            "uuid",
+            "nome",
+            "cargos",
+            "cargos_descricao",
+            "numero_processo",
+            "codigo",
+            "ano_edital",
+            "banca_responsavel",
+            "ativo",
+        ]
+
+    def get_cargos_descricao(self, obj: Concurso) -> list[str]:
+        """Retorna lista de ``"{codigo} - {nome}"`` por cargo vinculado.
+
+        Args:
+            obj: Instância de concurso serializada.
+
+        Returns:
+            Lista de strings ``"codigo - nome"`` dos cargos vinculados.
+        """
+        return [f"{cargo.codigo} - {cargo.nome}" for cargo in obj.cargos.all()]
 
 
 class ConcursoSelectSerializer(serializers.ModelSerializer):

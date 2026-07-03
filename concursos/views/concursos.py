@@ -11,6 +11,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
 
+from concursos.filters import ConcursoFilterSet
 from concursos.models import Concurso
 from concursos.serializers import (
     ConcursoListSerializer,
@@ -27,11 +28,15 @@ class ConcursoViewSet(viewsets.ModelViewSet):
     serializer_class = ConcursoSerializer
     permission_classes: list[Any] = []
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ["nome"]
+    filterset_class = ConcursoFilterSet
     search_fields = ["nome"]
     ordering_fields = ["nome", "criado_em"]
     ordering = ["-criado_em"]
     pagination_class = CustomPagination
+
+    def get_queryset(self) -> Any:
+        """Retorna concursos sem duplicatas geradas por JOIN M2M."""
+        return Concurso.objects.all().distinct()
 
     def get_serializer_class(self) -> type[BaseSerializer]:
         """Retorna serializer conforme action e query ``formato=select``."""

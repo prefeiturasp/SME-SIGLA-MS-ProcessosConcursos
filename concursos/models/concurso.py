@@ -14,12 +14,25 @@ class Concurso(BaseModel):
     cargos = models.ManyToManyField(
         Cargo, verbose_name="Cargos", related_name="concursos"
     )
-    numero_processo = models.IntegerField(
-        verbose_name="Número do Processo", blank=True, null=True, default=0
+    numero_processo = models.CharField(
+        max_length=50,
+        blank=True,
+        default="",
+        verbose_name="Número do Processo",
     )
     codigo = models.IntegerField(
-        verbose_name="Código do Concurso", blank=True, null=True, default=0
+        verbose_name="Código do Concurso", blank=True, null=True
     )
+    ano_edital = models.IntegerField(
+        verbose_name="Ano do Edital", blank=True, null=True
+    )
+    banca_responsavel = models.CharField(
+        max_length=200,
+        blank=True,
+        default="",
+        verbose_name="Banca Responsável",
+    )
+    ativo = models.BooleanField(default=True, verbose_name="Ativo")
 
     class Meta:
         """Configuração do serializer."""

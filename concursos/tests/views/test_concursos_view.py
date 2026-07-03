@@ -51,7 +51,7 @@ def test_create_concurso_success(authenticated_client, concurso_data):
     assert novo_concurso.atualizado_em is not None
     assert novo_concurso.cargos.count() == 1
     assert novo_concurso.codigo == 77
-    assert novo_concurso.numero_processo == 888
+    assert novo_concurso.numero_processo == "888"
 
 
 def test_create_concurso_without_nome(authenticated_client):
@@ -141,3 +141,84 @@ def test_delete_concurso_success(authenticated_client, concurso_analista):
     assert Concurso.objects.count() == 0
     with pytest.raises(Concurso.DoesNotExist):
         Concurso.objects.get(uuid=concurso_analista.uuid)
+
+
+def test_filtra_concurso_por_ano_edital(authenticated_client, cargo_analista):
+    """Filtra concursos pelo ano do edital."""
+    c1 = Concurso.objects.create(nome="Edital 2025", ano_edital=2025)
+    c1.cargos.add(cargo_analista)
+    c2 = Concurso.objects.create(nome="Edital 2026", ano_edital=2026)
+    c2.cargos.add(cargo_analista)
+
+    url = reverse("concurso-list")
+    response = authenticated_client.get(url, {"ano_edital": 2026})
+    assert response.status_code == status.HTTP_200_OK
+    nomes = [c["nome"] for c in response.data["results"]]
+    assert nomes == ["Edital 2026"]
+
+
+def test_filtra_concurso_por_ativo(authenticated_client, cargo_analista):
+    """Filtra concursos pelo status ativo."""
+    ativo = Concurso.objects.create(nome="Ativo", ativo=True)
+    ativo.cargos.add(cargo_analista)
+    inativo = Concurso.objects.create(nome="Inativo", ativo=False)
+    inativo.cargos.add(cargo_analista)
+
+    url = reverse("concurso-list")
+    response = authenticated_client.get(url, {"ativo": "false"})
+    assert response.status_code == status.HTTP_200_OK
+    nomes = [c["nome"] for c in response.data["results"]]
+    assert nomes == ["Inativo"]
+
+
+def test_filtra_concurso_por_codigo_cargo(authenticated_client):
+    """Filtra concursos pelo codigo do cargo vinculado."""
+    from concursos.models import Cargo
+
+    cargo = Cargo.objects.create(nome="Professor", codigo=4123)
+    com = Concurso.objects.create(nome="Com Cargo 4123")
+    com.cargos.add(cargo)
+    Concurso.objects.create(nome="Sem Cargo")
+
+    url = reverse("concurso-list")
+    response = authenticated_client.get(url, {"codigo_cargo": 4123})
+    assert response.status_code == status.HTTP_200_OK
+    nomes = [c["nome"] for c in response.data["results"]]
+    assert nomes == ["Com Cargo 4123"]
+
+
+def test_filtra_concurso_por_numero_processo(
+    authenticated_client, cargo_analista
+):
+    """Filtra concursos pelo numero do processo textual (icontains)."""
+    c1 = Concurso.objects.create(
+        nome="Proc A", numero_processo="6016202200779764"
+    )
+    c1.cargos.add(cargo_analista)
+    c2 = Concurso.objects.create(nome="Proc B", numero_processo="1234567890")
+    c2.cargos.add(cargo_analista)
+
+    url = reverse("concurso-list")
+    response = authenticated_client.get(url, {"numero_processo": "77976"})
+    assert response.status_code == status.HTTP_200_OK
+    nomes = [c["nome"] for c in response.data["results"]]
+    assert nomes == ["Proc A"]
+
+
+def test_filtra_descricao_cargo_nao_duplica_com_multiplos_cargos(
+    authenticated_client,
+):
+    """Concurso com varios cargos casando o filtro nao duplica na lista."""
+    from concursos.models import Cargo
+
+    cargo1 = Cargo.objects.create(nome="Professor de Portugues", codigo=1)
+    cargo2 = Cargo.objects.create(nome="Professor de Matematica", codigo=2)
+    concurso = Concurso.objects.create(nome="Edital Professores")
+    concurso.cargos.add(cargo1, cargo2)
+
+    url = reverse("concurso-list")
+    response = authenticated_client.get(url, {"descricao_cargo": "Professor"})
+    assert response.status_code == status.HTTP_200_OK
+    nomes = [c["nome"] for c in response.data["results"]]
+    assert nomes == ["Edital Professores"]
+    assert response.data["count"] == 1
