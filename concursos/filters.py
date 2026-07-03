@@ -31,7 +31,7 @@ class ConcursoFilterSet(filters.FilterSet):
             "numero_processo",
             "ano_edital",
             "banca_responsavel",
-            "ativo",
+            "status",
             "codigo_cargo",
             "descricao_cargo",
         ]

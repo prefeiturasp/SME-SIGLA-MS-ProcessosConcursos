@@ -3,6 +3,8 @@
 from auditlog.registry import auditlog
 from django.db import models
 
+from .constants import CONCURSO_STATUS_CHOICES
+
 from .base import BaseModel
 from .cargo import Cargo
 
@@ -32,7 +34,12 @@ class Concurso(BaseModel):
         default="",
         verbose_name="Banca Responsável",
     )
-    ativo = models.BooleanField(default=True, verbose_name="Ativo")
+    status = models.CharField(
+        max_length=10,
+        choices=CONCURSO_STATUS_CHOICES,
+        default="ATIVO",
+        verbose_name="Status"
+    )
 
     class Meta:
         """Configuração do serializer."""

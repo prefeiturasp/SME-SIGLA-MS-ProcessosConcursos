@@ -34,7 +34,7 @@ class ConcursoSerializer(serializers.ModelSerializer):
             "codigo",
             "ano_edital",
             "banca_responsavel",
-            "ativo",
+            "status",
         ]
         read_only_fields = ["uuid", "criado_em", "atualizado_em"]
 
@@ -99,7 +99,7 @@ class ConcursoListSerializer(serializers.ModelSerializer):
             "codigo",
             "ano_edital",
             "banca_responsavel",
-            "ativo",
+            "status",
         ]
 
     def get_cargos_descricao(self, obj: Concurso) -> list[str]:
