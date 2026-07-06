@@ -18,7 +18,7 @@ def test_concurso_model_fields():
 def test_concurso_novos_campos_defaults():
     """Concurso criado sem os campos novos usa defaults seguros."""
     concurso = Concurso.objects.create(nome="Concurso Novos Campos")
-    assert concurso.ativo is True
+    assert concurso.status == "ATIVO"
     assert concurso.banca_responsavel == ""
     assert concurso.ano_edital is None
     assert concurso.numero_processo == ""
@@ -30,13 +30,13 @@ def test_concurso_novos_campos_atribuidos():
         nome="Concurso 2026",
         ano_edital=2026,
         banca_responsavel="FGV",
-        ativo=False,
+        status="INATIVO",
         numero_processo="6016202200779764",
     )
     concurso.refresh_from_db()
     assert concurso.ano_edital == 2026
     assert concurso.banca_responsavel == "FGV"
-    assert concurso.ativo is False
+    assert concurso.status == "INATIVO"
     assert concurso.numero_processo == "6016202200779764"
 
 

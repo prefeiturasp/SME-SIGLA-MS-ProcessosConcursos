@@ -157,15 +157,15 @@ def test_filtra_concurso_por_ano_edital(authenticated_client, cargo_analista):
     assert nomes == ["Edital 2026"]
 
 
-def test_filtra_concurso_por_ativo(authenticated_client, cargo_analista):
-    """Filtra concursos pelo status ativo."""
-    ativo = Concurso.objects.create(nome="Ativo", ativo=True)
+def test_filtra_concurso_por_status(authenticated_client, cargo_analista):
+    """Filtra concursos pelo status (ATIVO/INATIVO)."""
+    ativo = Concurso.objects.create(nome="Ativo", status="ATIVO")
     ativo.cargos.add(cargo_analista)
-    inativo = Concurso.objects.create(nome="Inativo", ativo=False)
+    inativo = Concurso.objects.create(nome="Inativo", status="INATIVO")
     inativo.cargos.add(cargo_analista)
 
     url = reverse("concurso-list")
-    response = authenticated_client.get(url, {"ativo": "false"})
+    response = authenticated_client.get(url, {"status": "INATIVO"})
     assert response.status_code == status.HTTP_200_OK
     nomes = [c["nome"] for c in response.data["results"]]
     assert nomes == ["Inativo"]

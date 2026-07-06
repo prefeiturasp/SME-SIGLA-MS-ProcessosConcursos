@@ -16,7 +16,6 @@ from rest_framework.response import Response
 from concursos.models import Cargo
 from concursos.serializers import CargoSerializer
 from concursos.services import EscolhasAPIService
-from concursos.utils import CustomPagination
 
 
 class CargoViewSet(viewsets.ModelViewSet):
@@ -25,7 +24,6 @@ class CargoViewSet(viewsets.ModelViewSet):
     queryset = Cargo.objects.all()
     serializer_class = CargoSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ["codigo"]
     search_fields = ["nome", "codigo"]

@@ -229,7 +229,7 @@ def test_concurso_serializer_cria_com_novos_campos(cargo_analista):
             "cargos_ids": [str(cargo_analista.uuid)],
             "ano_edital": 2026,
             "banca_responsavel": "Cebraspe",
-            "ativo": False,
+            "status": "INATIVO",
             "numero_processo": "6016202200779764",
         }
     )
@@ -237,7 +237,7 @@ def test_concurso_serializer_cria_com_novos_campos(cargo_analista):
     concurso = serializer.save()
     assert concurso.ano_edital == 2026
     assert concurso.banca_responsavel == "Cebraspe"
-    assert concurso.ativo is False
+    assert concurso.status == "INATIVO"
     assert concurso.numero_processo == "6016202200779764"
 
 
@@ -250,7 +250,7 @@ def test_concurso_list_serializer_expoe_cargos_descricao(concurso_analista):
     assert data["cargos_descricao"] == ["0 - Analista de Sistemas"]
     assert "ano_edital" in data
     assert "banca_responsavel" in data
-    assert "ativo" in data
+    assert "status" in data
 
 
 def test_validate_numero_processo_rejeita_duplicado():
