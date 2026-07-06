@@ -2,6 +2,7 @@
 
 from auditlog.registry import auditlog
 from django.db import models
+from django.db.models import Q
 
 from .constants import CONCURSO_STATUS_CHOICES
 
@@ -48,6 +49,15 @@ class Concurso(BaseModel):
         verbose_name = "Concurso"
         verbose_name_plural = "Concursos"
         ordering = ["-criado_em"]
+        constraints = [
+            # Numero do processo unico apenas quando preenchido; multiplos
+            # concursos podem ter numero_processo vazio.
+            models.UniqueConstraint(
+                fields=["numero_processo"],
+                condition=~Q(numero_processo=""),
+                name="concurso_numero_processo_unico_nao_vazio",
+            ),
+        ]
 
     def __str__(self) -> str:
         """String de representação do objeto."""

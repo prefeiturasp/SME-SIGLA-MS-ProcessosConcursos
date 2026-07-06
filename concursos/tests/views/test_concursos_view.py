@@ -222,3 +222,74 @@ def test_filtra_descricao_cargo_nao_duplica_com_multiplos_cargos(
     nomes = [c["nome"] for c in response.data["results"]]
     assert nomes == ["Edital Professores"]
     assert response.data["count"] == 1
+
+
+def test_post_numero_processo_duplicado_retorna_400(authenticated_client):
+    """POST com numero_processo duplicado retorna 400 com mensagem custom."""
+    Concurso.objects.create(nome="Existente", numero_processo="99999")
+
+    url = reverse("concurso-list")
+    response = authenticated_client.post(
+        url,
+        {"nome": "Duplicata", "numero_processo": "99999", "cargos_ids": []},
+    )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.data["numero_processo"] == [
+        "Já existe um concurso com este número de processo."
+    ]
+
+
+def test_post_numero_processo_vazio_permite_multiplos(authenticated_client):
+    """Multiplos concursos podem ter numero_processo vazio."""
+    Concurso.objects.create(nome="Vazio 1", numero_processo="")
+
+    url = reverse("concurso-list")
+    response = authenticated_client.post(
+        url, {"nome": "Vazio 2", "numero_processo": "", "cargos_ids": []}
+    )
+    assert response.status_code == status.HTTP_201_CREATED
+
+
+def test_patch_numero_processo_proprio_permite(authenticated_client):
+    """PATCH mantendo o proprio numero_processo nao e rejeitado."""
+    concurso = Concurso.objects.create(
+        nome="Existente", numero_processo="55555"
+    )
+
+    url = reverse("concurso-detail", kwargs={"pk": concurso.uuid})
+    response = authenticated_client.patch(
+        url, {"nome": "Renomeado", "numero_processo": "55555"}
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_post_numero_processo_duplicado_concorrente_retorna_400(
+    authenticated_client,
+):
+    """Race de numero_processo duplicado vira 400, nao 500.
+
+    Simula requisicoes concorrentes forcando a validacao de leitura a
+    passar (mock) enquanto a constraint condicional do banco ainda barra
+    o INSERT. O IntegrityError resultante deve virar HTTP 400.
+    """
+    from unittest.mock import patch
+
+    Concurso.objects.create(nome="Existente", numero_processo="77777")
+
+    url = reverse("concurso-list")
+    with patch(
+        "concursos.serializers.concurso.numero_processo_esta_disponivel",
+        return_value=True,
+    ):
+        response = authenticated_client.post(
+            url,
+            {
+                "nome": "Duplicata",
+                "numero_processo": "77777",
+                "cargos_ids": [],
+            },
+        )
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.data["numero_processo"] == [
+        "Já existe um concurso com este número de processo."
+    ]

@@ -251,3 +251,44 @@ def test_concurso_list_serializer_expoe_cargos_descricao(concurso_analista):
     assert "ano_edital" in data
     assert "banca_responsavel" in data
     assert "ativo" in data
+
+
+def test_validate_numero_processo_rejeita_duplicado():
+    """Numero de processo ja usado por outro concurso e rejeitado."""
+    from concursos.models import Concurso
+
+    Concurso.objects.create(nome="Concurso A", numero_processo="12345")
+
+    serializer = ConcursoSerializer(
+        data={"nome": "Concurso B", "numero_processo": "12345"}
+    )
+    assert serializer.is_valid() is False
+    assert "numero_processo" in serializer.errors
+
+
+def test_validate_numero_processo_permite_manter_proprio_na_edicao():
+    """Concurso em edicao nao conflita com seu proprio numero_processo."""
+    from concursos.models import Concurso
+
+    concurso = Concurso.objects.create(
+        nome="Concurso A", numero_processo="12345"
+    )
+
+    serializer = ConcursoSerializer(
+        instance=concurso,
+        data={"nome": "Concurso A Renomeado", "numero_processo": "12345"},
+        partial=True,
+    )
+    assert serializer.is_valid() is True, serializer.errors
+
+
+def test_validate_numero_processo_permite_multiplos_vazios():
+    """Numero de processo vazio nao valida unicidade."""
+    from concursos.models import Concurso
+
+    Concurso.objects.create(nome="Concurso A", numero_processo="")
+
+    serializer = ConcursoSerializer(
+        data={"nome": "Concurso B", "numero_processo": ""}
+    )
+    assert serializer.is_valid() is True, serializer.errors
