@@ -108,6 +108,7 @@ def concurso_data(cargo_analista):
     return {
         "nome": "Novo Concurso de Teste",
         "cargos_ids": [str(cargo_analista.uuid)],
+        "numero_processo": "6016202200000001",
     }
 
 
@@ -120,13 +121,17 @@ def concurso_data_multiple_cargos(cargo_analista, cargo_desenvolvedor):
             str(cargo_analista.uuid),
             str(cargo_desenvolvedor.uuid),
         ],
+        "numero_processo": "6016202200000002",
     }
 
 
 @pytest.fixture
 def concurso_data_no_cargos():
     """Fixture para dados de concurso sem cargos."""
-    return {"nome": "Concurso Sem Cargos"}
+    return {
+        "nome": "Concurso Sem Cargos",
+        "numero_processo": "6016202200000003",
+    }
 
 
 @pytest.fixture
@@ -145,6 +150,7 @@ def concurso_data_invalid_cargo_ids():
     return {
         "nome": "Concurso com Cargo Inválido",
         "cargos_ids": [str(fake_uuid)],
+        "numero_processo": "6016202200000004",
     }
 
 

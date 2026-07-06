@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from django.db import IntegrityError
@@ -12,6 +13,8 @@ from concursos.models import Cargo, Concurso
 from concursos.services import numero_processo_esta_disponivel
 
 from .cargo import CargoListSerializer, CargoSelectSerializer
+
+logger = logging.getLogger(__name__)
 
 class ConcursoSerializer(serializers.ModelSerializer):
     """Serializer completo de concurso com vínculo de cargos."""
@@ -68,8 +71,13 @@ class ConcursoSerializer(serializers.ModelSerializer):
         cargos_ids = validated_data.pop("cargos_ids", [])
         try:
             concurso = Concurso.objects.create(**validated_data)
-        except IntegrityError as erro:
-            raise self._traduzir_erro_numero_processo_duplicado(erro)
+        except IntegrityError as e:
+            mensagem = (
+                f"Erro de integridade ao salvar os dados no banco "
+                f"de dados - {str(e)}."
+            )
+            logger.error(mensagem)
+            raise serializers.ValidationError(mensagem)
 
         if cargos_ids:
             cargos = Cargo.objects.filter(uuid__in=cargos_ids)
@@ -96,8 +104,13 @@ class ConcursoSerializer(serializers.ModelSerializer):
             setattr(instance, attr, value)
         try:
             instance.save()
-        except IntegrityError as erro:
-            raise self._traduzir_erro_numero_processo_duplicado(erro)
+        except IntegrityError as e:
+            mensagem = (
+                f"Erro de integridade ao salvar os dados no banco "
+                f"de dados - {str(e)}."
+            )
+            logger.error(mensagem)
+            raise serializers.ValidationError(mensagem)
 
         if cargos_ids is not None:
             cargos = Cargo.objects.filter(uuid__in=cargos_ids)

@@ -123,6 +123,7 @@ def test_update_concurso_success(
     data = {
         "nome": "Concurso de Analista Atualizado",
         "cargos_ids": [str(cargo_desenvolvedor.uuid)],
+        "numero_processo": "6016202200000020",
     }
     response = authenticated_client.put(url, data)
     assert response.status_code == status.HTTP_200_OK
@@ -235,19 +236,18 @@ def test_post_numero_processo_duplicado_retorna_400(authenticated_client):
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.data["numero_processo"] == [
-        "Já existe um concurso com este número de processo."
+        "Este número de processo já está cadastrado."
     ]
 
 
-def test_post_numero_processo_vazio_permite_multiplos(authenticated_client):
-    """Multiplos concursos podem ter numero_processo vazio."""
-    Concurso.objects.create(nome="Vazio 1", numero_processo="")
-
+def test_post_numero_processo_vazio_retorna_400(authenticated_client):
+    """POST com numero_processo em branco e rejeitado pelo serializer."""
     url = reverse("concurso-list")
     response = authenticated_client.post(
-        url, {"nome": "Vazio 2", "numero_processo": "", "cargos_ids": []}
+        url, {"nome": "Vazio", "numero_processo": "", "cargos_ids": []}
     )
-    assert response.status_code == status.HTTP_201_CREATED
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert "numero_processo" in response.data
 
 
 def test_patch_numero_processo_proprio_permite(authenticated_client):
@@ -291,5 +291,5 @@ def test_post_numero_processo_duplicado_concorrente_retorna_400(
         )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.data["numero_processo"] == [
-        "Já existe um concurso com este número de processo."
+        "Este número de processo já está cadastrado."
     ]

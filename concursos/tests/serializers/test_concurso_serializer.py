@@ -146,6 +146,7 @@ def test_concurso_serializer_cargos_ids_field(concurso_analista):
     data = {
         "nome": "Teste",
         "cargos_ids": [str(concurso_analista.cargos.first().uuid)],
+        "numero_processo": "6016202200000010",
     }
     serializer = ConcursoSerializer(data=data)
     assert serializer.is_valid()
@@ -176,7 +177,11 @@ def test_concurso_serializer_partial_update(concurso_analista):
 
 def test_concurso_serializer_create_with_empty_cargos_ids():
     """Verifica concurso serializer create with empty cargos ids."""
-    data = {"nome": "Concurso Vazio", "cargos_ids": []}
+    data = {
+        "nome": "Concurso Vazio",
+        "cargos_ids": [],
+        "numero_processo": "6016202200000011",
+    }
     serializer = ConcursoSerializer(data=data)
     assert serializer.is_valid()
     concurso = serializer.save()
@@ -210,6 +215,7 @@ def test_concurso_serializer_mixed_valid_invalid_cargos(cargo_analista):
     data = {
         "nome": "Concurso Misto",
         "cargos_ids": [str(cargo_analista.uuid), str(fake_uuid)],
+        "numero_processo": "6016202200000012",
     }
     serializer = ConcursoSerializer(data=data)
     assert serializer.is_valid()
@@ -282,13 +288,10 @@ def test_validate_numero_processo_permite_manter_proprio_na_edicao():
     assert serializer.is_valid() is True, serializer.errors
 
 
-def test_validate_numero_processo_permite_multiplos_vazios():
-    """Numero de processo vazio nao valida unicidade."""
-    from concursos.models import Concurso
-
-    Concurso.objects.create(nome="Concurso A", numero_processo="")
-
+def test_validate_numero_processo_rejeita_vazio():
+    """Numero de processo em branco nao e aceito pelo serializer."""
     serializer = ConcursoSerializer(
         data={"nome": "Concurso B", "numero_processo": ""}
     )
-    assert serializer.is_valid() is True, serializer.errors
+    assert serializer.is_valid() is False
+    assert "numero_processo" in serializer.errors
