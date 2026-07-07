@@ -29,6 +29,7 @@ class CargoViewSet(viewsets.ModelViewSet):
     search_fields = ["nome", "codigo"]
     ordering_fields = ["criado_em"]
     ordering = ["-criado_em"]
+    pagination_class = None
 
     @action(methods=["get"], detail=False, url_path="autorizacoes-publicadas")
     def autorizacoes_publicadas(

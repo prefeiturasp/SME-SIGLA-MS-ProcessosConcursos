@@ -17,8 +17,12 @@ def test_list_cargos_success(authenticated_client, cargos):
     url = reverse("cargo-list")
     response = authenticated_client.get(url)
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.data["results"]) == 3
-    cargos_data = response.data["results"]
+    cargos_data = (
+        response.data["results"]
+        if "results" in response.data
+        else response.data
+    )
+    assert len(cargos_data) == 3
     cargo_nomes = [cargo["nome"] for cargo in cargos_data]
     assert all("codigo" in cargo for cargo in cargos_data)
     assert "Analista de Sistemas" in cargo_nomes
