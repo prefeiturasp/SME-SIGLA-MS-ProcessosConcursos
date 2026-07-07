@@ -146,6 +146,7 @@ def test_concurso_serializer_cargos_ids_field(concurso_analista):
     data = {
         "nome": "Teste",
         "cargos_ids": [str(concurso_analista.cargos.first().uuid)],
+        "numero_processo": "6016202200000010",
     }
     serializer = ConcursoSerializer(data=data)
     assert serializer.is_valid()
@@ -176,7 +177,11 @@ def test_concurso_serializer_partial_update(concurso_analista):
 
 def test_concurso_serializer_create_with_empty_cargos_ids():
     """Verifica concurso serializer create with empty cargos ids."""
-    data = {"nome": "Concurso Vazio", "cargos_ids": []}
+    data = {
+        "nome": "Concurso Vazio",
+        "cargos_ids": [],
+        "numero_processo": "6016202200000011",
+    }
     serializer = ConcursoSerializer(data=data)
     assert serializer.is_valid()
     concurso = serializer.save()
@@ -210,6 +215,7 @@ def test_concurso_serializer_mixed_valid_invalid_cargos(cargo_analista):
     data = {
         "nome": "Concurso Misto",
         "cargos_ids": [str(cargo_analista.uuid), str(fake_uuid)],
+        "numero_processo": "6016202200000012",
     }
     serializer = ConcursoSerializer(data=data)
     assert serializer.is_valid()
@@ -217,3 +223,75 @@ def test_concurso_serializer_mixed_valid_invalid_cargos(cargo_analista):
     assert concurso.nome == "Concurso Misto"
     assert concurso.cargos.count() == 1
     assert cargo_analista in concurso.cargos.all()
+
+
+def test_concurso_serializer_cria_com_novos_campos(cargo_analista):
+    """ConcursoSerializer persiste os campos novos no create."""
+    from concursos.serializers import ConcursoSerializer
+
+    serializer = ConcursoSerializer(
+        data={
+            "nome": "Concurso Serializer",
+            "cargos_ids": [str(cargo_analista.uuid)],
+            "ano_edital": 2026,
+            "banca_responsavel": "Cebraspe",
+            "status": "INATIVO",
+            "numero_processo": "6016202200779764",
+        }
+    )
+    assert serializer.is_valid(), serializer.errors
+    concurso = serializer.save()
+    assert concurso.ano_edital == 2026
+    assert concurso.banca_responsavel == "Cebraspe"
+    assert concurso.status == "INATIVO"
+    assert concurso.numero_processo == "6016202200779764"
+
+
+def test_concurso_list_serializer_expoe_cargos_descricao(concurso_analista):
+    """ConcursoListSerializer retorna cargos_descricao como 'codigo - nome'."""
+    from concursos.serializers import ConcursoListSerializer
+
+    data = ConcursoListSerializer(concurso_analista).data
+    assert "cargos_descricao" in data
+    assert data["cargos_descricao"] == ["0 - Analista de Sistemas"]
+    assert "ano_edital" in data
+    assert "banca_responsavel" in data
+    assert "status" in data
+
+
+def test_validate_numero_processo_rejeita_duplicado():
+    """Numero de processo ja usado por outro concurso e rejeitado."""
+    from concursos.models import Concurso
+
+    Concurso.objects.create(nome="Concurso A", numero_processo="12345")
+
+    serializer = ConcursoSerializer(
+        data={"nome": "Concurso B", "numero_processo": "12345"}
+    )
+    assert serializer.is_valid() is False
+    assert "numero_processo" in serializer.errors
+
+
+def test_validate_numero_processo_permite_manter_proprio_na_edicao():
+    """Concurso em edicao nao conflita com seu proprio numero_processo."""
+    from concursos.models import Concurso
+
+    concurso = Concurso.objects.create(
+        nome="Concurso A", numero_processo="12345"
+    )
+
+    serializer = ConcursoSerializer(
+        instance=concurso,
+        data={"nome": "Concurso A Renomeado", "numero_processo": "12345"},
+        partial=True,
+    )
+    assert serializer.is_valid() is True, serializer.errors
+
+
+def test_validate_numero_processo_rejeita_vazio():
+    """Numero de processo em branco nao e aceito pelo serializer."""
+    serializer = ConcursoSerializer(
+        data={"nome": "Concurso B", "numero_processo": ""}
+    )
+    assert serializer.is_valid() is False
+    assert "numero_processo" in serializer.errors

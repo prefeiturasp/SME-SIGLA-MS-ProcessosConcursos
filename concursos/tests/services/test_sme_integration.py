@@ -96,7 +96,7 @@ def test_buscar_concursos_sucesso(settings):
         {
             "codigo": 1,
             "nome": "Concurso 2026",
-            "numero_processo": 999,
+            "numero_processo": "999",
             "cargos": [101, 102],
         }
     ]

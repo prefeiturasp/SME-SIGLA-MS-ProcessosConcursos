@@ -102,7 +102,7 @@ def buscar_concursos_de_smeintegracao() -> list[dict[str, Any]]:
             {
                 "codigo": int(codigo),
                 "nome": nome,
-                "numero_processo": int(numero_processo),
+                "numero_processo": str(numero_processo),
                 "cargos": [int(cargo) for cargo in cargos],
             }
         )

@@ -62,7 +62,7 @@ def test_criar_concursos_api_cria_registros(
 
     # Campos atualizados corretamente
     assert concurso.nome == "Concurso 2026"
-    assert concurso.numero_processo == 999
+    assert concurso.numero_processo == "999"
     assert cargo_101.nome == "Professor A"
 
 
@@ -82,7 +82,7 @@ def test_criar_concursos_api_atualiza_existentes(
     c101 = Cargo.objects.create(nome="Antigo 101", codigo=101)
     c102 = Cargo.objects.create(nome="Antigo 102", codigo=102)
     concurso = Concurso.objects.create(
-        nome="Antigo Concurso", numero_processo=1, codigo=1
+        nome="Antigo Concurso", numero_processo="1", codigo=1
     )
     concurso.cargos.set([c101])
 
@@ -99,7 +99,7 @@ def test_criar_concursos_api_atualiza_existentes(
     assert c101.nome == "Professor A"
     assert c102.nome == "Professor B"
     assert concurso.nome == "Concurso 2026"
-    assert concurso.numero_processo == 999
+    assert concurso.numero_processo == "999"
     assert set(concurso.cargos.values_list("codigo", flat=True)) == {101, 102}
 
 
@@ -144,3 +144,43 @@ def test_criar_concursos_api_quebra_api_nao_cria(
 
     assert Cargo.objects.count() == 0
     assert Concurso.objects.count() == 0
+
+
+@patch(
+    "concursos.management.commands.criar_concursos_api.buscar_cargos_de_smeintegracao",
+    autospec=True,
+)
+@patch(
+    "concursos.management.commands.criar_concursos_api.buscar_concursos_de_smeintegracao",
+    autospec=True,
+)
+def test_criar_concursos_api_nao_colide_com_concursos_manuais(
+    mock_buscar_concursos, mock_buscar_cargos
+):
+    """Importação com concursos manuais (codigo NULL) nao colide.
+
+    Concursos criados manualmente pela tela de Cadastro nao
+    enviam ``codigo`` e ficam com ``codigo=NULL``. A importação
+    da API SME deve criar o concurso com o codigo real sem
+    levantar ``MultipleObjectsReturned`` e sem afetar os
+    concursos manuais.
+    """
+    manual_1 = Concurso.objects.create(nome="Manual 1")
+    manual_2 = Concurso.objects.create(nome="Manual 2")
+
+    mock_buscar_cargos.return_value = _mock_cargos()
+    mock_buscar_concursos.return_value = _mock_concursos()
+
+    call_command("criar_concursos_api")
+
+    manual_1.refresh_from_db()
+    manual_2.refresh_from_db()
+
+    assert manual_1.codigo is None
+    assert manual_1.nome == "Manual 1"
+    assert manual_2.codigo is None
+    assert manual_2.nome == "Manual 2"
+
+    importado = Concurso.objects.get(codigo=1)
+    assert importado.nome == "Concurso 2026"
+    assert Concurso.objects.count() == 3
