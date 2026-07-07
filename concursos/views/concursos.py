@@ -34,10 +34,6 @@ class ConcursoViewSet(viewsets.ModelViewSet):
     ordering = ["-criado_em"]
     pagination_class = CustomPagination
 
-    def get_queryset(self) -> Any:
-        """Retorna concursos sem duplicatas geradas por JOIN M2M."""
-        return Concurso.objects.all().distinct()
-
     def get_serializer_class(self) -> type[BaseSerializer]:
         """Retorna serializer conforme action e query ``formato=select``."""
         if self.action == "list":
