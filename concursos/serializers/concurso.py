@@ -10,7 +10,6 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from concursos.models import Cargo, Concurso
-from concursos.services import numero_processo_esta_disponivel
 
 from .cargo import CargoListSerializer, CargoSelectSerializer
 
