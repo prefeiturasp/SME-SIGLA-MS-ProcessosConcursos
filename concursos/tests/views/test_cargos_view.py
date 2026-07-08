@@ -17,8 +17,12 @@ def test_list_cargos_success(authenticated_client, cargos):
     url = reverse("cargo-list")
     response = authenticated_client.get(url)
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.data["results"]) == 3
-    cargos_data = response.data["results"]
+    cargos_data = (
+        response.data["results"]
+        if "results" in response.data
+        else response.data
+    )
+    assert len(cargos_data) == 3
     cargo_nomes = [cargo["nome"] for cargo in cargos_data]
     assert all("codigo" in cargo for cargo in cargos_data)
     assert "Analista de Sistemas" in cargo_nomes
@@ -125,3 +129,45 @@ def test_autorizacoes_publicadas_agrupa_e_integra_ms_escolhas(
         assert a["data_autorizacao_mais_recente"] == "2026-01-15"
         assert b["autorizacoes"] == 5
         assert b["data_autorizacao_mais_recente"] == "2025-12-31"
+
+
+def test_busca_cargo_por_codigo_parcial(authenticated_client):
+    """search casa cargos pelo codigo (match parcial) alem do nome."""
+    from concursos.models import Cargo
+
+    Cargo.objects.create(nome="PROF.ED.INF.I-MAT", codigo=4123)
+    Cargo.objects.create(nome="PROF.ED.INF.I-HIS", codigo=4124)
+    Cargo.objects.create(nome="Outro Cargo", codigo=9999)
+
+    url = reverse("cargo-list")
+    response = authenticated_client.get(url, {"search": "412"})
+    assert response.status_code == status.HTTP_200_OK
+    dados = (
+        response.data["results"]
+        if "results" in response.data
+        else response.data
+    )
+    nomes = [c["nome"] for c in dados]
+    assert "PROF.ED.INF.I-MAT" in nomes
+    assert "PROF.ED.INF.I-HIS" in nomes
+    assert "Outro Cargo" not in nomes
+
+
+def test_busca_cargo_por_nome_ainda_funciona(authenticated_client):
+    """search por nome continua funcionando."""
+    from concursos.models import Cargo
+
+    Cargo.objects.create(nome="Analista Judiciario", codigo=100)
+    Cargo.objects.create(nome="Tecnico", codigo=200)
+
+    url = reverse("cargo-list")
+    response = authenticated_client.get(url, {"search": "Analista"})
+    assert response.status_code == status.HTTP_200_OK
+    dados = (
+        response.data["results"]
+        if "results" in response.data
+        else response.data
+    )
+    nomes = [c["nome"] for c in dados]
+    assert "Analista Judiciario" in nomes
+    assert "Tecnico" not in nomes

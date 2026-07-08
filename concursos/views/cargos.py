@@ -26,9 +26,10 @@ class CargoViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ["codigo"]
-    search_fields = ["nome"]
+    search_fields = ["nome", "codigo"]
     ordering_fields = ["criado_em"]
     ordering = ["-criado_em"]
+    pagination_class = None
 
     @action(methods=["get"], detail=False, url_path="autorizacoes-publicadas")
     def autorizacoes_publicadas(

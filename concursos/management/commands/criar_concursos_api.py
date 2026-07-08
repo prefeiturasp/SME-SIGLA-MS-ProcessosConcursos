@@ -95,7 +95,7 @@ class Command(BaseCommand):
                     try:
                         codigo_concurso = item["codigo"]
                         nome_concurso = item["nome"]
-                        numero_processo = item["numero_processo"]
+                        numero_processo = str(item["numero_processo"])
                         cargos_codes: list[int] = item["cargos"]
                     except Exception:
                         continue
