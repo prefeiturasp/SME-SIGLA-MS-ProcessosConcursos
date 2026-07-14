@@ -6,30 +6,38 @@ Sistema de gerenciamento de concursos desenvolvido com Django REST Framework.
 
 ```
 SME-SIGLA-MS-Concursos/
-├── config/                          # Configurações do Django
-│   ├── settings.py                  # Configurações principais
-│   ├── urls.py                      # URLs principais
-│   └── wsgi.py                      # Configuração WSGI
-├── concursos/                       # App principal
-│   ├── models.py                    # Modelos de dados
-│   ├── views.py                     # ViewSets da API
-│   ├── serializers.py               # Serializers
-│   ├── services.py                  # Serviços externos
-│   └── management/                  # Comandos customizados
-│       └── commands/
-│           ├── create_sample_concursos.py
-│           ├── cleanup_concursos.py
-│           ├── export_concursos.py
-│           └── check_concursos.py
-├── requirements/                    # Dependências organizadas
-│   ├── base.txt                     # Dependências principais
-│   ├── local.txt                    # Desenvolvimento local
-│   ├── production.txt               # Produção
-│   └── README.md                    # Documentação dos requirements
-├── docker-compose.yml              # Configuração Docker
-├── env.example                     # Variáveis de ambiente (exemplo)
-├── generate_secret_key.py          # Script para gerar secret key
-└── README_DOCKER.md               # Documentação Docker
+├── apps/
+│   ├── core/                        # BaseModel + utils (paginação)
+│   ├── cargos/                      # Domínio cargos
+│   │   ├── api/
+│   │   ├── models.py
+│   │   ├── serializers.py
+│   │   ├── repository.py
+│   │   ├── constants.py
+│   │   ├── services/
+│   │   └── tests/
+│   ├── autorizacoes/                # Domínio autorizações publicadas
+│   │   ├── api/
+│   │   ├── models.py
+│   │   ├── serializers.py
+│   │   ├── repository.py
+│   │   ├── constants.py
+│   │   ├── services/
+│   │   └── tests/
+│   └── concursos/                   # Domínio concursos
+│       ├── api/
+│       ├── models.py
+│       ├── serializers.py
+│       ├── repository.py
+│       ├── constants.py
+│       ├── services/                # sme_integration
+│       ├── management/
+│       └── tests/
+├── config/
+├── requirements/
+├── docker-compose.yml
+├── env.example
+└── README_DOCKER.md
 ```
 
 ## 🚀 Início Rápido
@@ -294,7 +302,7 @@ pytest --cov=concursos
 
 - [README Docker](README_DOCKER.md) - Configuração Docker
 - [Requirements](requirements/README.md) - Estrutura de dependências
-- [Comandos Customizados](concursos/management/README.md) - Comandos Django
+- [Comandos Customizados](apps/concursos/management/README.md) - Comandos Django
 
 ## 🤝 Contribuição
 

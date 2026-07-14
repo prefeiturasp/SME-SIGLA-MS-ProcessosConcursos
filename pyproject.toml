@@ -1,3 +1,22 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "SME-processos-concursos-MS"
+version = "0.1.0"
+description = "Microsserviço de processos de concursos"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [{ name = "SME" }]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["apps*", "config*"]
+
 [tool.ruff]
 line-length = 79
 target-version = "py312"
@@ -20,7 +39,7 @@ ignore = [
 "*/settings*.py" = ["F401", "F403", "F405", "E501", "E402"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["concursos"]
+known-first-party = ["concursos", "cargos", "autorizacoes", "core", "config"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -30,3 +49,9 @@ line-ending = "lf"
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 ignore-decorators = ["pytest.fixture", "extend_schema", "action"]
+
+[tool.coverage.run]
+source = ["apps"]
+
+[tool.coverage.report]
+show_missing = true
