@@ -3,7 +3,7 @@
 
 .PHONY: help pep257 makemigrations migrate runserver coverage test clean install format lint check
 
-PEP_APP_DIRS = concursos
+PEP_APP_DIRS = apps/concursos apps/cargos apps/autorizacoes apps/core
 
 # Comando padrão - mostra ajuda
 help:
@@ -38,7 +38,7 @@ runserver:
 # Executa testes com relatório de cobertura
 coverage:
 	@echo "Executando testes com cobertura..."
-	pytest --ds=config.settings_test --cov=concursos --cov-report=term-missing --cov-report=html
+	pytest --ds=config.settings_test --cov=apps --cov-report=term-missing --cov-report=html
 
 # Executa todos os testes
 test:
