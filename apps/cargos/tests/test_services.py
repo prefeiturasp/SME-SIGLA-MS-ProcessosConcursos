@@ -114,20 +114,6 @@ def test_repositorio_obter_por_uuid_inexistente():
     assert CargoRepository.obter_por_uuid(uuid4()) is None
 
 
-def test_repositorio_obter_modelo_por_uuid(cargo_analista):
-    """obter_modelo_por_uuid retorna a instância."""
-    cargo = CargoRepository.obter_modelo_por_uuid(cargo_analista.uuid)
-    assert cargo == cargo_analista
-
-
-def test_repositorio_obter_modelos_por_uuids(cargo_analista, cargo_desenvolvedor):
-    """obter_modelos_por_uuids retorna a lista pedida."""
-    cargos = CargoRepository.obter_modelos_por_uuids(
-        [cargo_analista.uuid, cargo_desenvolvedor.uuid]
-    )
-    assert set(cargos) == {cargo_analista, cargo_desenvolvedor}
-
-
 def test_repositorio_listar_com_resumo_autorizacoes():
     """listar_com_resumo_autorizacoes soma autorizações por cargo."""
     cargo = Cargo.objects.create(nome="Cargo X", codigo=50)

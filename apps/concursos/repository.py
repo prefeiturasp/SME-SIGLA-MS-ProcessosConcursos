@@ -52,18 +52,9 @@ class ConcursosRepository:
         )
 
     @classmethod
-    def obter_modelo_por_uuid(
-        cls, concurso_uuid: str | UUID
-    ) -> Concurso | None:
-        """Busca o registro do concurso pelo UUID (para escrita/atualização)."""
-        return Concurso.objects.filter(uuid=concurso_uuid).first()
-
-    @classmethod
     def obter_por_uuid(
         cls, concurso_uuid: str | UUID
     ) -> dict[str, Any] | None:
         """Busca um concurso pelo UUID e devolve a resposta serializada."""
-        concurso = cls.obter_modelo_por_uuid(concurso_uuid)
-        if concurso is None:
-            return None
-        return cls.montar_resposta(concurso)
+        concurso = Concurso.objects.filter(uuid=concurso_uuid).first()
+        return cls.montar_resposta(concurso) if concurso else None

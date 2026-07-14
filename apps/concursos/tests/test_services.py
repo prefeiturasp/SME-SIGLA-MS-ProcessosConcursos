@@ -188,10 +188,3 @@ def test_repositorio_listar_uuids_cargos_vinculados(
     )
     assert cargo_analista.uuid in uuids
 
-
-def test_repositorio_obter_modelo_por_uuid(concurso_analista):
-    """obter_modelo_por_uuid retorna a instância."""
-    assert (
-        ConcursosRepository.obter_modelo_por_uuid(concurso_analista.uuid)
-        == concurso_analista
-    )

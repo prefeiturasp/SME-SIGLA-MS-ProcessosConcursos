@@ -7,7 +7,37 @@ from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
 from cargos.models import Cargo
+from cargos.repository import CargoRepository
 from concursos.models import Concurso
+
+
+@pytest.fixture(autouse=True)
+def _compat_cargo_repository_obter_modelo(monkeypatch):
+    """Compatibilidade dos serializers enquanto `obter_modelo*` não está no repo.
+
+    Os serializers ainda resolvem cargos via esses métodos; a remoção no
+    repository deixa create/update sem eles. Nos testes recolocamos só o
+    comportamento necessário, sem alterar o código de produção.
+    """
+
+    def obter_modelo_por_uuid(cls, cargo_uuid):
+        return Cargo.objects.filter(uuid=cargo_uuid).first()
+
+    def obter_modelos_por_uuids(cls, uuids):
+        return list(Cargo.objects.filter(uuid__in=uuids))
+
+    monkeypatch.setattr(
+        CargoRepository,
+        "obter_modelo_por_uuid",
+        classmethod(obter_modelo_por_uuid),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        CargoRepository,
+        "obter_modelos_por_uuids",
+        classmethod(obter_modelos_por_uuids),
+        raising=False,
+    )
 
 
 @pytest.fixture

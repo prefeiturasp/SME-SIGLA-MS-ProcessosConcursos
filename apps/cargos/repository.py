@@ -45,23 +45,7 @@ class CargoRepository:
     ) -> dict[str, Any] | None:
         """Busca um cargo pelo UUID e devolve a resposta serializada."""
         cargo = Cargo.objects.filter(uuid=cargo_uuid).first()
-        if cargo is None:
-            return None
-        return cls.montar_resposta(cargo)
-
-    @classmethod
-    def obter_modelo_por_uuid(
-        cls, cargo_uuid: str | UUID
-    ) -> Cargo | None:
-        """Busca o registro do cargo pelo UUID (para escrita/atualização)."""
-        return Cargo.objects.filter(uuid=cargo_uuid).first()
-
-    @classmethod
-    def obter_modelos_por_uuids(
-        cls, uuids: list[UUID | str]
-    ) -> list[Cargo]:
-        """Busca vários cargos pelos UUIDs (ex.: vínculo M2M com concurso)."""
-        return list(Cargo.objects.filter(uuid__in=uuids))
+        return cls.montar_resposta(cargo) if cargo else None
 
     @classmethod
     def listar_com_resumo_autorizacoes(cls) -> list[dict[str, Any]]:
