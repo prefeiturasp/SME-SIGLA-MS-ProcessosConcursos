@@ -8,7 +8,7 @@ from rest_framework.test import APIRequestFactory
 
 from concursos.api.views import ConcursoViewSet
 from concursos.models import Concurso
-from concursos.repository import ConcursoRepository
+from concursos.repository import ConcursosRepository
 from concursos.serializers import (
     ConcursoListSerializer,
     ConcursoSelectSerializer,
@@ -169,12 +169,12 @@ def test_obter_serializer_listagem_padrao():
     )
 
 
-# --- ConcursoRepository ---
+# --- ConcursosRepository ---
 
 
 def test_repositorio_obter_por_uuid(concurso_analista):
     """obter_por_uuid devolve dict serializado."""
-    data = ConcursoRepository.obter_por_uuid(concurso_analista.uuid)
+    data = ConcursosRepository.obter_por_uuid(concurso_analista.uuid)
     assert data is not None
     assert data["nome"] == "Concurso de Analista"
 
@@ -183,7 +183,7 @@ def test_repositorio_listar_uuids_cargos_vinculados(
     concurso_analista, cargo_analista
 ):
     """Lista UUIDs dos cargos do concurso."""
-    uuids = ConcursoRepository.listar_uuids_cargos_vinculados(
+    uuids = ConcursosRepository.listar_uuids_cargos_vinculados(
         concurso_analista.uuid
     )
     assert cargo_analista.uuid in uuids
@@ -192,6 +192,6 @@ def test_repositorio_listar_uuids_cargos_vinculados(
 def test_repositorio_obter_modelo_por_uuid(concurso_analista):
     """obter_modelo_por_uuid retorna a instância."""
     assert (
-        ConcursoRepository.obter_modelo_por_uuid(concurso_analista.uuid)
+        ConcursosRepository.obter_modelo_por_uuid(concurso_analista.uuid)
         == concurso_analista
     )

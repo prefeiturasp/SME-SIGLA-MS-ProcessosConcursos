@@ -15,10 +15,10 @@ from django.db.models import Max, Sum
 from django.db.models.functions import ExtractYear
 
 from autorizacoes.models import AutorizacaoPublicada
-from concursos.repository import ConcursoRepository
+from concursos.repository import ConcursosRepository
 
 
-class AuthorizationRepository:
+class AutorizacaoRepository:
     """Acesso aos dados de autorizações publicadas."""
 
     @staticmethod
@@ -77,7 +77,7 @@ class AuthorizationRepository:
         )
 
         if concurso_uuid:
-            cargos_ids = ConcursoRepository.listar_uuids_cargos_vinculados(
+            cargos_ids = ConcursosRepository.listar_uuids_cargos_vinculados(
                 concurso_uuid
             )
             qs = qs.filter(cargo__uuid__in=cargos_ids)

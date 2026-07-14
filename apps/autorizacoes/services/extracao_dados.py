@@ -3,7 +3,7 @@
 from typing import Any
 from uuid import UUID
 
-from autorizacoes.repository import AuthorizationRepository
+from autorizacoes.repository import AutorizacaoRepository
 
 
 def montar_extracao_dados(
@@ -11,7 +11,7 @@ def montar_extracao_dados(
     anos: list[int] | None = None,
 ) -> dict[str, Any]:
     """Monta o dicionário de total de autorizações publicadas."""
-    return AuthorizationRepository.montar_extracao_dados(
+    return AutorizacaoRepository.montar_extracao_dados(
         concurso_uuid=concurso_uuid,
         anos=anos,
     )

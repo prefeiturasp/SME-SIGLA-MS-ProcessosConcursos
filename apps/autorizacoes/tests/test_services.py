@@ -5,7 +5,7 @@ from datetime import date
 import pytest
 
 from autorizacoes.models import AutorizacaoPublicada
-from autorizacoes.repository import AuthorizationRepository
+from autorizacoes.repository import AutorizacaoRepository
 from autorizacoes.services import montar_extracao_dados
 from cargos.models import Cargo
 from concursos.models import Concurso
@@ -59,11 +59,11 @@ def test_montar_extracao_dados_filtra_por_concurso_e_anos():
 
 
 def test_repositorio_montar_extracao_dados_delegado():
-    """AuthorizationRepository.montar_extracao_dados espelha o service."""
+    """AutorizacaoRepository.montar_extracao_dados espelha o service."""
     cargo = Cargo.objects.create(nome="X", codigo=2)
     AutorizacaoPublicada.objects.create(
         cargo=cargo, autorizacoes=7, data_autorizacao=date(2024, 1, 1)
     )
-    via_repo = AuthorizationRepository.montar_extracao_dados()
+    via_repo = AutorizacaoRepository.montar_extracao_dados()
     via_svc = montar_extracao_dados()
     assert via_repo == via_svc

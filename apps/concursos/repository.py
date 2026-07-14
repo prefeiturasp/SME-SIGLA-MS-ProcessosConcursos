@@ -12,7 +12,7 @@ from uuid import UUID
 from concursos.models import Concurso
 
 
-class ConcursoRepository:
+class ConcursosRepository:
     """Acesso aos dados de concursos (consultas e persistência)."""
 
     @staticmethod
