@@ -1,4 +1,4 @@
-"""URL configuration for the cargos module."""
+"""Rotas de URL do módulo de cargos."""
 
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter

@@ -44,8 +44,7 @@ class ConcursoAdmin(admin.ModelAdmin):
         ),
     )
 
+    @admin.display(description="Número de Cargos")
     def cargos_count(self, obj: Concurso) -> int:
         """Quantidade de cargos vinculados ao concurso."""
         return obj.cargos.count()
-
-    cargos_count.short_description = "Número de Cargos"

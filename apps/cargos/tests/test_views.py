@@ -113,7 +113,7 @@ def test_autorizacoes_publicadas_agrupa_e_integra_ms_escolhas(
 
 
 def test_busca_cargo_por_codigo_parcial(authenticated_client):
-    """search casa cargos pelo codigo (match parcial)."""
+    """Search casa cargos pelo codigo (match parcial)."""
     Cargo.objects.create(nome="PROF.ED.INF.I-MAT", codigo=4123)
     Cargo.objects.create(nome="PROF.ED.INF.I-HIS", codigo=4124)
     Cargo.objects.create(nome="Outro Cargo", codigo=9999)
@@ -133,7 +133,7 @@ def test_busca_cargo_por_codigo_parcial(authenticated_client):
 
 
 def test_busca_cargo_por_nome_ainda_funciona(authenticated_client):
-    """search por nome continua funcionando."""
+    """Search por nome continua funcionando."""
     Cargo.objects.create(nome="Analista Judiciario", codigo=100)
     Cargo.objects.create(nome="Tecnico", codigo=200)
 

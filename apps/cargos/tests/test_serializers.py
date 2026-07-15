@@ -22,7 +22,7 @@ def test_cargo_serializer_fields(cargo_analista):
 
 
 def test_cargo_serializer_read_only_fields():
-    """uuid e timestamps são read-only no create."""
+    """Uuid e timestamps são read-only no create."""
     data = {
         "uuid": "invalid-uuid",
         "nome": "Novo Nome",

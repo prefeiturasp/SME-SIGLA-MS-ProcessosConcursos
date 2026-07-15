@@ -1,4 +1,4 @@
-"""Django management command to clear all concursos."""
+"""Comando de management para limpar todos os concursos."""
 
 from django.core.management.base import BaseCommand
 

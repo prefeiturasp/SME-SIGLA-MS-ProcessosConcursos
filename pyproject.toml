@@ -17,38 +17,69 @@ include-package-data = true
 where = ["."]
 include = ["apps*", "config*"]
 
+[tool.black]
+line-length = 79
+target-version = ["py312"]
+exclude = "/migrations/"
+
 [tool.ruff]
 line-length = 79
 target-version = "py312"
-extend-exclude = ["migrations", ".venv", "venv", "htmlcov", "__pycache__"]
+exclude = ["migrations", "config/settings_test.py"]
 
 [tool.ruff.lint]
-# E/W = pycodestyle, F = pyflakes, I = isort,
-# UP = pyupgrade, B = bugbear, SIM = simplify
-select = ["E", "W", "F", "I", "UP", "B", "SIM"]
-ignore = [
-    "E203",   # conflito com ruff format (whitespace antes de ':')
-    "B008",   # função no default arg — comum em DRF
-    "SIM401", # .get() != if-in para DRF ReturnList/ReturnDict
-]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "D"]
+ignore = ["D203", "D212", "D104", "D105", "D106", "D107", "D102", "D401"]
 
 [tool.ruff.lint.per-file-ignores]
-"**/gerar_relatorio_pep*.py" = ["D"]
-"__init__.py" = ["F401", "F403", "F405", "D104"]
-"config/settings*.py" = ["F401", "F403", "F405", "E501", "E402"]
-"*/settings*.py" = ["F401", "F403", "F405", "E501", "E402"]
+"**/admin.py" = ["D100", "D101"]
+"**/apps.py" = ["D101"]
+"**/tests.py" = ["D100", "D103"]
+"**/tests/**/*.py" = ["D100", "D101", "D103", "SIM401"]
+"**/testes/**/*.py" = ["D100", "D101", "D103", "SIM401"]
+"config/settings*.py" = ["D100", "D200", "F401", "F403", "F405", "E501", "E402"]
+"*/settings*.py" = ["D100", "D200", "F401", "F403", "F405", "E501", "E402"]
+"config/urls.py" = ["D100"]
+"config/wsgi.py" = ["D200"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 120
 
 [tool.ruff.lint.isort]
 known-first-party = ["concursos", "cargos", "autorizacoes", "core", "config"]
 
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-line-ending = "lf"
+[tool.isort]
+profile = "black"
+line_length = 79
 
-[tool.ruff.lint.pydocstyle]
-convention = "google"
-ignore-decorators = ["pytest.fixture", "extend_schema", "action"]
+[tool.mypy]
+python_version = "3.12"
+exclude = ".*/migrations/.*"
+warn_return_any = false
+warn_unused_configs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+disable_error_code = ["return-value", "no-any-return"]
+
+[[tool.mypy.overrides]]
+module = [
+    "*.tests.*",
+    "*.migrations.*",
+    "*.commands.*",
+    "config.settings_test",
+    "config.settings",
+    "config.urls",
+    "config.wsgi",
+    "conftest",
+    "manage",
+]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = false
+ignore_errors = true
 
 [tool.coverage.run]
 source = ["apps"]

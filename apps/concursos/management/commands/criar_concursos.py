@@ -1,4 +1,4 @@
-"""Django management command to create sample concursos."""
+"""Comando de management para criar concursos de exemplo."""
 
 import random
 

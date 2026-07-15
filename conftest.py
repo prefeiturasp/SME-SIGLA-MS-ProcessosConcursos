@@ -13,7 +13,7 @@ from concursos.models import Concurso
 
 @pytest.fixture(autouse=True)
 def _compat_cargo_repository_obter_modelo(monkeypatch):
-    """Compatibilidade dos serializers enquanto `obter_modelo*` não está no repo.
+    """Compat dos serializers sem `obter_modelo*` no repository.
 
     Os serializers ainda resolvem cargos via esses métodos; a remoção no
     repository deixa create/update sem eles. Nos testes recolocamos só o
@@ -120,17 +120,13 @@ def cargo_data():
 @pytest.fixture
 def cargo_data_invalid():
     """Fixture para dados de cargo inválidos."""
-    return {
-        "nome": ""  # Nome vazio é inválido
-    }
+    return {"nome": ""}  # Nome vazio é inválido
 
 
 @pytest.fixture
 def cargo_data_long_name():
     """Fixture para dados de cargo com nome muito longo."""
-    return {
-        "nome": "A" * 201  # Mais que max_length=200
-    }
+    return {"nome": "A" * 201}  # Mais que max_length=200
 
 
 @pytest.fixture

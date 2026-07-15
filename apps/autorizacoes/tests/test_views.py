@@ -1,4 +1,4 @@
-"""Testes unitários das views de autorizações publicadas e extracão de dados."""
+"""Testes das views de autorizações publicadas e extracão de dados."""
 
 from datetime import date
 
@@ -17,12 +17,13 @@ def criar_autorizacao(
     cargo: Cargo | None = None, **kwargs
 ) -> AutorizacaoPublicada:
     """Cria autorização para testes."""
-    defaults = dict(
-        autorizacoes=2,
-        observacao="Obs teste",
-    )
+    defaults = {
+        "autorizacoes": 2,
+        "observacao": "Obs teste",
+    }
     defaults.update(kwargs)
     return AutorizacaoPublicada.objects.create(cargo=cargo, **defaults)
+
 
 def test_list_autorizacoes_publicadas_success(api_client):
     """Verifica list autorizacoes publicadas success."""
@@ -124,6 +125,7 @@ def test_delete_autorizacao_publicada_success(api_client):
     resp = api_client.delete(url)
     assert resp.status_code == status.HTTP_204_NO_CONTENT
     assert AutorizacaoPublicada.objects.filter(uuid=obj.uuid).count() == 0
+
 
 def test_total_autorizacoes_publicadas_por_ano(api_client):
     url = reverse("extracao-dados-list")

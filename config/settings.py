@@ -1,6 +1,4 @@
-"""
-Django settings for convocacao_processes project.
-"""
+"""Configurações Django do projeto processos-concursos."""
 
 import os
 import sys
@@ -253,9 +251,7 @@ LOGGING = {
 API_KEY = os.environ.get("API_KEY", "api-key-processos-concursos")
 API_KEY_HEADER = os.environ.get("API_KEY_HEADER", "X-API-Key")
 
-SMEINTEGRACAO_API_URL = os.environ.get("SMEINTEGRACAO_API_URL", "").rstrip(
-    "/"
-)
+SMEINTEGRACAO_API_URL = os.environ.get("SMEINTEGRACAO_API_URL", "").rstrip("/")
 SMEINTEGRACAO_API_TOKEN = os.environ.get("SMEINTEGRACAO_API_TOKEN", "")
 
 ESCOLHAS_API_URL = os.environ.get("ESCOLHAS_API_URL", "").rstrip("/")

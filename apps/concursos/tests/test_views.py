@@ -258,4 +258,3 @@ def test_patch_numero_processo_proprio_permite(authenticated_client):
         url, {"nome": "Renomeado", "numero_processo": "55555"}
     )
     assert response.status_code == status.HTTP_200_OK
-

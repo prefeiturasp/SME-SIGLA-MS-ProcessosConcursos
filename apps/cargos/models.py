@@ -1,8 +1,9 @@
 """Modelo Cargo."""
 
 from auditlog.registry import auditlog
-from core.models import BaseModel
 from django.db import models
+
+from core.models import BaseModel
 
 
 class Cargo(BaseModel):
@@ -24,7 +25,7 @@ class Cargo(BaseModel):
         ordering = ["nome"]
 
     def __str__(self) -> str:
-        """String de representação do objeto."""
+        """Representação textual do cargo."""
         return self.nome
 
 
