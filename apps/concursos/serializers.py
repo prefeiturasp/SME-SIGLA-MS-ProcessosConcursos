@@ -68,7 +68,7 @@ class ConcursoSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(mensagem) from e
 
         if cargos_ids:
-            cargos = CargoRepository.obter_modelos_por_uuids(cargos_ids)
+            cargos = CargoRepository.buscar_por_uuids(cargos_ids)
             concurso.cargos.set(cargos)
 
         return concurso
@@ -94,7 +94,7 @@ class ConcursoSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(mensagem) from e
 
         if cargos_ids is not None:
-            cargos = CargoRepository.obter_modelos_por_uuids(cargos_ids)
+            cargos = CargoRepository.buscar_por_uuids(cargos_ids)
             instance.cargos.set(cargos)
 
         return instance

@@ -53,28 +53,28 @@ def test_cargo_select_serializer_fields(cargo_analista):
     assert "nome" not in data
 
 
-def test_cargo_serializer_validation_valid(cargo_data):
+def test_cargo_serializer_validation_valid():
     """Payload válido passa na validação."""
-    assert CargoSerializer(data=cargo_data).is_valid()
+    assert CargoSerializer(data={"nome": "Novo Cargo de Teste"}).is_valid()
 
 
-def test_cargo_serializer_validation_empty_nome(cargo_data_invalid):
+def test_cargo_serializer_validation_empty_nome():
     """Nome vazio é rejeitado."""
-    serializer = CargoSerializer(data=cargo_data_invalid)
+    serializer = CargoSerializer(data={"nome": ""})
     assert not serializer.is_valid()
     assert "nome" in serializer.errors
 
 
-def test_cargo_serializer_validation_long_nome(cargo_data_long_name):
+def test_cargo_serializer_validation_long_nome():
     """Nome acima do max_length é rejeitado."""
-    serializer = CargoSerializer(data=cargo_data_long_name)
+    serializer = CargoSerializer(data={"nome": "A" * 201})
     assert not serializer.is_valid()
     assert "nome" in serializer.errors
 
 
-def test_cargo_serializer_create(cargo_data):
+def test_cargo_serializer_create():
     """Create via serializer persiste o cargo."""
-    serializer = CargoSerializer(data=cargo_data)
+    serializer = CargoSerializer(data={"nome": "Novo Cargo de Teste"})
     assert serializer.is_valid()
     cargo = serializer.save()
     assert cargo.nome == "Novo Cargo de Teste"

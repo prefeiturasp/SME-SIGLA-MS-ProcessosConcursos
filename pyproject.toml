@@ -74,6 +74,7 @@ module = [
     "config.urls",
     "config.wsgi",
     "conftest",
+    "apps.conftest",
     "manage",
 ]
 disallow_untyped_defs = false

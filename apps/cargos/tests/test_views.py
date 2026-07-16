@@ -13,8 +13,11 @@ from cargos.models import Cargo
 pytestmark = pytest.mark.django_db
 
 
-def test_list_cargos_success(authenticated_client, cargos):
-    """Lista cargos retorna os três fixtures."""
+def test_list_cargos_success(authenticated_client):
+    """Lista cargos retorna os três cadastrados."""
+    Cargo.objects.create(nome="Analista de Sistemas")
+    Cargo.objects.create(nome="Desenvolvedor Backend")
+    Cargo.objects.create(nome="Professor de Matemática")
     url = reverse("cargo-list")
     response = authenticated_client.get(url)
     assert response.status_code == status.HTTP_200_OK
@@ -31,10 +34,12 @@ def test_list_cargos_success(authenticated_client, cargos):
     assert "Professor de Matemática" in cargo_nomes
 
 
-def test_create_cargo_success(authenticated_client, cargo_data):
+def test_create_cargo_success(authenticated_client):
     """POST cria cargo com codigo."""
     url = reverse("cargo-list")
-    response = authenticated_client.post(url, {**cargo_data, "codigo": "1234"})
+    response = authenticated_client.post(
+        url, {"nome": "Novo Cargo de Teste", "codigo": "1234"}
+    )
     assert response.status_code == status.HTTP_201_CREATED
     assert Cargo.objects.count() == 1
     novo_cargo = Cargo.objects.get(nome="Novo Cargo de Teste")

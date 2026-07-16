@@ -46,6 +46,11 @@ class CargoRepository:
         return cls.montar_resposta(cargo) if cargo else None
 
     @classmethod
+    def buscar_por_uuids(cls, uuids: list[UUID | str]) -> list[Cargo]:
+        """Busca vários cargos pelos UUIDs."""
+        return list(Cargo.objects.filter(uuid__in=uuids))
+
+    @classmethod
     def listar_com_resumo_autorizacoes(cls) -> list[dict[str, Any]]:
         """Lista cargos com total de autorizações e data mais recente."""
         cargos = list(
