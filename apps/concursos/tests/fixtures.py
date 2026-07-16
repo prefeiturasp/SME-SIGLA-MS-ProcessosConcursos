@@ -1,4 +1,4 @@
-"""Módulo tests/conftest."""
+"""Fixtures compartilhadas e do domínio de concursos/cargos."""
 
 import uuid
 
@@ -11,14 +11,8 @@ from cargos.repository import CargoRepository
 from concursos.models import Concurso
 
 
-@pytest.fixture(autouse=True)
-def _compat_cargo_repository_obter_modelo(monkeypatch):
-    """Compat dos serializers sem `obter_modelo*` no repository.
-
-    Os serializers ainda resolvem cargos via esses métodos; a remoção no
-    repository deixa create/update sem eles. Nos testes recolocamos só o
-    comportamento necessário, sem alterar o código de produção.
-    """
+def apply_cargo_repository_compat(monkeypatch) -> None:
+    """Aplica monkeypatch de ``obter_modelo*`` no CargoRepository."""
 
     def obter_modelo_por_uuid(cls, cargo_uuid):
         return Cargo.objects.filter(uuid=cargo_uuid).first()
@@ -62,6 +56,12 @@ def authenticated_client(api_client, user):
 
 
 @pytest.fixture
+def fake_uuid():
+    """Fixture para gerar UUIDs falsos para testes."""
+    return uuid.uuid4()
+
+
+@pytest.fixture
 def cargo_analista():
     """Fixture para criar um cargo de analista."""
     return Cargo.objects.create(nome="Analista de Sistemas")
@@ -90,6 +90,16 @@ def cargos(cargo_analista, cargo_desenvolvedor, cargo_professor):
 
 
 @pytest.fixture
+def multiple_cargos():
+    """Fixture para criar múltiplos cargos para testes de paginação."""
+    cargos_lista = []
+    for i in range(25):
+        cargo = Cargo.objects.create(nome=f"Cargo Teste {i}")
+        cargos_lista.append(cargo)
+    return cargos_lista
+
+
+@pytest.fixture
 def concurso_analista(cargo_analista):
     """Fixture para criar um concurso de analista."""
     concurso = Concurso.objects.create(nome="Concurso de Analista")
@@ -109,24 +119,6 @@ def concurso_professor(cargo_professor):
 def concursos(concurso_analista, concurso_professor):
     """Fixture para criar múltiplos concursos de teste."""
     return {"analista": concurso_analista, "professor": concurso_professor}
-
-
-@pytest.fixture
-def cargo_data():
-    """Fixture para dados de cargo válidos."""
-    return {"nome": "Novo Cargo de Teste"}
-
-
-@pytest.fixture
-def cargo_data_invalid():
-    """Fixture para dados de cargo inválidos."""
-    return {"nome": ""}  # Nome vazio é inválido
-
-
-@pytest.fixture
-def cargo_data_long_name():
-    """Fixture para dados de cargo com nome muito longo."""
-    return {"nome": "A" * 201}  # Mais que max_length=200
 
 
 @pytest.fixture
@@ -173,35 +165,19 @@ def concurso_data_invalid():
 @pytest.fixture
 def concurso_data_invalid_cargo_ids():
     """Fixture para dados de concurso com IDs de cargo inválidos."""
-    fake_uuid = uuid.uuid4()
+    fake = uuid.uuid4()
     return {
         "nome": "Concurso com Cargo Inválido",
-        "cargos_ids": [str(fake_uuid)],
+        "cargos_ids": [str(fake)],
         "numero_processo": "6016202200000004",
     }
 
 
 @pytest.fixture
-def fake_uuid():
-    """Fixture para gerar UUIDs falsos para testes."""
-    return uuid.uuid4()
-
-
-@pytest.fixture
-def multiple_cargos():
-    """Fixture para criar múltiplos cargos para testes de paginação."""
-    cargos = []
-    for i in range(25):
-        cargo = Cargo.objects.create(nome=f"Cargo Teste {i}")
-        cargos.append(cargo)
-    return cargos
-
-
-@pytest.fixture
 def multiple_concursos():
     """Fixture para criar múltiplos concursos para testes de paginação."""
-    concursos = []
+    concursos_lista = []
     for i in range(25):
         concurso = Concurso.objects.create(nome=f"Concurso Teste {i}")
-        concursos.append(concurso)
-    return concursos
+        concursos_lista.append(concurso)
+    return concursos_lista
