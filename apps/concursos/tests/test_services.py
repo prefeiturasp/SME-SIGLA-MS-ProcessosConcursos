@@ -7,7 +7,6 @@ import requests
 from rest_framework.test import APIRequestFactory
 
 from concursos.api.views import ConcursoViewSet
-from concursos.models import Concurso
 from concursos.repository import ConcursosRepository
 from concursos.serializers import (
     ConcursoListSerializer,
@@ -187,4 +186,3 @@ def test_repositorio_listar_uuids_cargos_vinculados(
         concurso_analista.uuid
     )
     assert cargo_analista.uuid in uuids
-

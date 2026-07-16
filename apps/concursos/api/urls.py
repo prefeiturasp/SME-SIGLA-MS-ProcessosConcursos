@@ -1,4 +1,4 @@
-"""URL configuration for the concursos module."""
+"""Rotas de URL do módulo de concursos."""
 
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter

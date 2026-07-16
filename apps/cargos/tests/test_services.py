@@ -16,7 +16,6 @@ from cargos.services import CargosService, EscolhasAPIService
 pytestmark = pytest.mark.django_db
 
 
-
 def test_get_escolhas_por_cargo_success():
     """Cliente chama o endpoint de agrupamento por cargo."""
     service = EscolhasAPIService(

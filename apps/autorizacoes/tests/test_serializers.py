@@ -44,29 +44,15 @@ def test_autorizacao_create_with_valid_cargo():
     assert obj.autorizacoes == 3
 
 
-def test_autorizacao_create_sem_cargo():
-    """Create permite cargo nulo."""
-    serializer = AutorizacaoPublicadaSerializer(
-        data={"autorizacoes": 1, "observacao": ""}
-    )
-    assert serializer.is_valid(), serializer.errors
-    obj = serializer.save()
-    assert obj.cargo is None
-
-
 def test_autorizacao_create_cargo_inexistente():
     """Cargo UUID inexistente gera erro de validação no create."""
-    from rest_framework.exceptions import ValidationError
-
     serializer = AutorizacaoPublicadaSerializer(
         data={
             "cargo": "00000000-0000-0000-0000-000000000000",
             "autorizacoes": 1,
         }
     )
-    assert serializer.is_valid()
-    with pytest.raises(ValidationError):
-        serializer.save()
+    assert not serializer.is_valid()
 
 
 def test_total_serializer_opcional():

@@ -50,7 +50,9 @@ class ConcursoSerializer(serializers.ModelSerializer):
             "status",
         ]
         read_only_fields = ["uuid", "criado_em", "atualizado_em"]
-        extra_kwargs = {"numero_processo": {"validators": []}}
+        extra_kwargs: dict[str, Any] = {
+            "numero_processo": {"validators": []},
+        }
 
     def create(self, validated_data: dict[str, Any]) -> Concurso:
         """Cria concurso e associa cargos por UUID."""
@@ -63,10 +65,10 @@ class ConcursoSerializer(serializers.ModelSerializer):
                 f"de dados - {str(e)}."
             )
             logger.error(mensagem)
-            raise serializers.ValidationError(mensagem)
+            raise serializers.ValidationError(mensagem) from e
 
         if cargos_ids:
-            cargos = CargoRepository.obter_modelos_por_uuids(cargos_ids)
+            cargos = CargoRepository.buscar_por_uuids(cargos_ids)
             concurso.cargos.set(cargos)
 
         return concurso
@@ -89,10 +91,10 @@ class ConcursoSerializer(serializers.ModelSerializer):
                 f"de dados - {str(e)}."
             )
             logger.error(mensagem)
-            raise serializers.ValidationError(mensagem)
+            raise serializers.ValidationError(mensagem) from e
 
         if cargos_ids is not None:
-            cargos = CargoRepository.obter_modelos_por_uuids(cargos_ids)
+            cargos = CargoRepository.buscar_por_uuids(cargos_ids)
             instance.cargos.set(cargos)
 
         return instance

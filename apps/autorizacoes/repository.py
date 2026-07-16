@@ -71,7 +71,7 @@ class AutorizacaoRepository:
         concurso_uuid: UUID | str | None = None,
         anos: list[int] | None = None,
     ) -> dict[str, Any]:
-        """Monta a extração de dados com totais por cargo (e por ano, se pedido)."""
+        """Monta a extração de dados com totais por cargo e por ano."""
         qs = AutorizacaoPublicada.objects.filter(
             data_autorizacao__isnull=False
         )
@@ -99,9 +99,7 @@ class AutorizacaoRepository:
                 )
                 .order_by("ano", "cargo__nome")
             )
-            cargos_por_ano: dict[int, list[dict[str, Any]]] = defaultdict(
-                list
-            )
+            cargos_por_ano: dict[int, list[dict[str, Any]]] = defaultdict(list)
             for item in cargos_por_ano_raw:
                 cargos_por_ano[item["ano"]].append(
                     cls._montar_resumo_cargo(

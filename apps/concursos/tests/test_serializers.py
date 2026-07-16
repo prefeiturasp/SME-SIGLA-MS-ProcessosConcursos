@@ -95,9 +95,11 @@ def test_concurso_serializer_validation_valid(concurso_data):
     assert serializer.is_valid()
 
 
-def test_concurso_serializer_validation_empty_nome(concurso_data_invalid):
+def test_concurso_serializer_validation_empty_nome():
     """Verifica concurso serializer validation empty nome."""
-    serializer = ConcursoSerializer(data=concurso_data_invalid)
+    serializer = ConcursoSerializer(
+        data={"nome": "", "cargos_ids": ["invalid-uuid"]}
+    )
     assert not serializer.is_valid()
     assert "nome" in serializer.errors
 

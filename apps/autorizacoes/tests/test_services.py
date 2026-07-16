@@ -39,9 +39,7 @@ def test_montar_extracao_dados_filtra_por_concurso_e_anos():
     AutorizacaoPublicada.objects.create(
         cargo=cargo, autorizacoes=80, data_autorizacao=date(2025, 1, 5)
     )
-    resultado = montar_extracao_dados(
-        concurso_uuid=concurso.uuid, anos=[2026]
-    )
+    resultado = montar_extracao_dados(concurso_uuid=concurso.uuid, anos=[2026])
     assert resultado == {
         "2026": {
             "autorizacoes-publicadas": 100,

@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.request import Request
 from rest_framework.response import Response
 
 DEFAULT_PAGE = 1
@@ -20,17 +21,17 @@ class CustomPagination(PageNumberPagination):
 
     def get_paginated_response(self, data: list[Any]) -> Response:
         """Monta resposta paginada no formato padrão SIGLA."""
+        page = cast(Any, self.page)
+        request = cast(Request, self.request)
         return Response(
             {
                 "links": {
                     "next": self.get_next_link(),
                     "previous": self.get_previous_link(),
                 },
-                "count": self.page.paginator.count,
-                "page": int(self.request.GET.get("page", DEFAULT_PAGE)),
-                "page_size": int(
-                    self.request.GET.get("page_size", self.page_size)
-                ),
+                "count": page.paginator.count,
+                "page": int(request.GET.get("page", DEFAULT_PAGE)),
+                "page_size": int(request.GET.get("page_size", self.page_size)),
                 "results": data,
             }
         )

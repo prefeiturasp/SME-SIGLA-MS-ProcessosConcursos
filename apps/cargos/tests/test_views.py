@@ -13,8 +13,11 @@ from cargos.models import Cargo
 pytestmark = pytest.mark.django_db
 
 
-def test_list_cargos_success(authenticated_client, cargos):
-    """Lista cargos retorna os três fixtures."""
+def test_list_cargos_success(authenticated_client):
+    """Lista cargos retorna os três cadastrados."""
+    Cargo.objects.create(nome="Analista de Sistemas")
+    Cargo.objects.create(nome="Desenvolvedor Backend")
+    Cargo.objects.create(nome="Professor de Matemática")
     url = reverse("cargo-list")
     response = authenticated_client.get(url)
     assert response.status_code == status.HTTP_200_OK
@@ -31,10 +34,12 @@ def test_list_cargos_success(authenticated_client, cargos):
     assert "Professor de Matemática" in cargo_nomes
 
 
-def test_create_cargo_success(authenticated_client, cargo_data):
+def test_create_cargo_success(authenticated_client):
     """POST cria cargo com codigo."""
     url = reverse("cargo-list")
-    response = authenticated_client.post(url, {**cargo_data, "codigo": "1234"})
+    response = authenticated_client.post(
+        url, {"nome": "Novo Cargo de Teste", "codigo": "1234"}
+    )
     assert response.status_code == status.HTTP_201_CREATED
     assert Cargo.objects.count() == 1
     novo_cargo = Cargo.objects.get(nome="Novo Cargo de Teste")
@@ -113,7 +118,7 @@ def test_autorizacoes_publicadas_agrupa_e_integra_ms_escolhas(
 
 
 def test_busca_cargo_por_codigo_parcial(authenticated_client):
-    """search casa cargos pelo codigo (match parcial)."""
+    """Search casa cargos pelo codigo (match parcial)."""
     Cargo.objects.create(nome="PROF.ED.INF.I-MAT", codigo=4123)
     Cargo.objects.create(nome="PROF.ED.INF.I-HIS", codigo=4124)
     Cargo.objects.create(nome="Outro Cargo", codigo=9999)
@@ -133,7 +138,7 @@ def test_busca_cargo_por_codigo_parcial(authenticated_client):
 
 
 def test_busca_cargo_por_nome_ainda_funciona(authenticated_client):
-    """search por nome continua funcionando."""
+    """Search por nome continua funcionando."""
     Cargo.objects.create(nome="Analista Judiciario", codigo=100)
     Cargo.objects.create(nome="Tecnico", codigo=200)
 

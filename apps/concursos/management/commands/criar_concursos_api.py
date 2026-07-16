@@ -1,7 +1,4 @@
-"""Django management command to create/update Cargos e Concursos.
-
-usando a API de Integração da SME.
-"""
+"""Comando para criar/atualizar cargos e concursos via API SME."""
 
 from django.core.management.base import BaseCommand
 from django.db import transaction

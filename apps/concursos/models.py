@@ -1,11 +1,11 @@
 """Modelo Concurso."""
 
 from auditlog.registry import auditlog
-from core.models import BaseModel
 from django.db import models
 from django.db.models import Q
 
 from concursos.constants import CONCURSO_STATUS_CHOICES
+from core.models import BaseModel
 
 
 class Concurso(BaseModel):
@@ -58,7 +58,7 @@ class Concurso(BaseModel):
         ]
 
     def __str__(self) -> str:
-        """String de representação do objeto."""
+        """Representação textual do concurso."""
         return self.nome
 
 

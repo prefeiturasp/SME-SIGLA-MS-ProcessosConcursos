@@ -1,24 +1,26 @@
 # Makefile para o projeto SME-SIGLA-MS-Concurso
 # Comandos úteis para desenvolvimento Django
 
-.PHONY: help pep257 makemigrations migrate runserver coverage test clean install format lint check
+.PHONY: help pep257 makemigrations migrate runserver coverage test clean install format lint check pre-commit-install pre-commit
 
 PEP_APP_DIRS = apps/concursos apps/cargos apps/autorizacoes apps/core
 
 # Comando padrão - mostra ajuda
 help:
 	@echo "Comandos disponíveis:"
-	@echo "  make pep257          - Verifica PEP 257 (docstrings / Ruff D)"
-	@echo "  make makemigrations  - Cria migrações do Django"
-	@echo "  make migrate         - Aplica migrações do Django"
-	@echo "  make runserver       - Inicia o servidor de desenvolvimento"
-	@echo "  make coverage        - Executa testes com relatório de cobertura"
-	@echo "  make test            - Executa todos os testes"
-	@echo "  make clean           - Remove arquivos temporários"
-	@echo "  make install         - Instala dependências"
-	@echo "  make format          - Formata o código com ruff (auto-fix)"
-	@echo "  make lint            - Verifica conformidade com PEP 8 (ruff)"
-	@echo "  make check           - Roda lint + testes"
+	@echo "  make pep257              - Verifica PEP 257 (docstrings / Ruff D)"
+	@echo "  make makemigrations      - Cria migrações do Django"
+	@echo "  make migrate             - Aplica migrações do Django"
+	@echo "  make runserver           - Inicia o servidor de desenvolvimento"
+	@echo "  make coverage            - Executa testes com relatório de cobertura"
+	@echo "  make test                - Executa todos os testes"
+	@echo "  make clean               - Remove arquivos temporários"
+	@echo "  make install             - Instala dependências"
+	@echo "  make format              - Formata o código com ruff (auto-fix)"
+	@echo "  make lint                - Verifica conformidade com PEP 8 (ruff)"
+	@echo "  make check               - Roda lint + testes"
+	@echo "  make pre-commit-install  - Instala hooks do pre-commit no repositório"
+	@echo "  make pre-commit          - Roda pre-commit em todos os arquivos"
 
 # Cria migrações do Django
 makemigrations:
@@ -75,7 +77,17 @@ lint:
 # Lint + testes
 check: lint test
 
-# PEP 257 — docstrings (Ruff, regras D / pydocstyle Google)
+# PEP 257 — docstrings (Ruff, regras D / pydocstyle)
 pep257:
 	@echo "Verificando PEP 257 (docstrings)..."
 	python -m ruff check $(PEP_APP_DIRS) --select D
+
+# Configura hooks do pre-commit no repositório local
+pre-commit-install:
+	@echo "Instalando hooks do pre-commit..."
+	pre-commit install
+
+# Roda pre-commit em todos os arquivos
+pre-commit:
+	@echo "Executando pre-commit em todos os arquivos..."
+	pre-commit run --all-files
