@@ -5,13 +5,6 @@ CONCURSO_STATUS_CHOICES = [
     ("INATIVO", "Inativo"),
 ]
 
-# Situação do ciclo de vida do concurso (distinta de ``status``).
-# INCOMPLETO: cadastro iniciado (passo 1) e ainda não finalizado.
-# COMPLETO: cadastro finalizado (último passo do wizard concluído).
-# EM_ANDAMENTO: houve convocação; edição fica bloqueada. A transição para
-#   este estado será feita pela integração de convocação (serviço
-#   ``convocacao/``) — fora do escopo atual.
-# FINALIZADO / CANCELADO: definidos para uso futuro (ainda não utilizados).
 CONCURSO_SITUACAO_INCOMPLETO = "INCOMPLETO"
 CONCURSO_SITUACAO_COMPLETO = "COMPLETO"
 CONCURSO_SITUACAO_EM_ANDAMENTO = "EM_ANDAMENTO"
