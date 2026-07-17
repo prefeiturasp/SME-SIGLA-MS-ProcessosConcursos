@@ -4,7 +4,11 @@ from auditlog.registry import auditlog
 from django.db import models
 from django.db.models import Q
 
-from concursos.constants import CONCURSO_STATUS_CHOICES
+from concursos.constants import (
+    CONCURSO_SITUACAO_CHOICES,
+    CONCURSO_SITUACAO_INCOMPLETO,
+    CONCURSO_STATUS_CHOICES,
+)
 from core.models import BaseModel
 
 
@@ -26,9 +30,6 @@ class Concurso(BaseModel):
     codigo = models.IntegerField(
         verbose_name="Código do Concurso", blank=True, null=True
     )
-    ano_edital = models.IntegerField(
-        verbose_name="Ano do Edital", blank=True, null=True
-    )
     banca_responsavel = models.CharField(
         max_length=200,
         blank=True,
@@ -40,6 +41,73 @@ class Concurso(BaseModel):
         choices=CONCURSO_STATUS_CHOICES,
         default="ATIVO",
         verbose_name="Status",
+    )
+    situacao = models.CharField(
+        max_length=20,
+        choices=CONCURSO_SITUACAO_CHOICES,
+        default=CONCURSO_SITUACAO_INCOMPLETO,
+        verbose_name="Situação do Concurso",
+    )
+    data_autorizacao = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name="Data de Autorização do Concurso",
+    )
+    data_abertura = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name="Data de Abertura do Concurso",
+    )
+    classificacao_final = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name="Data da Classificação Final",
+    )
+    link_edital = models.URLField(
+        max_length=500,
+        blank=True,
+        default="",
+        verbose_name="Link do Edital",
+    )
+    habilitados_geral = models.IntegerField(
+        blank=True,
+        null=True,
+        verbose_name="Habilitados (Geral)",
+    )
+    habilitados_nna = models.IntegerField(
+        blank=True,
+        null=True,
+        verbose_name="Habilitados (NNA)",
+    )
+    habilitados_pcd = models.IntegerField(
+        blank=True,
+        null=True,
+        verbose_name="Habilitados (PcD)",
+    )
+    retificacoes = models.TextField(
+        blank=True,
+        default="",
+        verbose_name="Retificações",
+    )
+    data_homologacao = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name="Data da Homologação",
+    )
+    data_prorrogacao = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name="Data da Prorrogação",
+    )
+    vigencia_inicio = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name="Início da Vigência",
+    )
+    vigencia_fim = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name="Fim da Vigência",
     )
 
     class Meta:

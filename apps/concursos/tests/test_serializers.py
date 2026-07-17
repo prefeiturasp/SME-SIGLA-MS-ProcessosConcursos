@@ -235,18 +235,40 @@ def test_concurso_serializer_cria_com_novos_campos(cargo_analista):
         data={
             "nome": "Concurso Serializer",
             "cargos_ids": [str(cargo_analista.uuid)],
-            "ano_edital": 2026,
             "banca_responsavel": "Cebraspe",
             "status": "INATIVO",
             "numero_processo": "6016202200779764",
+            "data_autorizacao": "2026-01-10",
+            "data_abertura": "2026-02-15",
+            "classificacao_final": "2026-06-30",
+            "link_edital": "https://exemplo.gov.br/edital.pdf",
+            "habilitados_geral": 100,
+            "habilitados_nna": 20,
+            "habilitados_pcd": 5,
+            "retificacoes": "Retificação 01/2026.",
+            "data_homologacao": "2026-07-01",
+            "data_prorrogacao": "2028-07-01",
+            "vigencia_inicio": "2026-07-01",
+            "vigencia_fim": "2028-07-01",
         }
     )
     assert serializer.is_valid(), serializer.errors
     concurso = serializer.save()
-    assert concurso.ano_edital == 2026
     assert concurso.banca_responsavel == "Cebraspe"
     assert concurso.status == "INATIVO"
     assert concurso.numero_processo == "6016202200779764"
+    assert str(concurso.data_autorizacao) == "2026-01-10"
+    assert str(concurso.data_abertura) == "2026-02-15"
+    assert str(concurso.classificacao_final) == "2026-06-30"
+    assert concurso.link_edital == "https://exemplo.gov.br/edital.pdf"
+    assert concurso.habilitados_geral == 100
+    assert concurso.habilitados_nna == 20
+    assert concurso.habilitados_pcd == 5
+    assert concurso.retificacoes == "Retificação 01/2026."
+    assert str(concurso.data_homologacao) == "2026-07-01"
+    assert str(concurso.data_prorrogacao) == "2028-07-01"
+    assert str(concurso.vigencia_inicio) == "2026-07-01"
+    assert str(concurso.vigencia_fim) == "2028-07-01"
 
 
 def test_concurso_list_serializer_expoe_cargos_descricao(concurso_analista):
@@ -256,9 +278,33 @@ def test_concurso_list_serializer_expoe_cargos_descricao(concurso_analista):
     data = ConcursoListSerializer(concurso_analista).data
     assert "cargos_descricao" in data
     assert data["cargos_descricao"] == ["0 - Analista de Sistemas"]
-    assert "ano_edital" in data
+    assert "ano_edital" not in data
     assert "banca_responsavel" in data
     assert "status" in data
+    assert "situacao" in data
+
+
+def test_concurso_serializer_situacao_default_e_atualizacao(cargo_analista):
+    """Situacao usa default INCOMPLETO no create e aceita atualização."""
+    from concursos.serializers import ConcursoSerializer
+
+    serializer = ConcursoSerializer(
+        data={
+            "nome": "Concurso Situacao",
+            "cargos_ids": [str(cargo_analista.uuid)],
+            "numero_processo": "6016202200000099",
+        }
+    )
+    assert serializer.is_valid(), serializer.errors
+    concurso = serializer.save()
+    assert concurso.situacao == "INCOMPLETO"
+
+    atualizacao = ConcursoSerializer(
+        concurso, data={"situacao": "COMPLETO"}, partial=True
+    )
+    assert atualizacao.is_valid(), atualizacao.errors
+    concurso = atualizacao.save()
+    assert concurso.situacao == "COMPLETO"
 
 
 def test_validate_numero_processo_rejeita_duplicado():

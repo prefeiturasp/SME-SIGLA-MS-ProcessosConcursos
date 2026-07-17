@@ -29,9 +29,9 @@ class ConcursoFilterSet(filters.FilterSet):
         fields = [
             "nome",
             "numero_processo",
-            "ano_edital",
             "banca_responsavel",
             "status",
+            "situacao",
             "codigo_cargo",
             "descricao_cargo",
         ]
