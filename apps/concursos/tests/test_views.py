@@ -144,18 +144,22 @@ def test_delete_concurso_success(authenticated_client, concurso_analista):
         Concurso.objects.get(uuid=concurso_analista.uuid)
 
 
-def test_filtra_concurso_por_ano_edital(authenticated_client, cargo_analista):
-    """Filtra concursos pelo ano do edital."""
-    c1 = Concurso.objects.create(nome="Edital 2025", ano_edital=2025)
+def test_filtra_concurso_por_banca_responsavel(
+    authenticated_client, cargo_analista
+):
+    """Filtra concursos pela banca responsável."""
+    c1 = Concurso.objects.create(nome="Edital FGV", banca_responsavel="FGV")
     c1.cargos.add(cargo_analista)
-    c2 = Concurso.objects.create(nome="Edital 2026", ano_edital=2026)
+    c2 = Concurso.objects.create(
+        nome="Edital Cebraspe", banca_responsavel="Cebraspe"
+    )
     c2.cargos.add(cargo_analista)
 
     url = reverse("concurso-list")
-    response = authenticated_client.get(url, {"ano_edital": 2026})
+    response = authenticated_client.get(url, {"banca_responsavel": "Cebraspe"})
     assert response.status_code == status.HTTP_200_OK
     nomes = [c["nome"] for c in response.data["results"]]
-    assert nomes == ["Edital 2026"]
+    assert nomes == ["Edital Cebraspe"]
 
 
 def test_filtra_concurso_por_status(authenticated_client, cargo_analista):

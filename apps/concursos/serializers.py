@@ -45,9 +45,21 @@ class ConcursoSerializer(serializers.ModelSerializer):
             "atualizado_em",
             "numero_processo",
             "codigo",
-            "ano_edital",
             "banca_responsavel",
             "status",
+            "situacao",
+            "data_autorizacao",
+            "data_abertura",
+            "classificacao_final",
+            "link_edital",
+            "habilitados_geral",
+            "habilitados_nna",
+            "habilitados_pcd",
+            "retificacoes",
+            "data_homologacao",
+            "data_prorrogacao",
+            "vigencia_inicio",
+            "vigencia_fim",
         ]
         read_only_fields = ["uuid", "criado_em", "atualizado_em"]
         extra_kwargs: dict[str, Any] = {
@@ -117,9 +129,9 @@ class ConcursoListSerializer(serializers.ModelSerializer):
             "cargos_descricao",
             "numero_processo",
             "codigo",
-            "ano_edital",
             "banca_responsavel",
             "status",
+            "situacao",
         ]
 
     def get_cargos_descricao(self, obj: Concurso) -> list[str]:
