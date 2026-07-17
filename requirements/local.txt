@@ -12,4 +12,5 @@ pytest==7.4.3
 pytest-cov==4.1.0
 pytest-django==4.7.0
 ruff==0.6.9
+sphinx>=8.1,<9
 types-requests>=2.32,<3
