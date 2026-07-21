@@ -62,7 +62,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # "sigla_sdk.middlewares.AuditlogJWTMiddleware",
+    "sigla_sdk.middlewares.AuditlogJWTMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
