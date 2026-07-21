@@ -62,7 +62,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "sigla_sdk.middlewares.AuditlogJWTMiddleware",
+    # "sigla_sdk.middlewares.AuditlogJWTMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -189,6 +189,12 @@ SPECTACULAR_SETTINGS = {
     #     }
     # },
     # "SECURITY": [{"ApiKeyAuth": []}],
+    "SERVE_AUTHENTICATION": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"],
 }
 
 
@@ -217,13 +223,11 @@ LOGGING = {
         },
     },
     "loggers": {
-        # Logger do Django (Framework)
         "django": {
             "handlers": ["console"],
             "level": "INFO",
             "propagate": False,
         },
-        # Logger de aplicação
         "concursos": {
             "handlers": ["console"],
             "level": "DEBUG",

@@ -2,8 +2,13 @@
 
 from __future__ import annotations
 
+import logging
+
 import requests
 from django.conf import settings
+from sigla_sdk.context import get_correlation_id
+
+logger = logging.getLogger(__name__)
 
 
 class EscolhasAPIService:
@@ -30,8 +35,9 @@ class EscolhasAPIService:
         if not self.base_url:
             raise ValueError("ESCOLHAS_API_URL não configurada")
         self.timeout_seconds = timeout_seconds
-        self._default_headers: dict[str, str] = {
+        self.headers: dict[str, str] = {
             "Accept": "application/json",
+            settings.API_KEY_HEADER: settings.ESCOLHAS_API_KEY,
         }
 
     def get_escolhas_por_cargo(
@@ -51,7 +57,16 @@ class EscolhasAPIService:
             Nenhuma exceção específica documentada.
         """
         url = f"{self.base_url}/api/v1/escolhas/agrupar-por-cargo/"
-        merged_headers = {**self._default_headers, **(headers or {})}
+        merged_headers = {**self.headers, **(headers or {})}
+        logger.info(
+            "Consultando escolhas por cargo no MS-Escolhas",
+            extra={
+                "correlation_id": get_correlation_id(),
+                "method": "GET",
+                "url": url,
+                "headers": merged_headers.keys(),
+            },
+        )
         response = requests.get(
             url, headers=merged_headers, timeout=self.timeout_seconds
         )

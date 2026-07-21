@@ -7,6 +7,7 @@ from uuid import uuid4
 import pytest
 import requests
 from django.conf import settings
+from django.test import override_settings
 
 from autorizacoes.models import AutorizacaoPublicada
 from cargos.models import Cargo
@@ -16,6 +17,10 @@ from cargos.services import CargosService, EscolhasAPIService
 pytestmark = pytest.mark.django_db
 
 
+@override_settings(
+    ESCOLHAS_API_KEY="test-key",
+    API_KEY_HEADER="X-API-Key",
+)
 def test_get_escolhas_por_cargo_success():
     """Cliente chama o endpoint de agrupamento por cargo."""
     service = EscolhasAPIService(
@@ -32,10 +37,35 @@ def test_get_escolhas_por_cargo_success():
         assert resp is fake_response
         mocked_get.assert_called_once_with(
             "http://example.com/api/v1/escolhas/agrupar-por-cargo/",
-            headers={"Accept": "application/json", "X-Test": "1"},
+            headers={
+                "Accept": "application/json",
+                "X-API-Key": "test-key",
+                "X-Test": "1",
+            },
             timeout=5,
         )
         assert resp.json() == {"1001": 5, "1002": 4}
+
+
+@override_settings(
+    ESCOLHAS_API_KEY="test-key",
+    API_KEY_HEADER="X-API-Key",
+)
+def test_get_escolhas_por_cargo_envia_api_key():
+    """Cliente envia X-API-Key com ESCOLHAS_API_KEY configurada."""
+    service = EscolhasAPIService(base_url="http://example.com")
+    fake_response = Mock()
+    fake_response.raise_for_status.return_value = None
+    with patch(
+        "cargos.services.escolhas_api_service.requests.get",
+        return_value=fake_response,
+    ) as mocked_get:
+        service.get_escolhas_por_cargo()
+
+    assert mocked_get.call_args.kwargs["headers"] == {
+        "Accept": "application/json",
+        "X-API-Key": "test-key",
+    }
 
 
 def test_get_escolhas_por_cargo_http_error_propagates():
