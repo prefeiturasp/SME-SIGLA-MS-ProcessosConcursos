@@ -1,18 +1,23 @@
+"""Rotas de URL do projeto processos-concursos."""
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.http import JsonResponse
+from django.http import HttpRequest, JsonResponse
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 
-def healthcheck(_request):
+def healthcheck(_request: HttpRequest) -> JsonResponse:
+    """Resposta simples de health-check da aplicação."""
     return JsonResponse({"status": "ok"})
 
 
 _core_urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/v1/", include("concursos.urls")),
+    path("api/v1/", include("cargos.api.urls")),
+    path("api/v1/", include("concursos.api.urls")),
+    path("api/v1/", include("autorizacoes.api.urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/docs/",

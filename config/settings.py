@@ -1,8 +1,7 @@
-"""
-Django settings for convocacao_processes project.
-"""
+"""Configurações Django do projeto processos-concursos."""
 
 import os
+import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -15,6 +14,9 @@ DJANGO_ENVIRONMENT = os.environ.get("DJANGO_ENVIRONMENT", "local")
 MS_PATH = os.environ.get("MS_PATH", "/ms-processos-concursos")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+# Adiciona a pasta 'apps' ao sys.path do Python
+sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
+
 SECRET_KEY = os.environ.get(
     "SECRET_KEY", "django-insecure-your-secret-key-here"
 )
@@ -43,6 +45,10 @@ INSTALLED_APPS = [
     "corsheaders",
     "auditlog",
     "drf_spectacular",
+    "django_filters",
+    "core",
+    "cargos",
+    "autorizacoes",
     "concursos",
 ]
 
@@ -140,28 +146,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# REST Framework settings
-REST_FRAMEWORK = {
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 10,
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.BasicAuthentication",
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ],
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.AllowAny",
-    ],
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-}
-
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 # DRF settings
 REST_FRAMEWORK = {
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": (
+        "rest_framework.pagination.PageNumberPagination"
+    ),
     "PAGE_SIZE": 20,
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
@@ -171,9 +164,12 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.BasicAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # "sigla_sdk.autenticacao.authentication.ApiKeyAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+        # "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.AllowAny",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
@@ -183,6 +179,22 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "API para o sistema de concurso de sigla",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    # "APPEND_COMPONENTS": {
+    #     "securitySchemes": {
+    #         "ApiKeyAuth": {
+    #             "type": "apiKey",
+    #             "in": "header",
+    #             "name": "X-API-Key",
+    #         }
+    #     }
+    # },
+    # "SECURITY": [{"ApiKeyAuth": []}],
+    "SERVE_AUTHENTICATION": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"],
 }
 
 
@@ -197,7 +209,10 @@ LOGGING = {
         "json": {
             "()": "sigla_sdk.logging.json_formatter.CustomJsonFormatter",
             # Estes campos do logging padrão virarão chaves no JSON
-            "format": "%(levelname)s %(asctime)s %(module)s %(filename)s %(lineno)d %(funcName)s %(message)s",
+            "format": (
+                "%(levelname)s %(asctime)s %(module)s %(filename)s "
+                "%(lineno)d %(funcName)s %(message)s"
+            ),
         },
     },
     "handlers": {
@@ -208,14 +223,22 @@ LOGGING = {
         },
     },
     "loggers": {
-        # Logger do Django (Framework)
         "django": {
             "handlers": ["console"],
             "level": "INFO",
             "propagate": False,
         },
-        # Seu Logger de Aplicação (substitua pelo nome do seu app)
-        "processos": {
+        "concursos": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "cargos": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "autorizacoes": {
             "handlers": ["console"],
             "level": "DEBUG",
             "propagate": False,
@@ -228,9 +251,17 @@ LOGGING = {
     },
 }
 
-SMEINTEGRACAO_API_URL = os.environ.get("SMEINTEGRACAO_API_URL")
-SMEINTEGRACAO_API_TOKEN = os.environ.get("SMEINTEGRACAO_API_TOKEN")
-ESCOLHAS_API_URL = os.environ.get("ESCOLHAS_API_URL", "http://localhost:8000")
+# MS URLs e API Keys
+API_KEY = os.environ.get("API_KEY", "api-key-processos-concursos")
+API_KEY_HEADER = os.environ.get("API_KEY_HEADER", "X-API-Key")
+
+SMEINTEGRACAO_API_URL = os.environ.get("SMEINTEGRACAO_API_URL", "").rstrip("/")
+SMEINTEGRACAO_API_TOKEN = os.environ.get("SMEINTEGRACAO_API_TOKEN", "")
+
+ESCOLHAS_API_URL = os.environ.get("ESCOLHAS_API_URL", "").rstrip("/")
+ESCOLHAS_API_KEY = os.environ.get("ESCOLHAS_API_KEY", "api-key-escolhas")
+
+MS_URL = os.environ.get("MS_URL", "").rstrip("/")
 
 JWT_SIGNING_KEY = os.environ.get(
     "JWT_SIGNING_KEY",
