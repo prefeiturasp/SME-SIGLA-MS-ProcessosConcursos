@@ -176,6 +176,40 @@ def test_filtra_concurso_por_status(authenticated_client, cargo_analista):
     assert nomes == ["Inativo"]
 
 
+def test_filtra_concurso_por_status_in(authenticated_client, cargo_analista):
+    """Filtra concursos por status via status__in (valor único)."""
+    ativo = Concurso.objects.create(nome="Ativo", status="ATIVO")
+    ativo.cargos.add(cargo_analista)
+    inativo = Concurso.objects.create(nome="Inativo", status="INATIVO")
+    inativo.cargos.add(cargo_analista)
+
+    url = reverse("concurso-list")
+    response = authenticated_client.get(url, {"status__in": "INATIVO"})
+    assert response.status_code == status.HTTP_200_OK
+    nomes = {c["nome"] for c in response.data["results"]}
+    assert nomes == {"Inativo"}
+
+
+def test_filtra_concurso_por_situacao_in(authenticated_client, cargo_analista):
+    """Filtra concursos por múltiplas situações via situacao__in."""
+    completo = Concurso.objects.create(nome="Completo", situacao="COMPLETO")
+    completo.cargos.add(cargo_analista)
+    em_andamento = Concurso.objects.create(
+        nome="Em Andamento", situacao="EM_ANDAMENTO"
+    )
+    em_andamento.cargos.add(cargo_analista)
+    cancelado = Concurso.objects.create(nome="Cancelado", situacao="CANCELADO")
+    cancelado.cargos.add(cargo_analista)
+
+    url = reverse("concurso-list")
+    response = authenticated_client.get(
+        url, {"situacao__in": "COMPLETO,EM_ANDAMENTO"}
+    )
+    assert response.status_code == status.HTTP_200_OK
+    nomes = {c["nome"] for c in response.data["results"]}
+    assert nomes == {"Completo", "Em Andamento"}
+
+
 def test_filtra_concurso_por_codigo_cargo(authenticated_client):
     """Filtra concursos pelo codigo do cargo vinculado."""
     from cargos.models import Cargo

@@ -4,6 +4,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 import requests
+from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
 
 from concursos.api.views import ConcursoViewSet
@@ -12,7 +13,6 @@ from concursos.serializers import (
     ConcursoListSerializer,
     ConcursoSelectSerializer,
 )
-from concursos.services import ConcursosService
 from concursos.services import sme_integration as svc
 
 pytestmark = pytest.mark.django_db
@@ -135,37 +135,27 @@ def test_settings_faltando_token(settings):
         svc.buscar_concursos_de_smeintegracao()
 
 
-# --- ConcursosService ---
+# --- ConcursoViewSet.get_serializer_class ---
 
 
-def test_obter_serializer_listagem_select():
+def test_get_serializer_class_list_select():
     """formato=select usa ConcursoSelectSerializer."""
-    from rest_framework.request import Request
-
     factory = APIRequestFactory()
     request = Request(factory.get("/api/v1/concursos/", {"formato": "select"}))
     view = ConcursoViewSet()
     view.request = request
-    view.format_kwarg = None
-    assert (
-        ConcursosService.obter_serializer_listagem(view, request)
-        is ConcursoSelectSerializer
-    )
+    view.action = "list"
+    assert view.get_serializer_class() is ConcursoSelectSerializer
 
 
-def test_obter_serializer_listagem_padrao():
+def test_get_serializer_class_list_padrao():
     """Sem formato usa ConcursoListSerializer."""
-    from rest_framework.request import Request
-
     factory = APIRequestFactory()
     request = Request(factory.get("/api/v1/concursos/"))
     view = ConcursoViewSet()
     view.request = request
-    view.format_kwarg = None
-    assert (
-        ConcursosService.obter_serializer_listagem(view, request)
-        is ConcursoListSerializer
-    )
+    view.action = "list"
+    assert view.get_serializer_class() is ConcursoListSerializer
 
 
 # --- ConcursosRepository ---
