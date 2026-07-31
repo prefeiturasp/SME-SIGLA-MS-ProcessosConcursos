@@ -21,6 +21,8 @@ class ConcursoFilterSet(filters.FilterSet):
     descricao_cargo = filters.CharFilter(
         field_name="cargos__nome", lookup_expr="icontains"
     )
+    status__in = filters.BaseInFilter(field_name="status")
+    situacao__in = filters.BaseInFilter(field_name="situacao")
 
     class Meta:
         """Configuracao do filterset."""

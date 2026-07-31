@@ -25,10 +25,14 @@ def concurso_analista(cargo_analista):
 @pytest.fixture
 def concursos(cargo_analista):
     """Dois concursos de referência para listagens."""
-    concurso_a = Concurso.objects.create(nome="Concurso de Analista")
+    concurso_a = Concurso.objects.create(
+        nome="Concurso de Analista", situacao="COMPLETO"
+    )
     concurso_a.cargos.add(cargo_analista)
     cargo_professor = Cargo.objects.create(nome="Professor de Matemática")
-    concurso_p = Concurso.objects.create(nome="Concurso de Professor")
+    concurso_p = Concurso.objects.create(
+        nome="Concurso de Professor", situacao="EM_ANDAMENTO"
+    )
     concurso_p.cargos.add(cargo_professor)
     return {"analista": concurso_a, "professor": concurso_p}
 

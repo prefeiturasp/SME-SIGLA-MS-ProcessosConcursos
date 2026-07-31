@@ -13,8 +13,11 @@ from rest_framework.serializers import BaseSerializer
 
 from concursos.filters import ConcursoFilterSet
 from concursos.models import Concurso
-from concursos.serializers import ConcursoSerializer
-from concursos.services import ConcursosService
+from concursos.serializers import (
+    ConcursoListSerializer,
+    ConcursoSelectSerializer,
+    ConcursoSerializer,
+)
 from core.utils import CustomPagination
 
 
@@ -34,12 +37,23 @@ class ConcursoViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self) -> type[BaseSerializer]:
         """Retorna serializer conforme action e query ``formato=select``."""
         if self.action == "list":
-            return ConcursosService.obter_serializer_listagem(
-                self, self.request
-            )
+            if self.request.query_params.get("formato") == "select":
+                return ConcursoSelectSerializer
+            return ConcursoListSerializer
         return ConcursoSerializer
 
     def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         """Lista concursos paginados ou em formato select."""
         queryset = self.filter_queryset(self.get_queryset())
-        return ConcursosService.listar(self, request, queryset)
+
+        if request.query_params.get("formato") == "select":
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
