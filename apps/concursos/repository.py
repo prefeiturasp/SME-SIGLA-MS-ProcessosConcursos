@@ -58,3 +58,9 @@ class ConcursosRepository:
         """Busca um concurso pelo UUID e devolve a resposta serializada."""
         concurso = Concurso.objects.filter(uuid=concurso_uuid).first()
         return cls.montar_resposta(concurso) if concurso else None
+
+    @classmethod
+    def atualizar_situacao(cls, concurso: Concurso, situacao: str) -> None:
+        """Atualiza a situação do concurso e persiste o campo."""
+        concurso.situacao = situacao
+        concurso.save(update_fields=["situacao"])
