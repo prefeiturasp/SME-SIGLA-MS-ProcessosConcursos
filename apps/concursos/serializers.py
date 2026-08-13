@@ -11,6 +11,7 @@ from rest_framework.validators import UniqueValidator
 
 from cargos.repository import CargoRepository
 from cargos.serializers import CargoListSerializer, CargoSelectSerializer
+from concursos.constants import CONCURSO_SITUACAO_CHOICES
 from concursos.models import Concurso
 
 logger = logging.getLogger(__name__)
@@ -151,3 +152,9 @@ class ConcursoSelectSerializer(serializers.ModelSerializer):
 
         model = Concurso
         fields = ["value", "label", "cargos", "numero_processo", "codigo"]
+
+
+class ConcursoAtualizarSituacaoSerializer(serializers.Serializer):
+    """Valida o campo situacao para a transição de estado do concurso."""
+
+    situacao = serializers.ChoiceField(choices=CONCURSO_SITUACAO_CHOICES)

@@ -176,6 +176,40 @@ def test_filtra_concurso_por_status(authenticated_client, cargo_analista):
     assert nomes == ["Inativo"]
 
 
+def test_filtra_concurso_por_status_in(authenticated_client, cargo_analista):
+    """Filtra concursos por status via status__in (valor único)."""
+    ativo = Concurso.objects.create(nome="Ativo", status="ATIVO")
+    ativo.cargos.add(cargo_analista)
+    inativo = Concurso.objects.create(nome="Inativo", status="INATIVO")
+    inativo.cargos.add(cargo_analista)
+
+    url = reverse("concurso-list")
+    response = authenticated_client.get(url, {"status__in": "INATIVO"})
+    assert response.status_code == status.HTTP_200_OK
+    nomes = {c["nome"] for c in response.data["results"]}
+    assert nomes == {"Inativo"}
+
+
+def test_filtra_concurso_por_situacao_in(authenticated_client, cargo_analista):
+    """Filtra concursos por múltiplas situações via situacao__in."""
+    completo = Concurso.objects.create(nome="Completo", situacao="COMPLETO")
+    completo.cargos.add(cargo_analista)
+    em_andamento = Concurso.objects.create(
+        nome="Em Andamento", situacao="EM_ANDAMENTO"
+    )
+    em_andamento.cargos.add(cargo_analista)
+    cancelado = Concurso.objects.create(nome="Cancelado", situacao="CANCELADO")
+    cancelado.cargos.add(cargo_analista)
+
+    url = reverse("concurso-list")
+    response = authenticated_client.get(
+        url, {"situacao__in": "COMPLETO,EM_ANDAMENTO"}
+    )
+    assert response.status_code == status.HTTP_200_OK
+    nomes = {c["nome"] for c in response.data["results"]}
+    assert nomes == {"Completo", "Em Andamento"}
+
+
 def test_filtra_concurso_por_codigo_cargo(authenticated_client):
     """Filtra concursos pelo codigo do cargo vinculado."""
     from cargos.models import Cargo
@@ -262,3 +296,88 @@ def test_patch_numero_processo_proprio_permite(authenticated_client):
         url, {"nome": "Renomeado", "numero_processo": "55555"}
     )
     assert response.status_code == status.HTTP_200_OK
+
+
+def test_atualizar_situacao_de_completo_para_em_andamento_aplica(
+    authenticated_client,
+):
+    """Aplica a transição quando o concurso está COMPLETO."""
+    concurso = Concurso.objects.create(nome="Concurso X", situacao="COMPLETO")
+    url = reverse("concurso-atualizar-situacao", args=[concurso.uuid])
+
+    response = authenticated_client.patch(
+        url, {"situacao": "EM_ANDAMENTO"}, format="json"
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.data["situacao"] == "EM_ANDAMENTO"
+    concurso.refresh_from_db()
+    assert concurso.situacao == "EM_ANDAMENTO"
+
+
+def test_atualizar_situacao_de_em_andamento_para_completo_aplica(
+    authenticated_client,
+):
+    """Aplica a transição quando o concurso está EM_ANDAMENTO."""
+    concurso = Concurso.objects.create(
+        nome="Concurso Y", situacao="EM_ANDAMENTO"
+    )
+    url = reverse("concurso-atualizar-situacao", args=[concurso.uuid])
+
+    response = authenticated_client.patch(
+        url, {"situacao": "COMPLETO"}, format="json"
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.data["situacao"] == "COMPLETO"
+    concurso.refresh_from_db()
+    assert concurso.situacao == "COMPLETO"
+
+
+def test_atualizar_situacao_ignora_quando_estado_atual_nao_e_o_esperado(
+    authenticated_client,
+):
+    """Não altera quando o concurso não está no estado de origem esperado."""
+    concurso = Concurso.objects.create(
+        nome="Concurso Z", situacao="INCOMPLETO"
+    )
+    url = reverse("concurso-atualizar-situacao", args=[concurso.uuid])
+
+    response = authenticated_client.patch(
+        url, {"situacao": "EM_ANDAMENTO"}, format="json"
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.data["situacao"] == "INCOMPLETO"
+    concurso.refresh_from_db()
+    assert concurso.situacao == "INCOMPLETO"
+
+
+def test_atualizar_situacao_ignora_quando_completo_nao_esta_em_andamento(
+    authenticated_client,
+):
+    """Não reverte para COMPLETO se o concurso não estiver EM_ANDAMENTO."""
+    concurso = Concurso.objects.create(
+        nome="Concurso W", situacao="FINALIZADO"
+    )
+    url = reverse("concurso-atualizar-situacao", args=[concurso.uuid])
+
+    response = authenticated_client.patch(
+        url, {"situacao": "COMPLETO"}, format="json"
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    concurso.refresh_from_db()
+    assert concurso.situacao == "FINALIZADO"
+
+
+def test_atualizar_situacao_rejeita_valor_invalido(authenticated_client):
+    """Retorna 400 quando situacao não é um valor válido do enum."""
+    concurso = Concurso.objects.create(nome="Concurso V", situacao="COMPLETO")
+    url = reverse("concurso-atualizar-situacao", args=[concurso.uuid])
+
+    response = authenticated_client.patch(
+        url, {"situacao": "NAO_EXISTE"}, format="json"
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
