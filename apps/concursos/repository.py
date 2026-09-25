@@ -60,6 +60,11 @@ class ConcursosRepository:
         return cls.montar_resposta(concurso) if concurso else None
 
     @classmethod
+    def criar(cls, **dados: Any) -> Concurso:
+        """Persiste um novo concurso."""
+        return Concurso.objects.create(**dados)
+
+    @classmethod
     def atualizar_situacao(cls, concurso: Concurso, situacao: str) -> None:
         """Atualiza a situação do concurso e persiste o campo."""
         concurso.situacao = situacao

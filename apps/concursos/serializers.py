@@ -13,6 +13,7 @@ from cargos.repository import CargoRepository
 from cargos.serializers import CargoListSerializer, CargoSelectSerializer
 from concursos.constants import CONCURSO_SITUACAO_CHOICES
 from concursos.models import Concurso
+from concursos.repository import ConcursosRepository
 
 logger = logging.getLogger(__name__)
 
@@ -70,13 +71,11 @@ class ConcursoSerializer(serializers.ModelSerializer):
     def create(self, validated_data: dict[str, Any]) -> Concurso:
         """Cria concurso e associa cargos por UUID."""
         cargos_ids = validated_data.pop("cargos_ids", [])
+        logger.info(f"Criando concurso com dados: {validated_data}")
         try:
-            concurso = Concurso.objects.create(**validated_data)
+            concurso = ConcursosRepository.criar(**validated_data)
         except IntegrityError as e:
-            mensagem = (
-                f"Erro de integridade ao salvar os dados no banco "
-                f"de dados - {str(e)}."
-            )
+            mensagem = f"Erro de integridade ao salvar os dados no banco de dados - {e}."  # noqa: E501
             logger.error(mensagem)
             raise serializers.ValidationError(mensagem) from e
 
@@ -93,16 +92,13 @@ class ConcursoSerializer(serializers.ModelSerializer):
     ) -> Concurso:
         """Atualiza concurso e, se informado, substitui cargos vinculados."""
         cargos_ids = validated_data.pop("cargos_ids", None)
-
+        logger.info(f"Atualizando concurso com dados: {validated_data}")
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         try:
             instance.save()
         except IntegrityError as e:
-            mensagem = (
-                f"Erro de integridade ao salvar os dados no banco "
-                f"de dados - {str(e)}."
-            )
+            mensagem = f"Erro de integridade ao salvar os dados no banco de dados - {e}."  # noqa: E501
             logger.error(mensagem)
             raise serializers.ValidationError(mensagem) from e
 
