@@ -59,13 +59,9 @@ class EscolhasAPIService:
         url = f"{self.base_url}/api/v1/escolhas/agrupar-por-cargo/"
         merged_headers = {**self.headers, **(headers or {})}
         logger.info(
-            "Consultando escolhas por cargo no MS-Escolhas",
-            extra={
-                "correlation_id": get_correlation_id(),
-                "method": "GET",
-                "url": url,
-                "headers": merged_headers.keys(),
-            },
+            "Consultando escolhas por cargo no MS-Escolhas | "
+            f"correlation_id={get_correlation_id()} method=GET "
+            f"url={url} headers={list(merged_headers.keys())}"
         )
         response = requests.get(
             url, headers=merged_headers, timeout=self.timeout_seconds
