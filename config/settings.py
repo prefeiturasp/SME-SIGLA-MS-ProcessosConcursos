@@ -177,20 +177,94 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
+DESCRICAO_API = """
+API do microsserviço de **concursos** do SIGLA (SME-SP). Mantém o cadastro
+de concursos, os cargos ofertados, as autorizações publicadas por cargo e a
+extração de dados dessas autorizações.
+
+## Autenticação
+
+Envie o token **JWT** emitido pelo microsserviço de usuários no header
+`Authorization: Bearer <token>`. Também são aceitos HTTP Basic e a sessão
+do Django Admin. Só criar, alterar e excluir **cargos** exige usuário
+autenticado; as demais rotas atendem chamadas sem credencial. Uma
+credencial **inválida** é recusada com **403** em qualquer rota: o serviço
+não responde 401.
+
+## Erros
+
+- **400** com `{"<campo>": ["..."]}`: dados ou filtros inválidos. Em campos
+  que são listas, o valor é um objeto indexado pela posição do item
+  inválido.
+- **400** com `{"detail": "..."}`: corpo que não é JSON válido.
+- **403** com `{"detail": "...", "code": "..."}`: credencial recusada, ou
+  ausente onde é exigida.
+- **404** com `{"detail": "..."}`: registro ou página não encontrados.
+- **500**: erro inesperado, sem corpo JSON padronizado.
+
+## Paginação
+
+A listagem de concursos usa `page` e `page_size` (padrão 10) e responde
+com `links`, `count`, `page`, `page_size` e `results`. A de autorizações
+publicadas usa `page`, com 20 itens por página, e responde com `count`,
+`next`, `previous` e `results`. As listagens de cargos retornam um array
+simples.
+"""
+
 SPECTACULAR_SETTINGS = {
     "TITLE": "Concurso Sigla API",
-    "DESCRIPTION": "API para o sistema de concurso de sigla",
+    "DESCRIPTION": DESCRICAO_API,
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
-    # "APPEND_COMPONENTS": {
-    #     "securitySchemes": {
-    #         "ApiKeyAuth": {
-    #             "type": "apiKey",
-    #             "in": "header",
-    #             "name": "X-API-Key",
-    #         }
-    #     }
-    # },
+    "TAGS": [
+        {
+            "name": "Concursos",
+            "description": "Cadastro, consulta e situação dos concursos.",
+        },
+        {
+            "name": "Cargos",
+            "description": (
+                "Cargos ofertados nos concursos e resumo de autorizações "
+                "por cargo."
+            ),
+        },
+        {
+            "name": "Autorizações publicadas",
+            "description": (
+                "Quantidade de autorizações (vagas) publicadas para cada "
+                "cargo, por data."
+            ),
+        },
+        {
+            "name": "Extração de dados",
+            "description": (
+                "Totais de autorizações publicadas, por concurso e por "
+                "ano, para relatórios."
+            ),
+        },
+    ],
+    "ENUM_NAME_OVERRIDES": {
+        "StatusConcursoEnum": "concursos.constants.CONCURSO_STATUS_CHOICES",
+        "SituacaoConcursoEnum": "concursos.constants.CONCURSO_SITUACAO_CHOICES",
+    },
+    "APPEND_COMPONENTS": {
+        "securitySchemes": {
+            "jwtAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": (
+                    "Token JWT emitido pelo microsserviço de usuários do "
+                    "SIGLA, enviado em `Authorization: Bearer <token>`."
+                ),
+            },
+            # "ApiKeyAuth": {
+            #     "type": "apiKey",
+            #     "in": "header",
+            #     "name": "X-API-Key",
+            # },
+        }
+    },
     # "SECURITY": [{"ApiKeyAuth": []}],
     "SERVE_AUTHENTICATION": [
         "rest_framework.authentication.SessionAuthentication",

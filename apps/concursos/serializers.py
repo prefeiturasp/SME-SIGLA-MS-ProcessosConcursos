@@ -17,13 +17,84 @@ from concursos.repository import ConcursosRepository
 
 logger = logging.getLogger(__name__)
 
+DESCRICOES_CONCURSO = {
+    "uuid": {"help_text": "Identificador do concurso."},
+    "nome": {"help_text": "Nome do concurso, com até 200 caracteres."},
+    "numero_processo": {
+        "help_text": "Número do processo administrativo do concurso."
+    },
+    "codigo": {
+        "help_text": (
+            "Código do concurso na SME. Vem preenchido nos concursos "
+            "importados da SME Integração."
+        )
+    },
+    "banca_responsavel": {"help_text": "Banca responsável pelo concurso."},
+    "status": {
+        "help_text": (
+            "`ATIVO` (padrão ao criar) ou `INATIVO`. Serve para organizar "
+            "e filtrar a listagem; não bloqueia cargos nem autorizações."
+        )
+    },
+    "situacao": {
+        "help_text": (
+            "Situação do concurso. Começa em `INCOMPLETO`. O MS de "
+            "convocação leva o concurso a `EM_ANDAMENTO` ao criar um "
+            "processo de convocação e de volta a `COMPLETO` ao excluir o "
+            "último."
+        )
+    },
+    "data_autorizacao": {"help_text": "Data de autorização do concurso."},
+    "data_abertura": {"help_text": "Data de abertura do concurso."},
+    "classificacao_final": {"help_text": "Data da classificação final."},
+    "link_edital": {
+        "help_text": "Endereço (URL) do edital, com até 500 caracteres."
+    },
+    "habilitados_geral": {
+        "help_text": "Quantidade de habilitados na lista geral."
+    },
+    "habilitados_nna": {
+        "help_text": (
+            "Quantidade de habilitados na lista de negros, negras ou "
+            "afrodescendentes (NNA)."
+        )
+    },
+    "habilitados_pcd": {
+        "help_text": (
+            "Quantidade de habilitados na lista de pessoas com deficiência "
+            "(PcD)."
+        )
+    },
+    "retificacoes": {
+        "help_text": "Texto livre com as retificações do edital."
+    },
+    "data_homologacao": {"help_text": "Data da homologação."},
+    "data_prorrogacao": {"help_text": "Data da prorrogação."},
+    "vigencia_inicio": {"help_text": "Data de início da vigência."},
+    "vigencia_fim": {"help_text": "Data de fim da vigência."},
+    "criado_em": {"help_text": "Data e hora de criação do registro."},
+    "atualizado_em": {
+        "help_text": "Data e hora da última alteração do registro."
+    },
+}
+
 
 class ConcursoSerializer(serializers.ModelSerializer):
-    """Serializer completo de concurso com vínculo de cargos."""
+    """Concurso com os cargos vinculados."""
 
-    cargos = CargoListSerializer(many=True, read_only=True)
+    cargos = CargoListSerializer(
+        many=True, read_only=True, help_text="Cargos vinculados ao concurso."
+    )
     cargos_ids = serializers.ListField(
-        child=serializers.UUIDField(), write_only=True, required=False
+        child=serializers.UUIDField(),
+        write_only=True,
+        required=False,
+        help_text=(
+            "UUIDs dos cargos a vincular. Substitui os vínculos atuais, e "
+            "uma lista vazia remove todos. UUIDs que não existem são "
+            "ignorados. Se omitido em uma atualização, os vínculos são "
+            "mantidos."
+        ),
     )
     numero_processo = serializers.CharField(
         validators=[
@@ -31,7 +102,11 @@ class ConcursoSerializer(serializers.ModelSerializer):
                 queryset=Concurso.objects.all(),
                 message="Este número de processo já está cadastrado.",
             )
-        ]
+        ],
+        help_text=(
+            "Número do processo administrativo do concurso. Não pode se "
+            "repetir entre concursos."
+        ),
     )
 
     class Meta:
@@ -65,6 +140,7 @@ class ConcursoSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["uuid", "criado_em", "atualizado_em"]
         extra_kwargs: dict[str, Any] = {
+            **DESCRICOES_CONCURSO,
             "numero_processo": {"validators": []},
         }
 
@@ -110,10 +186,14 @@ class ConcursoSerializer(serializers.ModelSerializer):
 
 
 class ConcursoListSerializer(serializers.ModelSerializer):
-    """Serializer enxuto para listagem de concursos."""
+    """Concurso resumido, como aparece na listagem."""
 
-    cargos = CargoListSerializer(many=True, read_only=True)
-    cargos_descricao = serializers.SerializerMethodField()
+    cargos = CargoListSerializer(
+        many=True, read_only=True, help_text="Cargos vinculados ao concurso."
+    )
+    cargos_descricao = serializers.SerializerMethodField(
+        help_text='Cargos vinculados, cada um no formato "código - nome".'
+    )
 
     class Meta:
         """Configuração do serializer."""
@@ -130,6 +210,7 @@ class ConcursoListSerializer(serializers.ModelSerializer):
             "status",
             "situacao",
         ]
+        extra_kwargs = DESCRICOES_CONCURSO
 
     def get_cargos_descricao(self, obj: Concurso) -> list[str]:
         """Retorna lista de ``"{codigo} - {nome}"`` por cargo vinculado."""
@@ -137,20 +218,66 @@ class ConcursoListSerializer(serializers.ModelSerializer):
 
 
 class ConcursoSelectSerializer(serializers.ModelSerializer):
-    """Serializer ``value``/``label`` para selects no frontend."""
+    """Concurso como opção de um campo de seleção."""
 
-    value = serializers.UUIDField(source="uuid")
-    label = serializers.CharField(source="nome")
-    cargos = CargoSelectSerializer(many=True, read_only=True)
+    value = serializers.UUIDField(
+        source="uuid", help_text="UUID do concurso: o valor a enviar."
+    )
+    label = serializers.CharField(
+        source="nome", help_text="Nome do concurso: o texto a exibir."
+    )
+    cargos = CargoSelectSerializer(
+        many=True,
+        read_only=True,
+        help_text="Cargos do concurso, também como opções de seleção.",
+    )
 
     class Meta:
         """Configuração do serializer."""
 
         model = Concurso
         fields = ["value", "label", "cargos", "numero_processo", "codigo"]
+        extra_kwargs = DESCRICOES_CONCURSO
 
 
 class ConcursoAtualizarSituacaoSerializer(serializers.Serializer):
-    """Valida o campo situacao para a transição de estado do concurso."""
+    """Situação para a qual o concurso deve passar."""
 
-    situacao = serializers.ChoiceField(choices=CONCURSO_SITUACAO_CHOICES)
+    situacao = serializers.ChoiceField(
+        choices=CONCURSO_SITUACAO_CHOICES,
+        help_text=(
+            "Situação de destino. Obrigatória. Só `EM_ANDAMENTO` e "
+            "`COMPLETO` podem produzir alteração."
+        ),
+    )
+
+
+class LinksPaginacaoSerializer(serializers.Serializer):
+    """Links de navegação entre as páginas da listagem."""
+
+    next = serializers.URLField(
+        allow_null=True,
+        help_text="URL da próxima página, ou nulo na última página.",
+    )
+    previous = serializers.URLField(
+        allow_null=True,
+        help_text="URL da página anterior, ou nulo na primeira página.",
+    )
+
+
+class ConcursoPaginadoSerializer(serializers.Serializer):
+    """Página da listagem de concursos."""
+
+    links = LinksPaginacaoSerializer(
+        help_text="Links para as páginas vizinhas."
+    )
+    count = serializers.IntegerField(
+        help_text="Total de concursos que atendem aos filtros."
+    )
+    page = serializers.IntegerField(help_text="Número da página retornada.")
+    page_size = serializers.IntegerField(
+        help_text="Quantidade de concursos por página pedida."
+    )
+    results = ConcursoListSerializer(
+        many=True, help_text="Concursos da página."
+    )
