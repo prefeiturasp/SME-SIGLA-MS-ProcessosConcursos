@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -12,11 +13,14 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from cargos.api.schemas import OPERACOES_CARGOS, TAG_CARGOS
 from cargos.models import Cargo
 from cargos.serializers import CargoSerializer
 from cargos.services import CargosService
 
 
+@extend_schema(tags=[TAG_CARGOS])
+@extend_schema_view(**OPERACOES_CARGOS)
 class CargoViewSet(viewsets.ModelViewSet):
     """CRUD de cargos e action de autorizações publicadas agregadas."""
 

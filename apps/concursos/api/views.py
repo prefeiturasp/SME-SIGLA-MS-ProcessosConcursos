@@ -5,13 +5,16 @@ from __future__ import annotations
 from typing import Any
 
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer
 
+from concursos.api.schemas import OPERACOES_CONCURSOS, TAG_CONCURSOS
 from concursos.constants import (
     CONCURSO_SITUACAO_COMPLETO,
     CONCURSO_SITUACAO_EM_ANDAMENTO,
@@ -34,12 +37,14 @@ _TRANSICOES_PERMITIDAS = {
 }
 
 
+@extend_schema(tags=[TAG_CONCURSOS])
+@extend_schema_view(**OPERACOES_CONCURSOS)
 class ConcursoViewSet(viewsets.ModelViewSet):
     """CRUD e listagem de concursos com paginação ou formato select."""
 
     queryset = Concurso.objects.all()
     serializer_class = ConcursoSerializer
-    permission_classes: list[Any] = []
+    permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ConcursoFilterSet
     search_fields = ["nome"]
