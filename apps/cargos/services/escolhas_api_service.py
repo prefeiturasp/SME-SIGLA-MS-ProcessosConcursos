@@ -8,6 +8,8 @@ import requests
 from django.conf import settings
 from sigla_sdk.context import get_correlation_id
 
+from cargos.services.http_log import mascarar_headers
+
 logger = logging.getLogger(__name__)
 
 
@@ -61,7 +63,8 @@ class EscolhasAPIService:
         logger.info(
             "Consultando escolhas por cargo no MS-Escolhas | "
             f"correlation_id={get_correlation_id()} method=GET "
-            f"url={url} headers={list(merged_headers.keys())}"
+            f"url={url} headers={mascarar_headers(merged_headers)} "
+            f"timeout_seconds={self.timeout_seconds}"
         )
         response = requests.get(
             url, headers=merged_headers, timeout=self.timeout_seconds
