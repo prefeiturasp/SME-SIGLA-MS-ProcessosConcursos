@@ -50,6 +50,7 @@ class ConcursoViewSet(viewsets.ModelViewSet):
     search_fields = ["nome"]
     ordering_fields = ["nome", "criado_em"]
     ordering = ["-criado_em"]
+    lookup_field = "uuid"
     pagination_class = CustomPagination
 
     def get_serializer_class(self) -> type[BaseSerializer]:
@@ -78,7 +79,7 @@ class ConcursoViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["patch"], url_path="atualizar-situacao")
     def atualizar_situacao(
-        self, request: Request, pk: str | None = None
+        self, request: Request, **kwargs: Any
     ) -> Response:
         """Aplica transição de situação se o estado atual permitir."""
         concurso = self.get_object()
