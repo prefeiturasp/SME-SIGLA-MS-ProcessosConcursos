@@ -27,7 +27,8 @@ from autorizacoes.services import montar_extracao_dados
 class AutorizacaoPublicadaViewSet(viewsets.ModelViewSet):
     """CRUD de autorizações publicadas por cargo."""
 
-    queryset = AutorizacaoPublicada.objects.all()
+    queryset = AutorizacaoPublicada.objects.select_related("cargo")
+    lookup_field = "uuid"
     serializer_class = AutorizacaoPublicadaSerializer
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]

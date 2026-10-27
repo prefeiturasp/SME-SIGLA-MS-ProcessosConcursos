@@ -48,7 +48,7 @@ def test_create_cargo_success(authenticated_client):
 
 def test_retrieve_cargo_success(authenticated_client, cargo_analista):
     """GET detail retorna o cargo."""
-    url = reverse("cargo-detail", kwargs={"pk": cargo_analista.uuid})
+    url = reverse("cargo-detail", kwargs={"uuid": cargo_analista.uuid})
     response = authenticated_client.get(url)
     assert response.status_code == status.HTTP_200_OK
     assert response.data["nome"] == "Analista de Sistemas"
@@ -56,14 +56,14 @@ def test_retrieve_cargo_success(authenticated_client, cargo_analista):
 
 def test_retrieve_cargo_not_found(authenticated_client, fake_uuid):
     """GET detail com UUID inexistente retorna 404."""
-    url = reverse("cargo-detail", kwargs={"pk": fake_uuid})
+    url = reverse("cargo-detail", kwargs={"uuid": fake_uuid})
     response = authenticated_client.get(url)
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_update_cargo_success(authenticated_client, cargo_analista):
     """PUT atualiza o nome do cargo."""
-    url = reverse("cargo-detail", kwargs={"pk": cargo_analista.uuid})
+    url = reverse("cargo-detail", kwargs={"uuid": cargo_analista.uuid})
     response = authenticated_client.put(
         url, {"nome": "Analista de Sistemas Atualizado"}
     )
@@ -74,7 +74,7 @@ def test_update_cargo_success(authenticated_client, cargo_analista):
 
 def test_delete_cargo_success(authenticated_client, cargo_analista):
     """DELETE remove o cargo."""
-    url = reverse("cargo-detail", kwargs={"pk": cargo_analista.uuid})
+    url = reverse("cargo-detail", kwargs={"uuid": cargo_analista.uuid})
     response = authenticated_client.delete(url)
     assert response.status_code == status.HTTP_204_NO_CONTENT
     assert Cargo.objects.count() == 0
@@ -153,3 +153,11 @@ def test_busca_cargo_por_nome_ainda_funciona(authenticated_client):
     nomes = [c["nome"] for c in dados]
     assert "Analista Judiciario" in nomes
     assert "Tecnico" not in nomes
+
+
+def test_detalhe_por_id_inteiro_retorna_404(
+    authenticated_client, cargo_analista
+):
+    """O id interno não é aceito na rota: só o uuid."""
+    resposta = authenticated_client.get(f"/api/v1/cargos/{cargo_analista.id}/")
+    assert resposta.status_code == status.HTTP_404_NOT_FOUND
