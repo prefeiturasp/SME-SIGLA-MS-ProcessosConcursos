@@ -37,8 +37,12 @@ DESCRICOES_AUTORIZACAO = {
 class AutorizacaoPublicadaSerializer(serializers.ModelSerializer):
     """Autorizações publicadas para um cargo em uma data."""
 
-    cargo = serializers.PrimaryKeyRelatedField(
+    cargo = serializers.SlugRelatedField(
+        slug_field="uuid",
         queryset=Cargo.objects.all(),
+        error_messages={
+            "does_not_exist": 'Pk inválido "{value}" - objeto não existe.'
+        },
         help_text=(
             "UUID do cargo autorizado. Obrigatório na API. Registros "
             "criados pelo Django Admin podem vir com nulo."

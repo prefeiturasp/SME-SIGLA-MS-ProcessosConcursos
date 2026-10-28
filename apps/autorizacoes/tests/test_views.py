@@ -3,6 +3,8 @@
 from datetime import date
 
 import pytest
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from rest_framework import status
 
@@ -64,7 +66,7 @@ def test_retrieve_autorizacao_publicada_success(api_client):
     cargo = Cargo.objects.create(nome="Cargo A")
     obj = criar_autorizacao(cargo)
 
-    url = reverse("autorizacao-publicada-detail", kwargs={"pk": obj.uuid})
+    url = reverse("autorizacao-publicada-detail", kwargs={"uuid": obj.uuid})
     resp = api_client.get(url)
     assert resp.status_code == status.HTTP_200_OK
     assert resp.data["uuid"] == str(obj.uuid)
@@ -98,13 +100,38 @@ def test_create_autorizacao_publicada_invalid_cargo(api_client):
     resp = api_client.post(url, payload, format="json")
     # A validação falha durante o create() ao resolver o cargo
     assert resp.status_code == status.HTTP_400_BAD_REQUEST
-    assert "cargo" in resp.data
+    assert resp.json() == {
+        "cargo": [
+            'Pk inválido "00000000-0000-0000-0000-000000000000" - '
+            "objeto não existe."
+        ]
+    }
+
+
+@pytest.mark.parametrize(
+    ("valor", "mensagem"),
+    [
+        ("abc", "O valor “abc” não é um UUID válido"),
+        (5, 'Pk inválido "5" - objeto não existe.'),
+        ([1], "O valor “[1]” não é um UUID válido"),
+        (None, "Este campo não pode ser nulo."),
+    ],
+)
+def test_create_autorizacao_publicada_cargo_tipo_invalido(
+    api_client, valor, mensagem
+):
+    """Verifica as mensagens de erro de cargo com valores inválidos."""
+    url = reverse("autorizacao-publicada-list")
+    payload = {"cargo": valor, "autorizacoes": 1}
+    resp = api_client.post(url, payload, format="json")
+    assert resp.status_code == status.HTTP_400_BAD_REQUEST
+    assert resp.json() == {"cargo": [mensagem]}
 
 
 def test_patch_autorizacao_publicada_success(api_client):
     """Verifica patch autorizacao publicada success."""
     obj = criar_autorizacao(None, autorizacoes=2, observacao="old")
-    url = reverse("autorizacao-publicada-detail", kwargs={"pk": obj.uuid})
+    url = reverse("autorizacao-publicada-detail", kwargs={"uuid": obj.uuid})
     payload = {
         "autorizacoes": 7,
         "data_autorizacao": "2026-01-29",
@@ -116,12 +143,13 @@ def test_patch_autorizacao_publicada_success(api_client):
     assert obj.autorizacoes == 7
     assert str(obj.data_autorizacao) == "2026-01-29"
     assert obj.observacao == "nova"
+    assert resp.json()["cargo"] is None
 
 
 def test_delete_autorizacao_publicada_success(api_client):
     """Verifica delete autorizacao publicada success."""
     obj = criar_autorizacao()
-    url = reverse("autorizacao-publicada-detail", kwargs={"pk": obj.uuid})
+    url = reverse("autorizacao-publicada-detail", kwargs={"uuid": obj.uuid})
     resp = api_client.delete(url)
     assert resp.status_code == status.HTTP_204_NO_CONTENT
     assert AutorizacaoPublicada.objects.filter(uuid=obj.uuid).count() == 0
@@ -362,3 +390,40 @@ def test_data_autorizacao_mais_recente_por_cargo_com_multiplos_registros(
     cargo_data = resp.json()["2026"]["cargos"][0]
     assert cargo_data["autorizacoes"] == 100
     assert cargo_data["data_autorizacao"] == "2026-08-20"
+
+
+def test_detalhe_por_id_inteiro_retorna_404(api_client):
+    """O id interno não é aceito na rota: só o uuid."""
+    obj = criar_autorizacao(Cargo.objects.create(nome="Cargo A"))
+    resposta = api_client.get(f"/api/v1/autorizacoes-publicadas/{obj.id}/")
+    assert resposta.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_autorizacao_aceita_e_devolve_cargo_como_uuid(api_client):
+    """O cargo entra e sai como uuid, sem expor o id interno."""
+    cargo = Cargo.objects.create(nome="Cargo A")
+    resposta = api_client.post(
+        reverse("autorizacao-publicada-list"),
+        {"cargo": str(cargo.uuid), "autorizacoes": 4},
+        format="json",
+    )
+    assert resposta.status_code == status.HTTP_201_CREATED
+    corpo = resposta.json()
+    assert corpo["cargo"] == str(cargo.uuid)
+    assert "id" not in corpo
+
+
+def test_lista_de_autorizacoes_nao_cresce_em_queries(api_client):
+    """A listagem faz a mesma quantidade de queries com 1 ou 3 itens."""
+    url = reverse("autorizacao-publicada-list")
+
+    def contar() -> int:
+        with CaptureQueriesContext(connection) as ctx:
+            assert api_client.get(url).status_code == status.HTTP_200_OK
+        return len(ctx)
+
+    criar_autorizacao(Cargo.objects.create(nome="Cargo 1"))
+    com_um = contar()
+    for i in (2, 3):
+        criar_autorizacao(Cargo.objects.create(nome=f"Cargo {i}"))
+    assert contar() == com_um

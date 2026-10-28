@@ -97,7 +97,7 @@ def test_create_concurso_with_multiple_cargos(
 
 def test_retrieve_concurso_success(authenticated_client, concurso_analista):
     """Verifica retrieve concurso success."""
-    url = reverse("concurso-detail", kwargs={"pk": concurso_analista.uuid})
+    url = reverse("concurso-detail", kwargs={"uuid": concurso_analista.uuid})
     response = authenticated_client.get(url)
     assert response.status_code == status.HTTP_200_OK
     assert response.data["nome"] == "Concurso de Analista"
@@ -110,7 +110,7 @@ def test_retrieve_concurso_success(authenticated_client, concurso_analista):
 
 def test_retrieve_concurso_not_found(authenticated_client, fake_uuid):
     """Verifica retrieve concurso not found."""
-    url = reverse("concurso-detail", kwargs={"pk": fake_uuid})
+    url = reverse("concurso-detail", kwargs={"uuid": fake_uuid})
     response = authenticated_client.get(url)
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -119,7 +119,7 @@ def test_update_concurso_success(
     authenticated_client, concurso_analista, cargo_desenvolvedor
 ):
     """Verifica update concurso success."""
-    url = reverse("concurso-detail", kwargs={"pk": concurso_analista.uuid})
+    url = reverse("concurso-detail", kwargs={"uuid": concurso_analista.uuid})
     data = {
         "nome": "Concurso de Analista Atualizado",
         "cargos_ids": [str(cargo_desenvolvedor.uuid)],
@@ -136,7 +136,7 @@ def test_update_concurso_success(
 
 def test_delete_concurso_success(authenticated_client, concurso_analista):
     """Verifica delete concurso success."""
-    url = reverse("concurso-detail", kwargs={"pk": concurso_analista.uuid})
+    url = reverse("concurso-detail", kwargs={"uuid": concurso_analista.uuid})
     response = authenticated_client.delete(url)
     assert response.status_code == status.HTTP_204_NO_CONTENT
     assert Concurso.objects.count() == 0
@@ -291,7 +291,7 @@ def test_patch_numero_processo_proprio_permite(authenticated_client):
         nome="Existente", numero_processo="55555"
     )
 
-    url = reverse("concurso-detail", kwargs={"pk": concurso.uuid})
+    url = reverse("concurso-detail", kwargs={"uuid": concurso.uuid})
     response = authenticated_client.patch(
         url, {"nome": "Renomeado", "numero_processo": "55555"}
     )
@@ -381,3 +381,25 @@ def test_atualizar_situacao_rejeita_valor_invalido(authenticated_client):
     )
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+def test_detalhe_por_id_inteiro_retorna_404(
+    authenticated_client, concurso_analista
+):
+    """O id interno não é aceito na rota: só o uuid."""
+    url = f"/api/v1/concursos/{concurso_analista.id}/"
+    resposta = authenticated_client.get(url)
+    assert resposta.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_atualizar_situacao_por_uuid(authenticated_client):
+    """PATCH em /concursos/{uuid}/atualizar-situacao/ aplica a transição."""
+    concurso = Concurso.objects.create(nome="Concurso", situacao="COMPLETO")
+    url = f"/api/v1/concursos/{concurso.uuid}/atualizar-situacao/"
+    resposta = authenticated_client.patch(
+        url, {"situacao": "EM_ANDAMENTO"}, format="json"
+    )
+    assert resposta.status_code == status.HTTP_200_OK
+    assert resposta.json()["situacao"] == "EM_ANDAMENTO"
+    concurso.refresh_from_db()
+    assert concurso.situacao == "EM_ANDAMENTO"
